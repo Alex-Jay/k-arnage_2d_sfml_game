@@ -5,7 +5,7 @@ K-arnage is a 2D SFML game written as a last-year college project for *Multiplay
 ### Current Status
 [![Build status](https://ci.appveyor.com/api/projects/status/u91uk4akkcl3377m?svg=true)](https://ci.appveyor.com/project/Alex-Jay/k-arnage-2d-sfml-game)
 
-*Thank you to John Loane and Dundalk Institute of Technology for providing insight and resources for this project.*
+*Thank you to John Loane for the [Core Framework](https://bitbucket.org/johnloane/gd4201819classcode/src). and Dundalk Institute of Technology for providing insight and resources for this project.*
 
 **Members**:
 
