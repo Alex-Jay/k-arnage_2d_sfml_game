@@ -1,6 +1,9 @@
 # K-arnage
 
-K-arnage is a 2D SFML game written as a last-year college project for *Multiplayer-Distributed Programming* module. This is a pair-project. Thank you to John Loane and Dundalk Institute of Technology for providing insight and resources for this project.
+K-arnage is a 2D SFML game written as a last-year college project for *Multiplayer-Distributed Programming* module. This is a pair-project.
+
+Thank you to John Loane and Dundalk Institute of Technology for providing insight and resources for this project.
+
 Members:
 
   - Michael Grinnell
