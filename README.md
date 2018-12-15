@@ -2,14 +2,14 @@
 
 K-arnage is a 2D SFML game written as a last-year college project for *Multiplayer-Distributed Programming* module. This is a pair-project.
 
-Thank you to John Loane and Dundalk Institute of Technology for providing insight and resources for this project.
+*Thank you to John Loane and Dundalk Institute of Technology for providing insight and resources for this project.*
 
-Members:
+**Members**:
 
   - Michael Grinnell
   - Aleksandrs Jevdokimovs
 
-Degree: BSc. (Hons) Computer Science in Games Development
+**Degree**: BSc. (Hons) Computer Science in Games Development
 
 # Dependencies
 
@@ -18,7 +18,7 @@ Degree: BSc. (Hons) Computer Science in Games Development
   - Visual Studio 2017 (not necessary)
   - SFML Binaries in Build folder.
 
-Disclaimer:
+**Disclaimer:**
 *This game is written for educational-purposes only and is under Open-Source-Licence. You may use this framework to design/implement your own game, remember to give credit to the developers.*
 
 [![Open-Source-Licence](http://www.myiconfinder.com/uploads/iconsets/64-64-04a5e3532f7fb534017d5aeed9941c38.png)](https://opensource.org/licenses)
