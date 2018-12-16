@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# SFML Docs
+SFML-[0-9].[0-9].[0-9]*/doc/
+
 # User-specific files
 *.rsuser
 *.suo
