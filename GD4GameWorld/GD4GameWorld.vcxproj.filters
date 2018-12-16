@@ -15,237 +15,237 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SceneNode.cpp">
+    <ClCompile Include="src/Aircraft.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteNode.cpp">
+    <ClCompile Include="src/Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
+    <ClCompile Include="src/Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Aircraft.cpp">
+    <ClCompile Include="src/BloomEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="World.cpp">
+    <ClCompile Include="src/Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src/Command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
+    <ClCompile Include="src/CommandQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommandQueue.cpp">
+    <ClCompile Include="src/Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
+    <ClCompile Include="src/Container.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="State.cpp">
+    <ClCompile Include="src/DataTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StateStack.cpp">
+    <ClCompile Include="src/EmitterNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utility.cpp">
+    <ClCompile Include="src/Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src/GameOverState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TitleState.cpp">
+    <ClCompile Include="src/GameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MenuState.cpp">
+    <ClCompile Include="src/Label.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
+    <ClCompile Include="src/Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PauseState.cpp">
+    <ClCompile Include="src/MenuState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="src/MusicPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Container.cpp">
+    <ClCompile Include="src/ParticleNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
+    <ClCompile Include="src/PauseState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Label.cpp">
+    <ClCompile Include="src/Pickup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SettingsState.cpp">
+    <ClCompile Include="src/Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataTables.cpp">
+    <ClCompile Include="src/PostEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Projectile.cpp">
+    <ClCompile Include="src/Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameOverState.cpp">
+    <ClCompile Include="src/SceneNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pickup.cpp">
+    <ClCompile Include="src/SettingsState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
+    <ClCompile Include="src/SoundNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleNode.cpp">
+    <ClCompile Include="src/SoundPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EmitterNode.cpp">
+    <ClCompile Include="src/SpriteNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PostEffect.cpp">
+    <ClCompile Include="src/State.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BloomEffect.cpp">
+    <ClCompile Include="src/StateStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MusicPlayer.cpp">
+    <ClCompile Include="src/TextNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
+    <ClCompile Include="src/TitleState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SoundNode.cpp">
+    <ClCompile Include="src/Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextNode.cpp">
+    <ClCompile Include="src/World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SceneNode.hpp">
+    <ClInclude Include="include/Entity/Aircraft.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteNode.hpp">
+    <ClInclude Include="include/Animation/Animation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
+    <ClInclude Include="include/Core/Application.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Aircraft.hpp">
+    <ClInclude Include="include/PostEffect/BloomEffect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceIdentifiers.hpp">
+    <ClInclude Include="include/Component/Button.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceHolder.hpp">
+    <ClInclude Include="include/Structural/Category.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="World.hpp">
+    <ClInclude Include="include/Command/Command.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Category.hpp">
+    <ClInclude Include="include/Command/CommandQueue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Command.hpp">
+    <ClInclude Include="include/Component/Component.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CommandQueue.hpp">
+    <ClInclude Include="include/Constant/Constants.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.hpp">
+    <ClInclude Include="include/Component/Container.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State.hpp">
+    <ClInclude Include="include/DataTable/DataTables.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StateIdentifiers.hpp">
+    <ClInclude Include="include/SceneNode/EmitterNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StateStack.hpp">
+    <ClInclude Include="include/Entity/Entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.hpp">
+    <ClInclude Include="include/State/GameOverState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application.hpp">
+    <ClInclude Include="include/State/GameState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TitleState.hpp">
+    <ClInclude Include="include/Component/Label.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MenuState.hpp">
+    <ClInclude Include="include/State/MenuState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.hpp">
+    <ClInclude Include="include/Audio/MusicPlayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PauseState.hpp">
+    <ClInclude Include="include/Structural/Particle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Container.hpp">
+    <ClInclude Include="include/SceneNode/ParticleNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Button.hpp">
+    <ClInclude Include="include/State/PauseState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Component.hpp">
+    <ClInclude Include="include/Entity/Pickup.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Label.hpp">
+    <ClInclude Include="include/Structural/Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SettingsState.hpp">
+    <ClInclude Include="include/PostEffect/PostEffect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataTables.hpp">
+    <ClInclude Include="include/Entity/Projectile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.hpp">
+    <ClInclude Include="include/Structural/ResourceHolder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextNode.hpp">
+    <ClInclude Include="include/Structural/ResourceIdentifiers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Projectile.hpp">
+    <ClInclude Include="include/SceneNode/SceneNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameOverState.hpp">
+    <ClInclude Include="include/State/SettingsState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pickup.hpp">
+    <ClInclude Include="include/SceneNode/SoundNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.hpp">
+    <ClInclude Include="include/Audio/SoundPlayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Particle.hpp">
+    <ClInclude Include="include/SceneNode/SpriteNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleNode.hpp">
+    <ClInclude Include="include/State/State.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EmitterNode.hpp">
+    <ClInclude Include="include/State/StateIdentifiers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PostEffect.hpp">
+    <ClInclude Include="include/State/StateStack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BloomEffect.hpp">
+    <ClInclude Include="include/SceneNode/TextNode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MusicPlayer.hpp">
+    <ClInclude Include="include/State/TitleState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundPlayer.hpp">
+    <ClInclude Include="include/Structural/Utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SoundNode.hpp">
+    <ClInclude Include="include/Core/World.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ResourceHolder.inl">
-      <Filter>Source Files</Filter>
+    <None Include="src/ResourceHolder.inl">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>
