@@ -254,7 +254,7 @@ void World::buildScene()
 	mSceneLayers[Layer::UpperAir]->attachChild(std::move(player));
 
 	// Add enemy aircraft
-	addEnemies();
+	//addEnemies();
 }
 
 void World::addEnemies()
