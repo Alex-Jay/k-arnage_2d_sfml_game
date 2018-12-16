@@ -73,5 +73,16 @@ Want to contribute? Great!
  - Add teleporting functionality (*Power-up*).
  - Record and/or source audio effects and background music.
  - **More to be added.**
+
+### Specification
+ - Keyboard and/or Xbox controller input.
+ - **States & Menus**. The game should have discrete states such as a Titlestate, Menustate, Gameoverstate. These states should contain interactive menus.
+ - **Sprites and animation**. You are not required to build custom resources – feel free to use openly available graphical resources available online and mentioned in the slides.
+ - **Collision detection and physics**. When players or objects collide with the edges of the world or solid objects you should deal with this appropriately.
+ - **Shaders**. You should improve the look and feel of your game by using shaders.
+ - **Music and sound effects**. You should have background music and in game sound effects.
+ - **The game should be fun to play.**
+ - Give an overview of all of the code with **particular emphasis on the code that you were responsible for writing**. The code should be **clearly commented with a comment at the start of each file to say who was involved in writing it** and a **comment at the start of each function to say who wrote it**. Use version control to track the development of the game and submit the link to your code repository.
+ - Discuss how you will make this a networked game.
  
 *If you have any further requests or proposals, don't be stumbled to contact us, we love socialising <3.*
