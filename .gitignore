@@ -17,6 +17,7 @@ SFML-[0-9].[0-9].[0-9]*/doc/
 *.userprefs
 
 # Build results
+GD4GameWorld/[Dd]ebug/
 #[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
