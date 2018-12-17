@@ -1,8 +1,10 @@
 #include "TitleState.hpp"
 #include "Utility.hpp"
 #include "ResourceHolder.hpp"
-
+#include "MusicPlayer.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
+
+#include <iostream>
 
 TitleState::TitleState(StateStack & stack, Context context)
 	: State(stack, context)
@@ -16,6 +18,9 @@ TitleState::TitleState(StateStack & stack, Context context)
 	centreOrigin(mText);
 	mText.setPosition(context.window->getView().getSize() / 2.f);
 	mText.setCharacterSize(30);
+
+	//Play the menu music
+	context.music->play(MusicIDs::MenuTheme);
 }
 
 void TitleState::draw()
@@ -44,7 +49,7 @@ bool TitleState::update(sf::Time dt)
 bool TitleState::handleEvent(const sf::Event& event)
 {
 	//If any key is pressed move to menu state
-	if (event.type == sf::Event::KeyPressed)
+ 	if (event.type == sf::Event::KeyReleased)
 	{
 		requestStackPop();
 		requestStackPush(StateIDs::Menu);
