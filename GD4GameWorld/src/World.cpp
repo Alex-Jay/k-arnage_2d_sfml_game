@@ -49,7 +49,6 @@ void World::update(sf::Time dt)
 
 	sf::Vector2f playerVelocity = mPlayerAircraft->getVelocity();
 
-<<<<<<< HEAD
 	// Stick view to player position
 	mWorldView.setCenter(mPlayerAircraft->getPosition());
 	/*
@@ -81,9 +80,7 @@ void World::update(sf::Time dt)
 	{
 		mPlayerAircraft->setPosition(mPlayerAircraft->getPosition().x, (getBattlefieldBounds().height + mWorldBounds.height));
 	}
-=======
 	//mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
->>>>>>> 3ec28f5531a0aad1c5c6d244585fbc9722d01d99
 
 	#pragma endregion
 
