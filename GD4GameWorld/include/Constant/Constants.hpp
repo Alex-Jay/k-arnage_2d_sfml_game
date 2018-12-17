@@ -7,5 +7,5 @@ const int MAXFIRERATELEVEL = 10;
 const int MAXSPREADLEVEL = 3;
 const int SPREADLEVEL = 1;
 const int MISSILEAMMO = 2;
-const float M_PI = 3.14159f;
+const float M_PI = 3.14159265f;
 const float APPROACHRATE = 200;
