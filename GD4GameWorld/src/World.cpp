@@ -47,7 +47,7 @@ void World::update(sf::Time dt)
 
 	sf::Vector2f playerVelocity = mPlayerAircraft->getVelocity();
 
-	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
+	//mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
 
 	#pragma endregion
 

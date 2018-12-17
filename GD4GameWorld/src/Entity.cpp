@@ -1,6 +1,8 @@
 #include "Entity.hpp"
+#include "Constants.hpp"
 
 #include <cassert>
+
 
 Entity::Entity(int hitpoints) : mVelocity(), mHitpoints(hitpoints)
 {
@@ -68,5 +70,7 @@ bool Entity::isDestroyed() const
 
 void Entity::updateCurrent(sf::Time dt, CommandQueue&)
 {
-	move(mVelocity * dt.asSeconds());
+
+	rotate(mVelocity.x * dt.asSeconds());
+	move((cos((getRotation() + 90) * M_PI / 180) * mVelocity.y) * dt.asSeconds(), (sin((getRotation() + 90)* M_PI / 180)* mVelocity.y) * dt.asSeconds());
 }
