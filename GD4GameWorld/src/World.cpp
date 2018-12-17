@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <iostream>
 
 
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds)
@@ -21,7 +22,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mSounds(sounds)
 	, mSceneGraph()
 	, mSceneLayers()
-	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
+	// Decreased map size
+	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 500.f)
 	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	, mScrollSpeed(0.f)
 	, mPlayerAircraft(nullptr)
@@ -40,14 +42,44 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 void World::update(sf::Time dt)
 {
 
-	#pragma region Author: Alex - Set camera to follow player according to his X/Y velocity.
+	#pragma region Author: Alex
 
 	// Scroll the world, reset player velocity
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 
 	sf::Vector2f playerVelocity = mPlayerAircraft->getVelocity();
 
+	// Stick view to player position
+	mWorldView.setCenter(mPlayerAircraft->getPosition());
+	/*
+	Quick Alternative To:
 	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
+	*/
+
+	// Check if player is out of bounds (Left side)
+	if (mPlayerAircraft->getPosition().x <= 0.0f)
+	{
+		mPlayerAircraft->setPosition(0.0f, mPlayerAircraft->getPosition().y);
+	}
+
+	// Check if player is out of bounds (right side)
+	if (mPlayerAircraft->getPosition().x >= mWorldBounds.width)
+	{
+		mPlayerAircraft->setPosition(mWorldBounds.width, mPlayerAircraft->getPosition().y);
+	}
+
+	// Check if player is out of bounds (top side)
+	if (mPlayerAircraft->getPosition().y <= 0.0f)
+	{
+		mPlayerAircraft->setPosition(mPlayerAircraft->getPosition().x, 0.0f);
+	}
+
+	// Check if player is out of bounds (bottom side)
+	// getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
+	if (mPlayerAircraft->getPosition().y >= (getBattlefieldBounds().height + mWorldBounds.height))
+	{
+		mPlayerAircraft->setPosition(mPlayerAircraft->getPosition().x, (getBattlefieldBounds().height + mWorldBounds.height));
+	}
 
 	#pragma endregion
 
@@ -394,8 +426,8 @@ sf::FloatRect World::getBattlefieldBounds() const
 {
 	// Return view bounds + some area at top, where enemies spawn
 	sf::FloatRect bounds = getViewBounds();
-	bounds.top -= 100.f;
-	bounds.height += 100.f;
+	//bounds.top -= 100.f;
+	//bounds.height += 100.f;
 
 	return bounds;
 }

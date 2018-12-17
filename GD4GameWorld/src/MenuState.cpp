@@ -2,7 +2,7 @@
 #include "Button.hpp"
 #include "Utility.hpp"
 #include "ResourceHolder.hpp"
-
+#include "MusicPlayer.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -43,6 +43,9 @@ MenuState::MenuState(StateStack& stack, Context context)
 	mGUIContainer.pack(playButton);
 	mGUIContainer.pack(settingsButton);
 	mGUIContainer.pack(exitButton);
+
+	// Author: Alex - Play music upon going into menu
+	context.music->play(MusicIDs::MenuTheme);
 }
 
 void MenuState::draw()

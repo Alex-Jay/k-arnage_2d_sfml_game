@@ -30,8 +30,9 @@ bool GameState::update(sf::Time dt)
 	}
 	else if (mWorld.hasPlayerReachedEnd())
 	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		requestStackPush(StateIDs::GameOver);
+		// Disable win state
+		//mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
+		//requestStackPush(StateIDs::GameOver);
 	}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
