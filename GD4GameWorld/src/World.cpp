@@ -39,8 +39,18 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 
 void World::update(sf::Time dt)
 {
+
+	#pragma region Author: Alex - Set camera to follow player according to his X/Y velocity.
+
 	// Scroll the world, reset player velocity
-	mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
+	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
+
+	sf::Vector2f playerVelocity = mPlayerAircraft->getVelocity();
+
+	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
+
+	#pragma endregion
+
 	mPlayerAircraft->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide missiles
