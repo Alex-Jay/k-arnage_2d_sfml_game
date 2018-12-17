@@ -168,8 +168,8 @@ void World::adaptPlayerVelocity()
 	sf::Vector2f velocity = mPlayerAircraft->getVelocity();
 
 	// If moving diagonally, reduce velocity (to have always same velocity)
-	if (velocity.x != 0.f && velocity.y != 0.f)
-		mPlayerAircraft->setVelocity(velocity / std::sqrt(2.f));
+	//if (velocity.x != 0.f && velocity.y != 0.f)
+	//	mPlayerAircraft->setVelocity(velocity / std::sqrt(2.f));
 
 	// Add scrolling velocity
 	mPlayerAircraft->accelerate(0.f, mScrollSpeed);
