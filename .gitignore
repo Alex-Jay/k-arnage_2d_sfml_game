@@ -12,10 +12,10 @@ SFML-[0-9].[0-9].[0-9]*/doc/
 *.user
 *.userosscache
 *.sln.docstates
+*.exe
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
 # Build results
 GD4GameWorld/[Dd]ebug/
 #[Dd]ebug/
