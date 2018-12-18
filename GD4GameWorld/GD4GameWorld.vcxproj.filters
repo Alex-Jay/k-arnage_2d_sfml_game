@@ -189,6 +189,9 @@
     <ClCompile Include="src/Player.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
+    <ClCompile Include="src\Character.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
@@ -310,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="include/State/PauseState.hpp">
       <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entity\Character.hpp">
+      <Filter>Header Files\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

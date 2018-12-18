@@ -14,6 +14,7 @@ Animation::Animation()
 	, mElapsedTime(sf::Time::Zero)
 	, mRepeat(false)
 {
+
 }
 
 Animation::Animation(const sf::Texture& texture)
@@ -25,6 +26,7 @@ Animation::Animation(const sf::Texture& texture)
 	, mElapsedTime(sf::Time::Zero)
 	, mRepeat(false)
 {
+
 }
 
 void Animation::setTexture(const sf::Texture& texture)
@@ -32,6 +34,16 @@ void Animation::setTexture(const sf::Texture& texture)
 	mSprite.setTexture(texture);
 }
 
+//Mike
+void Animation::setTextureRect()
+{
+	mSprite.setTextureRect(sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y));
+}
+//Mike
+sf::Sprite Animation::getSprite()
+{
+	return mSprite;
+}
 const sf::Texture * Animation::getTexture() const
 {
 	return mSprite.getTexture();
@@ -96,6 +108,7 @@ sf::FloatRect Animation::getGlobalBounds() const
 {
 	return getTransform().transformRect(getLocalBounds());
 }
+
 
 void Animation::update(sf::Time dt)
 {

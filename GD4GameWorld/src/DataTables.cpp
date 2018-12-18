@@ -1,5 +1,6 @@
 #include "DataTables.hpp"
 #include "Aircraft.hpp"
+#include "Character.hpp"
 #include "Projectile.hpp"
 #include "Particle.hpp"
 #include "Pickup.hpp"
@@ -42,6 +43,25 @@ std::vector<AircraftData> initializeAircraftData()
 	return data;
 }
 
+std::vector<CharacterData> initializeCharacterData()
+{
+	std::vector<CharacterData> data(static_cast<int>(Character::Type::TypeCount));
+	data[static_cast<int>(Character::Type::Player)].hitpoints = PLAYERHITPOINTS;
+	data[static_cast<int>(Character::Type::Player)].speed = CHARACTERSPEED;
+	data[static_cast<int>(Character::Type::Player)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
+	data[static_cast<int>(Character::Type::Player)].texture = TextureIDs::PlayerMove;
+	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(0, 0, PLAYERANIMATIONRECTWIDTH, PLAYERANIMATIONRECTHEIGHT);
+	data[static_cast<int>(Character::Type::Player)].hasAnimation = true;
+
+	//data[static_cast<int>(Character::Type::Zombie)].hitpoints = PLAYERHITPOINTS;
+	//data[static_cast<int>(Character::Type::Zombie)].speed = CHARACTERSPEED;
+	//data[static_cast<int>(Character::Type::Zombie)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
+	//data[static_cast<int>(Character::Type::Zombie)].texture = TextureIDs::PlayerMove;
+	//data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(0, 0, PLAYERANIMATIONRECTWIDTH, PLAYERANIMATIONRECTHEIGHT);
+	//data[static_cast<int>(Character::Type::Zombie)].hasAnimation = true;
+
+	return data;
+}
 std::vector<ProjectileData> initializeProjectileData()
 {
 	std::vector<ProjectileData> data(static_cast<int>(Projectile::ProjectileIDs::TypeCount));
@@ -75,7 +95,7 @@ std::vector<PickupData> initializePickupData()
 
 	data[static_cast<int>(Pickup::PickupID::MissileRefill)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Pickup::PickupID::MissileRefill)].textureRect = sf::IntRect(40, 64, 40, 40);
-	data[static_cast<int>(Pickup::PickupID::MissileRefill)].action = std::bind(&Aircraft::collectMissiles, _1, MISSILEPICKUPAMMOVALUE);
+	data[static_cast<int>(Pickup::PickupID::MissileRefill)].action = std::bind(&Aircraft::collectMissiles, _1, GrenadePICKUPAMMOVALUE);
 
 	data[static_cast<int>(Pickup::PickupID::FireSpread)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Pickup::PickupID::FireSpread)].textureRect = sf::IntRect(80, 64, 40, 40);

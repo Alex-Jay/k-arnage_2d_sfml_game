@@ -3,7 +3,8 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-#include "Aircraft.hpp"
+//#include "Aircraft.hpp"
+#include "Character.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
 #include "BloomEffect.hpp"
@@ -42,7 +43,7 @@ private:
 	void updateSounds();
 
 	void addEnemies();
-	void addEnemy(Aircraft::Type type, float relX, float relY);
+	void addEnemy(Character::Type type, float relX, float relY);
 	void spawnEnemies();
 	void destroyEntitiesOutsideView();
 	void guideMissiles();
@@ -50,18 +51,18 @@ private:
 	sf::FloatRect getBattlefieldBounds() const;
 
 private:
-	enum Layer{Background, LowerAir, UpperAir, LayerCount};
+	enum Layer { Background, LowerAir, UpperAir, LayerCount };
 
 	struct SpawnPoint
 	{
-		SpawnPoint(Aircraft::Type type, float x, float y)
+		SpawnPoint(Character::Type type, float x, float y)
 			: type(type)
 			, x(x)
 			, y(y)
 		{
 		}
 
-		Aircraft::Type type;
+		Character::Type type;
 		float x;
 		float y;
 	};
@@ -81,10 +82,10 @@ private:
 	sf::FloatRect mWorldBounds;
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
-	Aircraft* mPlayerAircraft;
+	Character* mPlayerAircraft;
 
 	std::vector<SpawnPoint>	mEnemySpawnPoints;
-	std::vector<Aircraft*> mActiveEnemies;
+	std::vector<Character*> mActiveEnemies;
 
 	BloomEffect	mBloomEffect;
 };

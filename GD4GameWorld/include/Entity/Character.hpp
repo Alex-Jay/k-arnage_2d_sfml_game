@@ -8,13 +8,13 @@
 
 #include "SFML/Graphics/Sprite.hpp"
 
-class Aircraft : public Entity
+class Character : public Entity
 {
 public:
-	enum class Type{Eagle, Raptor, Avenger, TypeCount};
+	enum class Type { Player, Zombie, TypeCount };
 
 public:
-	Aircraft(Type type, const TextureHolder& texture, const FontHolder& fonts);
+	Character(Type type, const TextureHolder& texture, const FontHolder& fonts);
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
 	virtual void remove();

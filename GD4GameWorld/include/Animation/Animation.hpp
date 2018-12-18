@@ -9,6 +9,8 @@ public:
 	explicit Animation(const sf::Texture& texture);
 
 	void setTexture(const sf::Texture& texture);
+	void setTextureRect();
+	sf::Sprite getSprite();
 	const sf::Texture* getTexture() const;
 
 	void setFrameSize(sf::Vector2i mFrameSize);
