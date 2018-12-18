@@ -5,6 +5,8 @@
 #include "ParticleNode.hpp"
 #include "PostEffect.hpp"
 #include "SoundNode.hpp"
+#include "Constants.hpp"
+
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <algorithm>
@@ -22,8 +24,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mSounds(sounds)
 	, mSceneGraph()
 	, mSceneLayers()
-	// Decreased map size
-	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 500.f)
+	// Alex - Increased map size
+	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x * 2, 1000.f)
 	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	, mScrollSpeed(0.f)
 	, mPlayerCharacter(nullptr)
@@ -31,6 +33,9 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mActiveEnemies()
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+
+	// Alex - Apply zoom factor
+	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
 	buildScene();
@@ -42,7 +47,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 void World::update(sf::Time dt)
 {
 
-#pragma region Author: Alex
+	#pragma region Author: Alex
 
 	// Scroll the world, reset player velocity
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
@@ -56,33 +61,10 @@ void World::update(sf::Time dt)
 	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
 	*/
 
-	// Check if player is out of bounds (Left side)
-	if (mPlayerCharacter->getPosition().x <= 0.0f)
-	{
-		mPlayerCharacter->setPosition(0.0f, mPlayerCharacter->getPosition().y);
-	}
+	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
+	handlePlayerCollision();
 
-	// Check if player is out of bounds (right side)
-	if (mPlayerCharacter->getPosition().x >= mWorldBounds.width)
-	{
-		mPlayerCharacter->setPosition(mWorldBounds.width, mPlayerCharacter->getPosition().y);
-	}
-
-	// Check if player is out of bounds (top side)
-	if (mPlayerCharacter->getPosition().y <= 0.0f)
-	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, 0.0f);
-	}
-
-	// Check if player is out of bounds (bottom side)
-	// getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
-	if (mPlayerCharacter->getPosition().y >= (getBattlefieldBounds().height + mWorldBounds.height))
-	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, (getBattlefieldBounds().height + mWorldBounds.height));
-	}
-	//mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
-
-#pragma endregion
+	#pragma endregion
 
 	mPlayerCharacter->setVelocity(0.f, 0.f);
 
@@ -199,6 +181,33 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 	}
 }
 
+void World::handlePlayerCollision()
+{
+	// Check if player is out of bounds (Left side)
+	if (mPlayerCharacter->getPosition().x <= 0.0f)
+	{
+		mPlayerCharacter->setPosition(0.0f, mPlayerCharacter->getPosition().y);
+	}
+	// Check if player is out of bounds (right side)
+	if (mPlayerCharacter->getPosition().x >= mWorldBounds.width)
+	{
+		mPlayerCharacter->setPosition(mWorldBounds.width, mPlayerCharacter->getPosition().y);
+	}
+	// Check if player is out of bounds (top side)
+	if (mPlayerCharacter->getPosition().y <= 0.0f)
+	{
+		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, 0.0f);
+	}
+	/*
+		Check if player is out of bounds (bottom side)
+		getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
+	*/
+	if (mPlayerCharacter->getPosition().y >= (getBattlefieldBounds().height + mWorldBounds.height))
+	{
+		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, (getBattlefieldBounds().height + mWorldBounds.height));
+	}
+}
+
 void World::handleCollisions()
 {
 	std::set<SceneNode::Pair> collisionPairs;
@@ -275,11 +284,12 @@ void World::buildScene()
 	jungleSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
 	mSceneLayers[Layer::Background]->attachChild(std::move(jungleSprite));
 
+	// Alex - Disable finish line
 	// Add the finish line to the scene
-	sf::Texture& finishTexture = mTextures.get(TextureIDs::FinishLine);
-	std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
-	finishSprite->setPosition(0.f, -76.f);
-	mSceneLayers[Background]->attachChild(std::move(finishSprite));
+	//sf::Texture& finishTexture = mTextures.get(TextureIDs::FinishLine);
+	//std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
+	//finishSprite->setPosition(0.f, -76.f);
+	//mSceneLayers[Background]->attachChild(std::move(finishSprite));
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
@@ -430,6 +440,7 @@ sf::FloatRect World::getBattlefieldBounds() const
 {
 	// Return view bounds + some area at top, where enemies spawn
 	sf::FloatRect bounds = getViewBounds();
+	// Alex - Disable extra bounding area
 	//bounds.top -= 100.f;
 	//bounds.height += 100.f;
 

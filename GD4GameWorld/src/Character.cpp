@@ -105,13 +105,11 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	//{
 	//	checkPickupDrop(commands);
 	//	mPlayerAnimation.update(dt);
-
 	//	// Play explosion sound only once
 	//	if (!mPlayedExplosionSound)
 	//	{
 	//		SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
 	//		playLocalSound(commands, soundEffect);
-
 	//		mPlayedExplosionSound = true;
 	//	}
 	//	return;
@@ -130,6 +128,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	
 	updateVelocity(dt);
 	Entity::updateCurrent(dt, commands);
+
 	updateTexts();
 }
 
@@ -137,7 +136,6 @@ void Character::updateVelocity(sf::Time dt)
 {
 	rotate(getVelocity().x * dt.asSeconds());
 	setVelocity((cos((getRotation()) * M_PI / 180) * -getVelocity().y), (sin((getRotation())* M_PI / 180)* -getVelocity().y));
-
 
 }
 

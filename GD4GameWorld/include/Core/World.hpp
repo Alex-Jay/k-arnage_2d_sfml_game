@@ -39,6 +39,7 @@ private:
 	void buildScene();
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
+	void handlePlayerCollision();
 	void handleCollisions();
 	void updateSounds();
 

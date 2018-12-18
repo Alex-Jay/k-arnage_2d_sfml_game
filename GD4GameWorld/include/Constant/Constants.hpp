@@ -11,10 +11,10 @@ const int ZOMBIEANIMATIONRECTHEIGHT = 153;
 const int PLAYERHITPOINTS = 100;
 const int GRENADEPICKUPAMMOVALUE = 3;
 const int PLAYERSPEED = 200;
-const int PLAYERFIREINTERVAL = 1;
+const float PLAYERFIREINTERVAL = 1.f;
 const int HEALTHPICKUPREPAIRVALUE = 25;
 const int FIRERATELEVEL = 1;
-const int MAXFIRERATELEVEL = 10;
+const float MAXFIRERATELEVEL = 10.f;
 const int MAXSPREADLEVEL = 3;
 const int SPREADLEVEL = 1;
 const int GRENADEAMMO = 2;
@@ -30,6 +30,7 @@ const int BULLETSPEED = 800;
 const int GRENADEDAMAGE = 200;
 const int GRENADESPEED = 300;
 const int GRENADBLASTRADIOUS = 25;
+const float LEVEL_ZOOM_FACTOR = 1.5f;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ GENERAL CONSTANTS ++++++++++++++++++
