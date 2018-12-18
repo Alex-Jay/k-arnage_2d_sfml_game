@@ -97,7 +97,7 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	// Update texts and roll animation
-	updateTexts();
+	//updateTexts();
 	updateRollAnimation();
 
 	// Entity has been destroyed: Possibly drop pickup, mark for removal
@@ -130,12 +130,15 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	
 	updateVelocity(dt);
 	Entity::updateCurrent(dt, commands);
+	updateTexts();
 }
 
 void Character::updateVelocity(sf::Time dt)
 {
 	rotate(getVelocity().x * dt.asSeconds());
 	setVelocity((cos((getRotation()) * M_PI / 180) * -getVelocity().y), (sin((getRotation())* M_PI / 180)* -getVelocity().y));
+
+
 }
 
 unsigned int Character::getCategory() const
@@ -323,15 +326,28 @@ void Character::createPickup(SceneNode& node, const TextureHolder& textures) con
 void Character::updateTexts()
 {
 	mHealthDisplay->setString(std::to_string(getHitpoints()) + " HP");
-	mHealthDisplay->setPosition(0.f, 50.f);
+	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
+	mHealthDisplay->setOrigin(0.0f, -100.f);
 
 	if (mGrenadeDisplay)
 	{
+		mGrenadeDisplay->setPosition(0.f, 0.f);
+		mGrenadeDisplay->setRotation(-getRotation());
+		mGrenadeDisplay->setOrigin(0.0f, -120.f);
 		if (mGrenadeAmmo == 0)
 			mGrenadeDisplay->setString("");
 		else
 			mGrenadeDisplay->setString("M: " + std::to_string(mGrenadeAmmo));
+	}
+
+	if (getHitpoints() <= 40)
+	{
+		mHealthDisplay->setColor(sf::Color::Red);
+	}
+	else
+	{
+		mHealthDisplay->setColor(sf::Color::Green);
 	}
 }
 
