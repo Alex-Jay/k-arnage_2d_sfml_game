@@ -1,6 +1,6 @@
 uniform sampler2D source;
 
-const float Threshold = 0.76;
+const float Threshold = 0.85;
 const float Factor   = 4.0;
 
 void main()
