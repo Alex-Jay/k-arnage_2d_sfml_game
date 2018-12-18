@@ -278,11 +278,11 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 	switch (mSpreadLevel)
 	{
 	case 1:
-		createProjectile(node, type, 0.0f, 0.5f, textures);
+		createProjectile(node, type, -0.09f, 0.5f, textures);
 		break;
 
 	case 2:
-		createProjectile(node, type, -0.33f, 0.33f, textures);
+		createProjectile(node, type, +0.33f, 0.33f, textures);
 		createProjectile(node, type, +0.33f, 0.33f, textures);
 		break;
 
@@ -297,18 +297,12 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
 
-	//(cos((getRotation()) * M_PI / 180) * 3) * dt.asSeconds(), (sin((getRotation())* M_PI / 180)* 3) * dt.asSeconds());
-
-	sf::Vector2f velocity(0, projectile->getMaxSpeed());
-
-	float sign = isAllied() ? -1.f : +1.f;
-
-	projectile->setPosition(getWorldPosition() + offset * sign);
-
-	projectile->setVelocity(velocity * sign);
+	projectile->setOrigin(offset);
+	projectile->setPosition(getWorldPosition());
+	projectile->setRotation(getRotation() + 90);
+	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
 
 	node.attachChild(std::move(projectile));
 }

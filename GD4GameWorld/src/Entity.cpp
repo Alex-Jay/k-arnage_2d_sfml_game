@@ -72,6 +72,4 @@ bool Entity::isDestroyed() const
 void Entity::updateCurrent(sf::Time dt, CommandQueue&)
 {
 	move(mVelocity * dt.asSeconds());
-	//rotate(mVelocity.x * dt.asSeconds());
-	//move((cos((getRotation()) * M_PI / 180) * -mVelocity.y) * dt.asSeconds(), (sin((getRotation())* M_PI / 180)* -mVelocity.y) * dt.asSeconds());
 }
