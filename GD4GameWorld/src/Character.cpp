@@ -6,6 +6,7 @@
 #include "ResourceHolder.hpp"
 #include "SoundNode.hpp"
 
+#include "Constants.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -126,7 +127,15 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	// Update enemy movement pattern; apply velocity
 	updateMovementPattern(dt);
+	
+	updateVelocity(dt);
 	Entity::updateCurrent(dt, commands);
+}
+
+void Character::updateVelocity(sf::Time dt)
+{
+	rotate(getVelocity().x * dt.asSeconds());
+	setVelocity((cos((getRotation()) * M_PI / 180) * -getVelocity().y), (sin((getRotation())* M_PI / 180)* -getVelocity().y));
 }
 
 unsigned int Character::getCategory() const
@@ -287,11 +296,17 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
+
+	//(cos((getRotation()) * M_PI / 180) * 3) * dt.asSeconds(), (sin((getRotation())* M_PI / 180)* 3) * dt.asSeconds());
+
 	sf::Vector2f velocity(0, projectile->getMaxSpeed());
 
 	float sign = isAllied() ? -1.f : +1.f;
+
 	projectile->setPosition(getWorldPosition() + offset * sign);
+
 	projectile->setVelocity(velocity * sign);
+
 	node.attachChild(std::move(projectile));
 }
 

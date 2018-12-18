@@ -114,7 +114,6 @@ void Player::initializeActions()
 	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1));
 	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
-	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
 }
 
 bool Player::isRealtimeAction(Action action)
