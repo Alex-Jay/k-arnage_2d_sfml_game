@@ -8,7 +8,7 @@ class CommandQueue;
 class Player
 {
 public:
-	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, Fire, LaunchGrenade, ActionCount};
+	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, Fire, StartGrenade, LaunchGrenade, ActionCount};
 	enum class MissionStatus{MissionRunning, MissionSuccess, MissionFailure};
 
 public:
@@ -23,6 +23,7 @@ public:
 
 private:
 	void initializeActions();
+	bool isReleaseAction(Action action);
 	static bool isRealtimeAction(Action action);
 
 private:

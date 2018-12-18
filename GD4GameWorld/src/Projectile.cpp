@@ -68,9 +68,26 @@ float Projectile::getMaxSpeed() const
 	return Table[static_cast<int>(mType)].speed;
 }
 
+float Projectile::getMaxSpeed(float initialSpeed) const
+{
+	return Table[static_cast<int>(mType)].speed + initialSpeed;
+}
+
 int Projectile::getDamage() const
 {
 	return Table[static_cast<int>(mType)].damage;
+}
+
+void Projectile::setInitialVelocity(float vel)
+{
+	if (isGrenade())
+	{
+		mInitialVelocity = vel;
+	}
+	else
+	{
+		mInitialVelocity = 0;
+	}
 }
 
 
@@ -78,29 +95,28 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (isGrenade())
 	{
-		//const float approachRate = APPROACHRATE;
-		//sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection + getVelocity());
-		//newVelocity *= getMaxSpeed();
-		//float angle = std::atan2(newVelocity.y, newVelocity.x);
-		//setRotation(toDegrees(angle) + 90.f);
 
-		setVelocity(MoveTowards(getVelocity(), sf::Vector2f(0.f, 0.f), 10.f));
-
-		if (!GrenadeTimerStarted)
+		if (!mGrenadeTimerStarted)
 		{
+			//sf::Vector2f newVelocity = getVelocity();
+			//newVelocity *= getMaxSpeed(200.f); // mInitialVelocity);
+			//setVelocity(sf::Vector2f(getVelocity().x * 200, getVelocity().y * 200));
+
 			StartTimer(dt);
 		}
 		else
 		{
-			GrenadeTimer += dt;
+			mGrenadeTimer += dt;
 		}
 
+
+		setVelocity(MoveTowards(getVelocity(), sf::Vector2f(0.f, 0.f), 10.f));
 		//sf::Time currentTime = sf::Time::Zero;
 		//currentTime += dt;
 
-		if (GrenadeTimer.asSeconds() > 1)
+		if (mGrenadeTimer.asSeconds() > 1)
 		{
-			GrenadeTimerStarted = false;
+			mGrenadeTimerStarted = false;
 			//Genade.explode()
 			remove();
 		}
@@ -116,6 +132,6 @@ void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 
 void Projectile::StartTimer(sf::Time dt)
 {
-	GrenadeTimerStarted = true;
-	GrenadeTimer = dt;
+	mGrenadeTimerStarted = true;
+	mGrenadeTimer = dt;
 }

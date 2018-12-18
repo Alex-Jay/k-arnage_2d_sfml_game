@@ -20,7 +20,9 @@ public:
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
 	float getMaxSpeed() const;
+	float getMaxSpeed(float initialSpeed) const;
 	int getDamage() const;
+	void setInitialVelocity(float vel);
 
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
@@ -32,7 +34,7 @@ private:
 	ProjectileIDs mType;
 	sf::Sprite mSprite;
 	sf::Vector2f mTargetDirection;
-	sf::Clock clock;
-	sf::Time GrenadeTimer;
-	bool GrenadeTimerStarted;
+	sf::Time mGrenadeTimer;
+	bool mGrenadeTimerStarted;
+	float mInitialVelocity;
 };

@@ -197,6 +197,11 @@ void Character::fire()
 		mIsFiring = true;
 }
 
+void Character::startGrenade()
+{
+	mGrenadeStarted = true;
+}
+
 void Character::launchGrenade()
 {
 	if (mGrenadeAmmo > 0)
@@ -261,11 +266,12 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	}
 
 	// Check for grenade launch
-	if (mIsLaunchingGrenade)
+	if (mIsLaunchingGrenade && mGrenadeStarted)//&& mGrenadeStarted)
 	{
 		commands.push(mGrenadeCommand);
 		//playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
 		mIsLaunchingGrenade = false;
+		mGrenadeStarted = false;
 	}
 }
 
@@ -297,11 +303,23 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
 
+	float initialVelocity = 0;
+	if (projectile->isGrenade())
+	{
+		initialVelocity = 400.f;
+	}
+
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
 	projectile->setRotation(getRotation() + 90);
-	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));	
+
+	float xVelocity = cos(toRadians(getRotation())) * projectile->getMaxSpeed(initialVelocity);
+	float yVelocity = sin(toRadians(getRotation()))* projectile->getMaxSpeed(initialVelocity);
+		
+	projectile->setVelocity(xVelocity, yVelocity);
+
 	node.attachChild(std::move(projectile));
+
 }
 
 void Character::createPickup(SceneNode& node, const TextureHolder& textures) const

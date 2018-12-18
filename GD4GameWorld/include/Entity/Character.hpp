@@ -27,6 +27,7 @@ public:
 	void collectGrenades(unsigned int count);
 
 	void fire();
+	void startGrenade();
 	void launchGrenade();
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
@@ -41,6 +42,8 @@ private:
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const;
+	void setProjectileProperties(std::unique_ptr<Projectile> projectile, sf::Vector2f offset, float initialVelocity);
+
 	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
 	void updateRollAnimation();
@@ -54,6 +57,7 @@ private:
 	sf::Time mFireCountdown;
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
+	bool mGrenadeStarted;
 	bool mShowExplosion;
 	bool mPlayedExplosionSound;
 	bool mSpawnedPickup;

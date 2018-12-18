@@ -31,6 +31,7 @@ Player::Player()
 	mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
 	mKeyBinding[sf::Keyboard::Space] = Action::Fire;
 	mKeyBinding[sf::Keyboard::M] = Action::LaunchGrenade;
+	mKeyBinding[sf::Keyboard::M] = Action::StartGrenade;
 
 	//set initial action bindings
 	initializeActions();
@@ -43,11 +44,23 @@ Player::Player()
 
 void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
+	//check if key pressed is in the key bindings, if so trigger command
+	
 	if (event.type == sf::Event::KeyPressed)
 	{
-		//check if key pressed is in the key bindings, if so trigger command
 		auto found = mKeyBinding.find(event.key.code);
-		if (found != mKeyBinding.end() && !isRealtimeAction(found->second))
+
+		if (found != mKeyBinding.end() && !isRealtimeAction(found->second) && !isReleaseAction(found->second))
+		{
+			commands.push(mActionBinding[found->second]);
+		}
+	}
+	
+	if (event.type == sf::Event::KeyReleased)
+	{
+		auto found = mKeyBinding.find(event.key.code);
+
+		if (found != mKeyBinding.end() && !isRealtimeAction(found->second) && isReleaseAction(found->second))
 		{
 			commands.push(mActionBinding[found->second]);
 		}
@@ -113,7 +126,19 @@ void Player::initializeActions()
 	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1));
 	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1));
 	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+}
+
+bool Player::isReleaseAction(Action action)
+{
+	switch (action)
+	{
+	case Action::LaunchGrenade:
+		return true;
+	default:
+		return false;
+	}
 }
 
 bool Player::isRealtimeAction(Action action)
