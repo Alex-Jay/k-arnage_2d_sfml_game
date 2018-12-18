@@ -34,7 +34,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSpawnedPickup(false)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
-	, mGrenadeAmmo(2)
+	, mGrenadeAmmo(200)
 	, mDropPickupCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
@@ -98,7 +98,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	// Update texts and roll animation
 	//updateTexts();
-	updateRollAnimation();
+	//updateRollAnimation();
 
 	// Entity has been destroyed: Possibly drop pickup, mark for removal
 	//if (isDestroyed())
@@ -266,7 +266,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	if (mIsLaunchingGrenade)
 	{
 		commands.push(mGrenadeCommand);
-		playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
+		//playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
 		mIsLaunchingGrenade = false;
 	}
 }
@@ -302,8 +302,7 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
 	projectile->setRotation(getRotation() + 90);
-	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
-
+	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));	
 	node.attachChild(std::move(projectile));
 }
 

@@ -37,8 +37,10 @@ struct ProjectileData
 {
 	int damage;
 	float speed;
+	float textureScale;
 	TextureIDs texture;
 	sf::IntRect textureRect;
+
 };
 
 struct PickupData

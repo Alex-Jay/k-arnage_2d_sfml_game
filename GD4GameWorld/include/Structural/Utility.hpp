@@ -21,5 +21,7 @@ int randomInt(int range);
 sf::Vector2f unitVector(sf::Vector2f vector);
 float length(sf::Vector2f vector);
 
+sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDelta);
+
 // Convert enumerators to strings
 std::string toString(sf::Keyboard::Key key);

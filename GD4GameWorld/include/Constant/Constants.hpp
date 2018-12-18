@@ -25,10 +25,10 @@ const int ZOMBIESPEED = 40;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
 const int BULLETDAMAGE = 10;
-const int BULLETSPEED = 600;
+const int BULLETSPEED = 800;
 
 const int GRENADEDAMAGE = 200;
-const int GRENADESPEED = 100;
+const int GRENADESPEED = 300;
 const int GRENADBLASTRADIOUS = 25;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++

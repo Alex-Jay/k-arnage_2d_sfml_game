@@ -63,6 +63,21 @@ float length(sf::Vector2f vector)
 	return std::sqrt(vector.x * vector.x + vector.y * vector.y);
 }
 
+//Mike
+sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDelta)
+{
+	sf::Vector2f a = target - current;
+
+	float magnitude = length(a);
+
+	if (magnitude <= maxDelta || magnitude == 0.f)
+	{
+		return target;
+	}
+	return current + a / magnitude * maxDelta;
+}
+
+
 std::string toString(sf::Keyboard::Key key)
 {
 #define BOOK_KEYTOSTRING_CASE(KEY) case sf::Keyboard::KEY: return #KEY;

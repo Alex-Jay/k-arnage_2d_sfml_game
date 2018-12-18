@@ -393,7 +393,7 @@ void World::guideGrenades()
 	grenadeGuider.action = derivedAction<Projectile>([this](Projectile& grenade, sf::Time)
 	{
 		// Ignore unguided bullets
-		if (!grenade.isGuided())
+		if (!grenade.isGrenade())
 			return;
 
 		float minDistance = std::numeric_limits<float>::max();

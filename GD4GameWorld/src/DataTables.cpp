@@ -39,16 +39,19 @@ std::vector<ProjectileData> initializeProjectileData()
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].speed = BULLETSPEED;
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureRect = sf::IntRect(175, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureScale = 10;
 
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].damage = BULLETDAMAGE;
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].speed = BULLETSPEED;
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].textureRect = sf::IntRect(178, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].textureScale = 1;
 
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].damage = GRENADEDAMAGE;
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].speed = GRENADESPEED;
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].texture = TextureIDs::Grenade;
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureRect = sf::IntRect(0, 0, 718, 800);
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureScale = 0.03f;
 
 	return data;
 }
