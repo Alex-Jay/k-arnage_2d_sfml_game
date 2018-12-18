@@ -75,10 +75,10 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 	if (getCategory() == static_cast<int>(Category::PlayerCharacter))
 	{
-		std::unique_ptr<TextNode> missileDisplay(new TextNode(fonts, ""));
-		missileDisplay->setPosition(0, 70);
-		mGrenadeDisplay = missileDisplay.get();
-		attachChild(std::move(missileDisplay));
+		std::unique_ptr<TextNode> grenadeDisplay(new TextNode(fonts, ""));
+		grenadeDisplay->setPosition(0, 70);
+		mGrenadeDisplay = grenadeDisplay.get();
+		attachChild(std::move(grenadeDisplay));
 	}
 
 	updateTexts();
@@ -122,7 +122,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 		mPlayerAnimation.update(dt);
 	}
 
-	// Check if bullets or missiles are fired
+	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
 
 	// Update enemy movement pattern; apply velocity
@@ -259,7 +259,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		mIsFiring = false;
 	}
 
-	// Check for missile launch
+	// Check for grenade launch
 	if (mIsLaunchingGrenade)
 	{
 		commands.push(mGrenadeCommand);

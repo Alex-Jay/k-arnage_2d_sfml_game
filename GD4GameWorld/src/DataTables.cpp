@@ -47,8 +47,8 @@ std::vector<ProjectileData> initializeProjectileData()
 
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].damage = GRENADEDAMAGE;
 	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].speed = GRENADESPEED;
-	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].texture = TextureIDs::Entities;
-	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureRect = sf::IntRect(160, 64, 15, 32);
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].texture = TextureIDs::Grenade;
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureRect = sf::IntRect(0, 0, 718, 800);
 
 	return data;
 }

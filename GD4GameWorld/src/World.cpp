@@ -86,7 +86,7 @@ void World::update(sf::Time dt)
 
 	mPlayerCharacter->setVelocity(0.f, 0.f);
 
-	// Setup commands to destroy entities, and guide missiles
+	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
 	guideGrenades();
 
@@ -149,6 +149,7 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
 
 	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
+	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
 }
 
 void World::adaptPlayerPosition()
@@ -386,13 +387,13 @@ void World::guideGrenades()
 			mActiveEnemies.push_back(&enemy);
 	});
 
-	// Setup command that guides all missiles to the enemy which is currently closest to the player
-	Command missileGuider;
-	missileGuider.category = static_cast<int>(Category::AlliedProjectile);
-	missileGuider.action = derivedAction<Projectile>([this](Projectile& missile, sf::Time)
+	// Setup command that guides all grenades to the enemy which is currently closest to the player
+	Command grenadeGuider;
+	grenadeGuider.category = static_cast<int>(Category::AlliedProjectile);
+	grenadeGuider.action = derivedAction<Projectile>([this](Projectile& grenade, sf::Time)
 	{
 		// Ignore unguided bullets
-		if (!missile.isGuided())
+		if (!grenade.isGuided())
 			return;
 
 		float minDistance = std::numeric_limits<float>::max();
@@ -401,7 +402,7 @@ void World::guideGrenades()
 		// Find closest enemy
 		for (Character* enemy : mActiveEnemies)
 		{
-			float enemyDistance = distance(missile, *enemy);
+			float enemyDistance = distance(grenade, *enemy);
 
 			if (enemyDistance < minDistance)
 			{
@@ -411,12 +412,12 @@ void World::guideGrenades()
 		}
 
 		if (closestEnemy)
-			missile.guideTowards(closestEnemy->getWorldPosition());
+			grenade.guideTowards(closestEnemy->getWorldPosition());
 	});
 
 	// Push commands, reset active enemies
 	mCommandQueue.push(enemyCollector);
-	mCommandQueue.push(missileGuider);
+	mCommandQueue.push(grenadeGuider);
 	mActiveEnemies.clear();
 }
 

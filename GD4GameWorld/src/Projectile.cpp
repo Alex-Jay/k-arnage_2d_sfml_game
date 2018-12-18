@@ -23,7 +23,7 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 	, mTargetDirection()
 {
 	centreOrigin(mSprite);
-	// Add particle system for missiles
+	// Add particle system for grenades
 	if (isGuided())
 	{
 		std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Type::Smoke));
