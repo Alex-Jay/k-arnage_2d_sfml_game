@@ -29,7 +29,7 @@ struct CharacterData
 	sf::IntRect textureRect;
 	sf::Time fireInterval;
 	std::vector<Direction> directions;
-	bool hasRollAnimation;
+	bool hasAnimation;
 };
 
 

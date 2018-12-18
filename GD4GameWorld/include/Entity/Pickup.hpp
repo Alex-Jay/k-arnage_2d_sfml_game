@@ -14,7 +14,7 @@ public:
 	enum class PickupID
 	{
 		HealthRefill,
-		MissileRefill,
+		GrenadeRefill,
 		FireSpread,
 		FireRate,
 		TypeCount

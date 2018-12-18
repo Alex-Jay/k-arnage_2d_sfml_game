@@ -46,7 +46,7 @@ void Projectile::guideTowards(sf::Vector2f position)
 
 bool Projectile::isGuided() const
 {
-	return mType == ProjectileIDs::Missile;
+	return mType == ProjectileIDs::Grenade;
 }
 
 unsigned int Projectile::getCategory() const

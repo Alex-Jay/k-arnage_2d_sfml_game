@@ -12,7 +12,7 @@ enum class TextureIDs{Entities, Jungle, TitleScreen, Buttons, Explosion, Particl
 enum class Shaders{BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass};
 enum class FontIDs{Main};
 enum class MusicIDs{MenuTheme, MissionTheme};
-enum class SoundEffectIDs{AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchMissile, CollectPickup, Button};
+enum class SoundEffectIDs{AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchGrenade, CollectPickup, Button};
 
 
 //Forward declaration and typedef

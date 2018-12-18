@@ -7,7 +7,7 @@
 class Projectile : public Entity
 {
 public:
-	enum class ProjectileIDs{AlliedBullet, EnemyBullet, Missile, Grenade, TypeCount};
+	enum class ProjectileIDs{AlliedBullet, EnemyBullet, Grenade, TypeCount};
 
 public:
 	Projectile(ProjectileIDs type, const TextureHolder& textures);

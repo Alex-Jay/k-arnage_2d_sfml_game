@@ -88,7 +88,7 @@ void World::update(sf::Time dt)
 
 	// Setup commands to destroy entities, and guide missiles
 	destroyEntitiesOutsideView();
-	guideMissiles();
+	guideGrenades();
 
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
@@ -293,7 +293,7 @@ void World::buildScene()
 	mSceneGraph.attachChild(std::move(soundNode));
 
 	// Add player's Character
-	std::unique_ptr<Character> player(new Character(Character::Type::Eagle, mTextures, mFonts));
+	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
 	mPlayerCharacter = player.get();
 	mPlayerCharacter->setPosition(mSpawnPosition);
 	mSceneLayers[Layer::UpperAir]->attachChild(std::move(player));
@@ -306,30 +306,30 @@ void World::addEnemies()
 {
 	// Add enemies to the spawn point container
 
-	//addEnemy(Character::Type::Raptor, 0.f, 1000.f);
-	//addEnemy(Character::Type::Raptor, +100.f, 1150.f);
-	//addEnemy(Character::Type::Raptor, -100.f, 1150.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 1000.f);
+	//addEnemy(Character::Type::Zombie, +100.f, 1150.f);
+	//addEnemy(Character::Type::Zombie, -100.f, 1150.f);
 	//addEnemy(Character::Type::Avenger, 70.f, 1500.f);
 	//addEnemy(Character::Type::Avenger, -70.f, 1500.f);
 	//addEnemy(Character::Type::Avenger, -70.f, 1710.f);
 	//addEnemy(Character::Type::Avenger, 70.f, 1700.f);
 	//addEnemy(Character::Type::Avenger, 30.f, 1850.f);
-	//addEnemy(Character::Type::Raptor, 300.f, 2200.f);
-	//addEnemy(Character::Type::Raptor, -300.f, 2200.f);
-	//addEnemy(Character::Type::Raptor, 0.f, 2200.f);
-	//addEnemy(Character::Type::Raptor, 0.f, 2500.f);
+	//addEnemy(Character::Type::Zombie, 300.f, 2200.f);
+	//addEnemy(Character::Type::Zombie, -300.f, 2200.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 2200.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 2500.f);
 	//addEnemy(Character::Type::Avenger, -300.f, 2700.f);
 	//addEnemy(Character::Type::Avenger, -300.f, 2700.f);
-	//addEnemy(Character::Type::Raptor, 0.f, 3000.f);
-	//addEnemy(Character::Type::Raptor, 250.f, 3250.f);
-	//addEnemy(Character::Type::Raptor, -250.f, 3250.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 3000.f);
+	//addEnemy(Character::Type::Zombie, 250.f, 3250.f);
+	//addEnemy(Character::Type::Zombie, -250.f, 3250.f);
 	//addEnemy(Character::Type::Avenger, 0.f, 3500.f);
 	//addEnemy(Character::Type::Avenger, 0.f, 3700.f);
-	//addEnemy(Character::Type::Raptor, 0.f, 3800.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 3800.f);
 	//addEnemy(Character::Type::Avenger, 0.f, 4000.f);
 	//addEnemy(Character::Type::Avenger, -200.f, 4200.f);
-	//addEnemy(Character::Type::Raptor, 200.f, 4200.f);
-	//addEnemy(Character::Type::Raptor, 0.f, 4400.f);
+	//addEnemy(Character::Type::Zombie, 200.f, 4200.f);
+	//addEnemy(Character::Type::Zombie, 0.f, 4400.f);
 	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
 	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
 	{
@@ -375,7 +375,7 @@ void World::destroyEntitiesOutsideView()
 	mCommandQueue.push(command);
 }
 
-void World::guideMissiles()
+void World::guideGrenades()
 {
 	// Setup command that stores all enemies in mActiveEnemies
 	Command enemyCollector;

@@ -24,21 +24,21 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
 	, mPlayerAnimation(textures.get(TextureIDs::PlayerMove))
 	, mFireCommand()
-	, mMissileCommand()
+	, mGrenadeCommand()
 	, mFireCountdown(sf::Time::Zero)
 	, mIsFiring(false)
-	, mIsLaunchingMissile(false)
+	, mIsLaunchingGrenade(false)
 	, mShowExplosion(true)
 	, mPlayedExplosionSound(false)
 	, mSpawnedPickup(false)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
-	, mMissileAmmo(2)
+	, mGrenadeAmmo(2)
 	, mDropPickupCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
 	, mHealthDisplay(nullptr)
-	, mMissileDisplay(nullptr)
+	, mGrenadeDisplay(nullptr)
 {
 	mPlayerAnimation.setFrameSize(sf::Vector2i(263, 156));
 	mPlayerAnimation.setNumFrames(18);
@@ -56,10 +56,10 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		createBullets(node, textures);
 	};
 
-	mMissileCommand.category = static_cast<int>(Category::SceneAirLayer);
-	mMissileCommand.action = [this, &textures](SceneNode& node, sf::Time)
+	mGrenadeCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
-		createProjectile(node, Projectile::ProjectileIDs::Missile, 0.f, 0.5f, textures);
+		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures);
 	};
 
 	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
@@ -76,7 +76,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	{
 		std::unique_ptr<TextNode> missileDisplay(new TextNode(fonts, ""));
 		missileDisplay->setPosition(0, 70);
-		mMissileDisplay = missileDisplay.get();
+		mGrenadeDisplay = missileDisplay.get();
 		attachChild(std::move(missileDisplay));
 	}
 
@@ -155,7 +155,7 @@ void Character::remove()
 
 bool Character::isAllied() const
 {
-	return mType == Type::Eagle;
+	return mType == Type::Player;
 }
 
 float Character::getMaxSpeed() const
@@ -175,9 +175,9 @@ void Character::increaseSpread()
 		++mSpreadLevel;
 }
 
-void Character::collectMissiles(unsigned int count)
+void Character::collectGrenades(unsigned int count)
 {
-	mMissileAmmo += count;
+	mGrenadeAmmo += count;
 }
 
 void Character::fire()
@@ -187,12 +187,12 @@ void Character::fire()
 		mIsFiring = true;
 }
 
-void Character::launchMissile()
+void Character::launchGrenade()
 {
-	if (mMissileAmmo > 0)
+	if (mGrenadeAmmo > 0)
 	{
-		mIsLaunchingMissile = true;
-		--mMissileAmmo;
+		mIsLaunchingGrenade = true;
+		--mGrenadeAmmo;
 	}
 }
 
@@ -251,11 +251,11 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	}
 
 	// Check for missile launch
-	if (mIsLaunchingMissile)
+	if (mIsLaunchingGrenade)
 	{
-		commands.push(mMissileCommand);
-		playLocalSound(commands, SoundEffectIDs::LaunchMissile);
-		mIsLaunchingMissile = false;
+		commands.push(mGrenadeCommand);
+		playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
+		mIsLaunchingGrenade = false;
 	}
 }
 
@@ -311,18 +311,18 @@ void Character::updateTexts()
 	mHealthDisplay->setPosition(0.f, 50.f);
 	mHealthDisplay->setRotation(-getRotation());
 
-	if (mMissileDisplay)
+	if (mGrenadeDisplay)
 	{
-		if (mMissileAmmo == 0)
-			mMissileDisplay->setString("");
+		if (mGrenadeAmmo == 0)
+			mGrenadeDisplay->setString("");
 		else
-			mMissileDisplay->setString("M: " + std::to_string(mMissileAmmo));
+			mGrenadeDisplay->setString("M: " + std::to_string(mGrenadeAmmo));
 	}
 }
 
 void Character::updateRollAnimation()
 {
-	//if (Table[static_cast<int>(mType)].hasRollAnimation)
+	//if (Table[static_cast<int>(mType)].hasAnimation)
 	//{
 	//	sf::IntRect textureRect = Table[static_cast<int>(mType)].textureRect;
 

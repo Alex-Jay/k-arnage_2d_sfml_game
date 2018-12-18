@@ -11,7 +11,7 @@
 class Character : public Entity
 {
 public:
-	enum class Type{Eagle, Raptor, Avenger, TypeCount};
+	enum class Type{Player, Zombie, TypeCount};
 
 public:
 	Character(Type type, const TextureHolder& texture, const FontHolder& fonts);
@@ -24,10 +24,10 @@ public:
 
 	void increaseFireRate();
 	void increaseSpread();
-	void collectMissiles(unsigned int count);
+	void collectGrenades(unsigned int count);
 
 	void fire();
-	void launchMissile();
+	void launchGrenade();
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
 private:
@@ -48,21 +48,21 @@ private:
 	sf::Sprite mSprite;
 	Animation mPlayerAnimation;
 	Command mFireCommand;
-	Command mMissileCommand;
+	Command mGrenadeCommand;
 	sf::Time mFireCountdown;
 	bool mIsFiring;
-	bool mIsLaunchingMissile;
+	bool mIsLaunchingGrenade;
 	bool mShowExplosion;
 	bool mPlayedExplosionSound;
 	bool mSpawnedPickup;
 
 	int mFireRateLevel;
 	int mSpreadLevel;
-	int mMissileAmmo;
+	int mGrenadeAmmo;
 
 	Command mDropPickupCommand;
 	float mTravelledDistance;
 	std::size_t mDirectionIndex;
 	TextNode* mHealthDisplay;
-	TextNode* mMissileDisplay;
+	TextNode* mGrenadeDisplay;
 };
