@@ -11,7 +11,7 @@
 class Character : public Entity
 {
 public:
-	enum class Type { Player, Zombie, TypeCount };
+	enum class Type{Eagle, Raptor, Avenger, TypeCount};
 
 public:
 	Character(Type type, const TextureHolder& texture, const FontHolder& fonts);

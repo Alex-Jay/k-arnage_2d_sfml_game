@@ -31,7 +31,7 @@ sf::FloatRect Pickup::getBoundingRect() const
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
-void Pickup::apply(Aircraft& player) const
+void Pickup::apply(Character& player) const
 {
 	Table[static_cast<int>(mType)].action(player);
 }

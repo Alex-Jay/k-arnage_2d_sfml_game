@@ -132,7 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src/Aircraft.cpp" />
+    <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src/Animation.cpp" />
     <ClCompile Include="src/Application.cpp" />
     <ClCompile Include="src/BloomEffect.cpp" />
@@ -167,10 +167,9 @@
     <ClCompile Include="src/TitleState.cpp" />
     <ClCompile Include="src/Utility.cpp" />
     <ClCompile Include="src/World.cpp" />
-    <ClCompile Include="src\Character.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include/Entity/Aircraft.hpp" />
+    <ClInclude Include="include\Entity\Character.hpp" />
     <ClInclude Include="include/Animation/Animation.hpp" />
     <ClInclude Include="include/Core/Application.hpp" />
     <ClInclude Include="include/PostEffect/BloomEffect.hpp" />
@@ -210,7 +209,6 @@
     <ClInclude Include="include/State/TitleState.hpp" />
     <ClInclude Include="include/Structural/Utility.hpp" />
     <ClInclude Include="include/Core/World.hpp" />
-    <ClInclude Include="include\Entity\Character.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

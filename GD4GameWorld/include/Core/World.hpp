@@ -3,7 +3,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-//#include "Aircraft.hpp"
+//#include "Character.hpp"
 #include "Character.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
@@ -82,7 +82,7 @@ private:
 	sf::FloatRect mWorldBounds;
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
-	Character* mPlayerAircraft;
+	Character* mPlayerCharacter;
 
 	std::vector<SpawnPoint>	mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;

@@ -1,6 +1,6 @@
 #include "Player.hpp"
 #include "CommandQueue.hpp"
-#include "Aircraft.hpp"
+#include "Character.hpp"
 
 #include <map>
 #include <string>
@@ -8,15 +8,15 @@
 
 using namespace std::placeholders;
 
-struct AircraftMover
+struct CharacterMover
 {
-	AircraftMover(float vx, float vy) : velocity(vx, vy)
+	CharacterMover(float vx, float vy) : velocity(vx, vy)
 	{
 
 	}
-	void operator() (Aircraft& aircraft, sf::Time) const
+	void operator() (Character& Character, sf::Time) const
 	{
-		aircraft.accelerate(velocity * aircraft.getMaxSpeed());
+		Character.accelerate(velocity * Character.getMaxSpeed());
 	}
 	sf::Vector2f velocity;
 };
@@ -34,10 +34,10 @@ Player::Player()
 
 	//set initial action bindings
 	initializeActions();
-	//Assign all categories to the player's aircraft
+	//Assign all categories to the player's Character
 	for (auto& pair : mActionBinding)
 	{
-		pair.second.category = static_cast<unsigned int>(Category::PlayerAircraft);
+		pair.second.category = static_cast<unsigned int>(Category::PlayerCharacter);
 	}
 }
 
@@ -108,12 +108,12 @@ Player::MissionStatus Player::getMissionStatus() const
 
 void Player::initializeActions()
 {
-	mActionBinding[Action::MoveLeft].action = derivedAction<Aircraft>(AircraftMover(-1, 0.f));
-	mActionBinding[Action::MoveRight].action = derivedAction<Aircraft>(AircraftMover(1, 0.f));
-	mActionBinding[Action::MoveUp].action = derivedAction<Aircraft>(AircraftMover(0.f, -1));
-	mActionBinding[Action::MoveDown].action = derivedAction<Aircraft>(AircraftMover(0.f, 1));
-	mActionBinding[Action::Fire].action = derivedAction<Aircraft>([](Aircraft& a, sf::Time) { a.fire(); });
-	mActionBinding[Action::LaunchMissile].action = derivedAction<Aircraft>([](Aircraft& a, sf::Time) { a.launchMissile(); });
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1, 0.f));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1, 0.f));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1));
+	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
+	mActionBinding[Action::LaunchMissile].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchMissile(); });
 }
 
 bool Player::isRealtimeAction(Action action)

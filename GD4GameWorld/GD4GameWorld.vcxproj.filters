@@ -123,9 +123,6 @@
     <ClCompile Include="src/DataTables.cpp">
       <Filter>Source Files\DataTable</Filter>
     </ClCompile>
-    <ClCompile Include="src/Aircraft.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="src/Entity.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
@@ -196,9 +193,6 @@
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
       <Filter>Header Files\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Entity/Aircraft.hpp">
-      <Filter>Header Files\Entity</Filter>
     </ClInclude>
     <ClInclude Include="include/Audio/MusicPlayer.hpp">
       <Filter>Header Files\Audio</Filter>

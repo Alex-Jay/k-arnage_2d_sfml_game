@@ -40,8 +40,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mHealthDisplay(nullptr)
 	, mMissileDisplay(nullptr)
 {
-	mPlayerAnimation.setFrameSize(sf::Vector2i(256, 256));
+	mPlayerAnimation.setFrameSize(sf::Vector2i(263, 156));
 	mPlayerAnimation.setNumFrames(18);
+	mPlayerAnimation.setScale(0.5f, 0.5f);
 	mPlayerAnimation.setDuration(sf::seconds(1));
 	mPlayerAnimation.setRepeating(true);
 	mPlayerAnimation.setTextureRect();
@@ -84,12 +85,12 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (isDestroyed() && mShowExplosion)
-		target.draw(mPlayerAnimation, states);
-	else
-		target.draw(mSprite, states);
+	//if (isDestroyed() && mShowExplosion)
+	//	target.draw(mPlayerAnimation, states);
+	//else
+	//	target.draw(mSprite, states);
 
-	//target.draw(mPlayerAnimation, states);
+	target.draw(mPlayerAnimation, states);
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -115,7 +116,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	//	return;
 	//}
 
-	if (getVelocity().x > 0.f || getVelocity().y > 0.f)
+	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
 	{
 		mPlayerAnimation.update(dt);
 	}
@@ -154,7 +155,7 @@ void Character::remove()
 
 bool Character::isAllied() const
 {
-	return mType == Type::Player;
+	return mType == Type::Eagle;
 }
 
 float Character::getMaxSpeed() const

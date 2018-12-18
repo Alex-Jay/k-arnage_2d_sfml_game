@@ -6,7 +6,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 
-class Aircraft;
+class Character;
 
 class Pickup : public Entity
 {
@@ -27,7 +27,7 @@ public:
 	virtual unsigned int	getCategory() const;
 	virtual sf::FloatRect	getBoundingRect() const;
 
-	void 					apply(Aircraft& player) const;
+	void 					apply(Character& player) const;
 
 
 protected:
