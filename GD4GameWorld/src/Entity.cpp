@@ -72,7 +72,7 @@ bool Entity::isDestroyed() const
 void Entity::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	move(mVelocity * dt.asSeconds());
-	rotate(mAngle * dt.asSeconds());
+	setRotation(mAngle * dt.asSeconds()); // Alex - update players current rotation
 }
 
 // Alex - Get/Set Angle, Separating movement and rotation
@@ -86,8 +86,8 @@ float Entity::getAngle() const
 	return mAngle;
 }
 
-// da - angle delta
-//void Entity::rotate(float da)
-//{
-//	mAngle += da;
-//}
+// da - Delta of angle
+void Entity::applyRotation(float da)
+{
+	mAngle += da;
+}

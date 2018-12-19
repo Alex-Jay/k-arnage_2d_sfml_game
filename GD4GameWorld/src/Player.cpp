@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 using namespace std::placeholders;
 
@@ -21,7 +22,9 @@ struct CharacterMover
 	void operator() (Character& Character, sf::Time) const
 	{
 		Character.accelerate(velocity * Character.getMaxSpeed());
-		Character.rotate(angle * Character.getMaxRotationSpeed());
+		Character.applyRotation(angle * Character.getMaxRotationSpeed());
+		std::cout << "Velocity [X,Y]: " << velocity.x << ", " << velocity.y << std::endl;
+		std::cout << "Angle: " << angle << std::endl;
 	}
 };
 
@@ -66,7 +69,7 @@ void Player::handleRealtimeInput(CommandQueue& commands)
 {
 	//Check if any key binding keys are pressed
 	for (auto pair : mKeyBinding)
-	{
+	{		
 		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
 		{
 			commands.push(mActionBinding[pair.second]);
@@ -116,12 +119,12 @@ Player::MissionStatus Player::getMissionStatus() const
 
 void Player::initializeActions()
 {
-	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1, 0.f, 0.f));
-	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1, 0.f, 0.f));
-	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1, 0.f));
-	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1, 0.f));
-	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1));
-	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1));
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f, 0.f));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f, 0.f));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f));
+	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f)); // Alex - Rotate left action
+	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f)); // Alex - Rotate right action
 	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
 }
@@ -143,4 +146,3 @@ bool Player::isRealtimeAction(Action action)
 		return false;
 	}
 }
-

@@ -12,7 +12,7 @@ public:
 	void accelerate(float vx, float vy);
 	void setAngle(float angle);
 	float getAngle() const;
-	//void rotate(float da);
+	void applyRotation(float da);
 
 	int getHitpoints() const;
 	void repair(int points);

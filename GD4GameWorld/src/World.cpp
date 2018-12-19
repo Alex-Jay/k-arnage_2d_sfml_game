@@ -152,8 +152,8 @@ void World::adaptPlayerVelocity()
 	sf::Vector2f velocity = mPlayerCharacter->getVelocity();
 
 	// If moving diagonally, reduce velocity (to have always same velocity)
-	//if (velocity.x != 0.f && velocity.y != 0.f)
-	//	mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
+	if (velocity.x != 0.f && velocity.y != 0.f)
+		mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
 
 	// Add scrolling velocity
 	mPlayerCharacter->accelerate(0.f, mScrollSpeed);

@@ -124,7 +124,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	checkProjectileLaunch(dt, commands);
 
 	// Update enemy movement pattern; apply velocity
-	updateMovementPattern(dt);
+	//updateMovementPattern(dt);
 	
 	//updateVelocity(dt);
 	Entity::updateCurrent(dt, commands);
