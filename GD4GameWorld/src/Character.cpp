@@ -303,7 +303,7 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	projectile->setPosition(getWorldPosition());
 	projectile->setRotation(getRotation() + 90.f);
 	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
-	std::cout << "Projectile Rotation: " << projectile->getRotation() << std::endl;
+	//std::cout << "Projectile Rotation: " << projectile->getRotation() << std::endl;
 
 	node.attachChild(std::move(projectile));
 }
