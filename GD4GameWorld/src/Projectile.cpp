@@ -90,18 +90,13 @@ void Projectile::setInitialVelocity(float vel)
 	}
 }
 
-
+//Mike
 void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (isGrenade())
 	{
-
 		if (!mGrenadeTimerStarted)
 		{
-			//sf::Vector2f newVelocity = getVelocity();
-			//newVelocity *= getMaxSpeed(200.f); // mInitialVelocity);
-			//setVelocity(sf::Vector2f(getVelocity().x * 200, getVelocity().y * 200));
-
 			StartTimer(dt);
 		}
 		else
@@ -109,12 +104,9 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 			mGrenadeTimer += dt;
 		}
 
-
 		setVelocity(MoveTowards(getVelocity(), sf::Vector2f(0.f, 0.f), 10.f));
-		//sf::Time currentTime = sf::Time::Zero;
-		//currentTime += dt;
 
-		if (mGrenadeTimer.asSeconds() > 1)
+		if (mGrenadeTimer.asSeconds() > 3)
 		{
 			mGrenadeTimerStarted = false;
 			//Genade.explode()

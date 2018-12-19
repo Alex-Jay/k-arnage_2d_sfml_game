@@ -76,7 +76,11 @@ sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDel
 	}
 	return current + a / magnitude * maxDelta;
 }
-
+//Mike
+void clamp(float & value, float min, float max)
+{
+	value = std::max(min, std::min(value, max));
+}
 
 std::string toString(sf::Keyboard::Key key)
 {

@@ -23,11 +23,12 @@ public:
 
 private:
 	void initializeActions();
-	bool isReleaseAction(Action action);
+	static bool isReleaseAction(Action action);
 	static bool isRealtimeAction(Action action);
 
 private:
-	std::map<sf::Keyboard::Key, Action> mKeyBinding;
+	std::map<sf::Keyboard::Key, Action> mKeyBindingPressed;
+	std::map<sf::Keyboard::Key, Action> mKeyBindingReleased;
 	std::map<Action, Command> mActionBinding;
 	MissionStatus mCurrentMissionStatus;
 

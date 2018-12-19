@@ -36,13 +36,14 @@ private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	void updateVelocity(sf::Time dt);
 
+	void updateAnimations(sf::Time dt);
+
 	void updateMovementPattern(sf::Time dt);
 	void checkPickupDrop(CommandQueue& commands);
 	void checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const;
-	void setProjectileProperties(std::unique_ptr<Projectile> projectile, sf::Vector2f offset, float initialVelocity);
 
 	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
@@ -61,6 +62,8 @@ private:
 	bool mShowExplosion;
 	bool mPlayedExplosionSound;
 	bool mSpawnedPickup;
+
+	float mGrenadeVelocity;
 
 	int mFireRateLevel;
 	int mSpreadLevel;

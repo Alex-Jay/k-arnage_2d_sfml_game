@@ -25,13 +25,14 @@ Player::Player()
 	: mCurrentMissionStatus(MissionStatus::MissionRunning)
 {
 	//Set initial key bindings
-	mKeyBinding[sf::Keyboard::Left] = Action::MoveLeft;
-	mKeyBinding[sf::Keyboard::Right] = Action::MoveRight;
-	mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
-	mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
-	mKeyBinding[sf::Keyboard::Space] = Action::Fire;
-	mKeyBinding[sf::Keyboard::M] = Action::LaunchGrenade;
-	mKeyBinding[sf::Keyboard::M] = Action::StartGrenade;
+	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
+	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
+	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
+	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
+
+	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
 
 	//set initial action bindings
 	initializeActions();
@@ -48,9 +49,9 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 	
 	if (event.type == sf::Event::KeyPressed)
 	{
-		auto found = mKeyBinding.find(event.key.code);
+		auto found = mKeyBindingPressed.find(event.key.code);
 
-		if (found != mKeyBinding.end() && !isRealtimeAction(found->second) && !isReleaseAction(found->second))
+		if (found != mKeyBindingPressed.end() && !isRealtimeAction(found->second))
 		{
 			commands.push(mActionBinding[found->second]);
 		}
@@ -58,9 +59,9 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 	
 	if (event.type == sf::Event::KeyReleased)
 	{
-		auto found = mKeyBinding.find(event.key.code);
+		auto found = mKeyBindingReleased.find(event.key.code);
 
-		if (found != mKeyBinding.end() && !isRealtimeAction(found->second) && isReleaseAction(found->second))
+		if (found != mKeyBindingReleased.end() && !isRealtimeAction(found->second))
 		{
 			commands.push(mActionBinding[found->second]);
 		}
@@ -70,7 +71,7 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 void Player::handleRealtimeInput(CommandQueue& commands)
 {
 	//Check if any key binding keys are pressed
-	for (auto pair : mKeyBinding)
+	for (auto pair : mKeyBindingPressed)
 	{
 		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
 		{
@@ -82,24 +83,24 @@ void Player::handleRealtimeInput(CommandQueue& commands)
 void Player::assignKey(Action action, sf::Keyboard::Key key)
 {
 	//Remove all keys that are already mapped to an action
-	for (auto itr = mKeyBinding.begin(); itr != mKeyBinding.end();)
+	for (auto itr = mKeyBindingPressed.begin(); itr != mKeyBindingPressed.end();)
 	{
 		if (itr->second == action)
 		{
-			mKeyBinding.erase(itr++);
+			mKeyBindingPressed.erase(itr++);
 		}
 		else
 		{
 			++itr;
 		}
 		//insert new binding
-		mKeyBinding[key] = action;
+		mKeyBindingPressed[key] = action;
 	}
 }
 
 sf::Keyboard::Key Player::getAssignedKey(Action action) const
 {
-	for (auto pair : mKeyBinding)
+	for (auto pair : mKeyBindingPressed)
 	{
 		if (pair.second == action)
 		{

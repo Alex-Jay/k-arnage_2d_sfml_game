@@ -86,39 +86,13 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	//if (isDestroyed() && mShowExplosion)
-	//	target.draw(mPlayerAnimation, states);
-	//else
-	//	target.draw(mSprite, states);
-
 	target.draw(mPlayerAnimation, states);
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
-	// Update texts and roll animation
-	//updateTexts();
-	//updateRollAnimation();
-
-	// Entity has been destroyed: Possibly drop pickup, mark for removal
-	//if (isDestroyed())
-	//{
-	//	checkPickupDrop(commands);
-	//	mPlayerAnimation.update(dt);
-	//	// Play explosion sound only once
-	//	if (!mPlayedExplosionSound)
-	//	{
-	//		SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
-	//		playLocalSound(commands, soundEffect);
-	//		mPlayedExplosionSound = true;
-	//	}
-	//	return;
-	//}
-
-	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
-	{
-		mPlayerAnimation.update(dt);
-	}
+	//Update Player Animations
+	updateAnimations(dt);
 
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
@@ -126,7 +100,9 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Update enemy movement pattern; apply velocity
 	updateMovementPattern(dt);
 	
+	//Handles rotation and movement
 	updateVelocity(dt);
+
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();
@@ -136,7 +112,14 @@ void Character::updateVelocity(sf::Time dt)
 {
 	rotate(getVelocity().x * dt.asSeconds());
 	setVelocity((cos((getRotation()) * M_PI / 180) * -getVelocity().y), (sin((getRotation())* M_PI / 180)* -getVelocity().y));
+}
 
+void Character::updateAnimations(sf::Time dt)
+{
+	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
+	{
+		mPlayerAnimation.update(dt);
+	}
 }
 
 unsigned int Character::getCategory() const
@@ -199,12 +182,16 @@ void Character::fire()
 
 void Character::startGrenade()
 {
-	mGrenadeStarted = true;
+	if (mGrenadeAmmo > 0)
+	{
+		mGrenadeVelocity = 0;
+		mGrenadeStarted = true;
+	}
 }
 
 void Character::launchGrenade()
 {
-	if (mGrenadeAmmo > 0)
+	if (mGrenadeStarted)
 	{
 		mIsLaunchingGrenade = true;
 		--mGrenadeAmmo;
@@ -245,6 +232,11 @@ void Character::checkPickupDrop(CommandQueue& commands)
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
+	if (mGrenadeStarted)
+	{
+		clamp(mGrenadeVelocity += (dt.asMilliseconds()), 0, 500.f);
+	}
+
 	// Enemies try to fire all the time
 	if (!isAllied())
 		fire();
@@ -266,7 +258,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	}
 
 	// Check for grenade launch
-	if (mIsLaunchingGrenade && mGrenadeStarted)//&& mGrenadeStarted)
+	if (mIsLaunchingGrenade)
 	{
 		commands.push(mGrenadeCommand);
 		//playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
@@ -303,18 +295,15 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
 
-	float initialVelocity = 0;
-	if (projectile->isGrenade())
-	{
-		initialVelocity = 400.f;
-	}
-
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
 	projectile->setRotation(getRotation() + 90);
 
-	float xVelocity = cos(toRadians(getRotation())) * projectile->getMaxSpeed(initialVelocity);
-	float yVelocity = sin(toRadians(getRotation()))* projectile->getMaxSpeed(initialVelocity);
+	float radians = toRadians(getRotation());
+	float speed = projectile->getMaxSpeed(mGrenadeVelocity);
+
+	float xVelocity = cos(radians) * speed;
+	float yVelocity = sin(radians) * speed;
 		
 	projectile->setVelocity(xVelocity, yVelocity);
 
