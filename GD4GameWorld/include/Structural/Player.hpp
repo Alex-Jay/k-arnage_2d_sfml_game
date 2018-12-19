@@ -8,7 +8,7 @@ class CommandQueue;
 class Player
 {
 public:
-	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, Fire, LaunchGrenade, ActionCount};
+	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, RotateLeft, RotateRight, Fire, LaunchGrenade, ActionCount};
 	enum class MissionStatus{MissionRunning, MissionSuccess, MissionFailure};
 
 public:

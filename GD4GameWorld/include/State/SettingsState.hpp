@@ -20,6 +20,8 @@ public:
 	virtual bool					update(sf::Time dt);
 	virtual bool					handleEvent(const sf::Event& event);
 
+	bool							isReservedKey(sf::Event event);
+
 
 private:
 	void							updateLabels();
