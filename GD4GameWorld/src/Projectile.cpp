@@ -23,9 +23,17 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 	, mTargetDirection()
 {
 	centreOrigin(mSprite);
-	// Add particle system for grenades
+
+	// Add Animation system for grenades
 	if (isGrenade())
 	{
+		mAnimation.setTexture(textures.get(TextureIDs::Explosion));
+		mAnimation.setFrameSize(sf::Vector2i(256, 256));
+		mAnimation.setNumFrames(16);
+		mAnimation.setDuration(sf::seconds(1));
+		centreOrigin(mAnimation);
+		mShowExplosion = true;
+		//OLD PARTICLE SYSTEM CODE
 		//std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Type::Smoke));
 		//smoke->setPosition(0.f, getBoundingRect().height / 2.f);
 		//attachChild(std::move(smoke));
@@ -90,9 +98,23 @@ void Projectile::setInitialVelocity(float vel)
 	}
 }
 
+bool Projectile::isMarkedForRemoval() const
+{
+	return isDestroyed() && (mAnimation.isFinished() || !mShowExplosion);
+}
+
+void Projectile::remove()
+{
+	Entity::remove();
+	mShowExplosion = false;
+}
+
 //Mike
 void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+
+
+
 	if (isGrenade())
 	{
 		if (!mGrenadeTimerStarted)
@@ -109,8 +131,23 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 		if (mGrenadeTimer.asSeconds() > 3)
 		{
 			mGrenadeTimerStarted = false;
-			//Genade.explode()
-			remove();
+			mAnimation.update(dt);
+			damage(1);
+		}
+
+		if (isDestroyed())
+		{
+			mAnimation.update(dt);
+
+			// Play explosion sound only once
+			if (!mPlayedExplosionSound)
+			{
+				SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
+				playLocalSound(commands, soundEffect);
+
+				mPlayedExplosionSound = true;
+			}
+			return;
 		}
 
 	}
@@ -119,11 +156,28 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(mSprite, states);
+	if (isDestroyed() && mShowExplosion)
+		target.draw(mAnimation, states);
+	else
+		target.draw(mSprite, states);
 }
 
 void Projectile::StartTimer(sf::Time dt)
 {
 	mGrenadeTimerStarted = true;
 	mGrenadeTimer = dt;
+}
+
+void Projectile::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
+{
+	sf::Vector2f worldPosition = getWorldPosition();
+
+	Command command;
+	command.category = static_cast<int>(Category::SoundEffect);
+	command.action = derivedAction<SoundNode>([effect, worldPosition](SoundNode& node, sf::Time)
+	{
+		node.playSound(effect, worldPosition);
+	});
+	commands.push(command);
+
 }

@@ -2,6 +2,7 @@
 #include "Entity.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Command.hpp"
+
 #include "Projectile.hpp"
 #include "TextNode.hpp"
 #include "ShapeNode.hpp"
@@ -57,6 +58,7 @@ private:
 	Command mFireCommand;
 	Command mGrenadeCommand;
 	sf::Time mFireCountdown;
+
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
 	bool mGrenadeStarted;

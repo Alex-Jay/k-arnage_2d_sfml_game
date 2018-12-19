@@ -1,7 +1,10 @@
 #pragma once
 #include "Entity.hpp"
 #include "ResourceIdentifiers.hpp"
-
+#include "Command.hpp"
+#include "CommandQueue.hpp"
+#include "SoundNode.hpp"
+#include "Animation.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Clock.hpp"
 #include "SFML/System/Time.hpp"
@@ -24,17 +27,28 @@ public:
 	int getDamage() const;
 	void setInitialVelocity(float vel);
 
+	bool isMarkedForRemoval() const;
+
+	void remove();
+
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void StartTimer(sf::Time dt);
 
+	void playLocalSound(CommandQueue & commands, SoundEffectIDs effect);
+
 private:
 	ProjectileIDs mType;
+	Animation mAnimation;
 	sf::Sprite mSprite;
 	sf::Vector2f mTargetDirection;
 	sf::Time mGrenadeTimer;
+
 	bool mGrenadeTimerStarted;
+	bool mShowExplosion;
+	bool mPlayedExplosionSound;
+
 	float mInitialVelocity;
 };
