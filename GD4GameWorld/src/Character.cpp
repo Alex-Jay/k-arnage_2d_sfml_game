@@ -368,25 +368,6 @@ void Character::updateTexts()
 	}
 }
 
-void Character::updateRollAnimation()
-{
-	//if (Table[static_cast<int>(mType)].hasAnimation)
-	//{
-	//	sf::IntRect textureRect = Table[static_cast<int>(mType)].textureRect;
-
-	//	// Roll left: Texture rect offset once
-	//	if (getVelocity().x < 0.f)
-	//		textureRect.left += textureRect.width;
-
-	//	// Roll right: Texture rect offset twice
-	//	else if (getVelocity().x > 0.f)
-	//		textureRect.left += 2 * textureRect.width;
-
-	//	mSprite.setTextureRect(textureRect);
-	//}
-
-
-}
 
 void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 {
