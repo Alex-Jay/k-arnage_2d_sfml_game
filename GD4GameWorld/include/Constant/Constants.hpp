@@ -34,6 +34,7 @@ const float LEVEL_ZOOM_FACTOR = 1.5f;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ GENERAL CONSTANTS ++++++++++++++++++
+const float ROTATION_SPEED = 100;
 const float M_PI = 3.14159265f;
 const float APPROACHRATE = 200;
 //++++++++++++++++++++++++++++++++++++++++++++++++++

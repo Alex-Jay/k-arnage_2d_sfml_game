@@ -25,6 +25,7 @@ struct CharacterData
 {
 	int hitpoints;
 	float speed;
+	float rotationSpeed;
 	TextureIDs texture;
 	sf::IntRect textureRect;
 	sf::Time fireInterval;
@@ -53,8 +54,6 @@ struct ParticleData
 	sf::Color color;
 	sf::Time lifetime;
 };
-
-std::vector<CharacterData> initializeCharacterData();
 
 std::vector<CharacterData> initializeCharacterData();
 

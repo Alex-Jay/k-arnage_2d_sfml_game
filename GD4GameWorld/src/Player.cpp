@@ -10,15 +10,19 @@ using namespace std::placeholders;
 
 struct CharacterMover
 {
-	CharacterMover(float vx, float vy) : velocity(vx, vy)
+	sf::Vector2f velocity;
+	float angle;
+
+	CharacterMover(float vx, float vy, float da) : velocity(vx, vy), angle(da)
 	{
 
 	}
+
 	void operator() (Character& Character, sf::Time) const
 	{
 		Character.accelerate(velocity * Character.getMaxSpeed());
+		Character.rotate(angle * Character.getMaxRotationSpeed());
 	}
-	sf::Vector2f velocity;
 };
 
 Player::Player()
@@ -29,6 +33,10 @@ Player::Player()
 	mKeyBinding[sf::Keyboard::Right] = Action::MoveRight;
 	mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
 	mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
+	// Alex - Init. rotation keys -------------------------
+	mKeyBinding[sf::Keyboard::Num4] = Action::RotateLeft;
+	mKeyBinding[sf::Keyboard::Num6] = Action::RotateRight;
+	//-----------------------------------------------------
 	mKeyBinding[sf::Keyboard::Space] = Action::Fire;
 	mKeyBinding[sf::Keyboard::M] = Action::LaunchGrenade;
 
@@ -108,22 +116,27 @@ Player::MissionStatus Player::getMissionStatus() const
 
 void Player::initializeActions()
 {
-	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1, 0.f));
-	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1, 0.f));
-	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1));
-	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1));
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1, 0.f, 0.f));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1, 0.f, 0.f));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1, 0.f));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1, 0.f));
+	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1));
+	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1));
 	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
 }
 
 bool Player::isRealtimeAction(Action action)
 {
+	// Alex - Add rotation case as real-time action
 	switch (action)
 	{
 	case Action::MoveLeft:
 	case Action::MoveRight:
 	case Action::MoveUp:
 	case Action::MoveDown:
+	case Action::RotateLeft:
+	case Action::RotateRight:
 	case Action::Fire:
 		return true;
 	default:

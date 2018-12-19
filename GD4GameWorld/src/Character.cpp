@@ -126,7 +126,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Update enemy movement pattern; apply velocity
 	updateMovementPattern(dt);
 	
-	updateVelocity(dt);
+	//updateVelocity(dt);
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();
@@ -375,4 +375,10 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 	});
 	commands.push(command);
 
+}
+
+// Alex - Get maximum rotation speed (Set in Constants.hpp & DataTables.cpp)
+float Character::getMaxRotationSpeed() const
+{
+	return Table[static_cast<int>(mType)].rotationSpeed;
 }
