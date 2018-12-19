@@ -72,7 +72,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		createPickup(node, textures);
 	};
 
-	std::unique_ptr<TextNode> healthDisplay(new TextNode(fonts, ""));
+	std::unique_ptr<ShapeNode> healthDisplay(new ShapeNode(sf::Color::Green));
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
 
@@ -83,7 +83,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mGrenadeDisplay = grenadeDisplay.get();
 		attachChild(std::move(grenadeDisplay));
 
-		std::unique_ptr<ShapeNode> grenadePower(new ShapeNode(sf::Color::Blue));
+		std::unique_ptr<ShapeNode> grenadePower(new ShapeNode(sf::Color(BLUE)));
 		grenadePower->setPosition(0, 100);
 		mGrenadePower = grenadePower.get();
 		attachChild(std::move(grenadePower));
@@ -333,10 +333,11 @@ void Character::createPickup(SceneNode& node, const TextureHolder& textures) con
 
 void Character::updateTexts()
 {
-	mHealthDisplay->setString(std::to_string(getHitpoints()) + " HP");
+	//mHealthDisplay->setString(std::to_string(getHitpoints()) + " HP");
 	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
 	mHealthDisplay->setOrigin(0.0f, -100.f);
+	mHealthDisplay->setSize(getHitpoints(), 5.f);
 
 	mGrenadePower->setPosition(0.f, 0.f);
 	mGrenadePower->setRotation(-getRotation());
@@ -355,13 +356,17 @@ void Character::updateTexts()
 			mGrenadeDisplay->setString("M: " + std::to_string(mGrenadeAmmo));
 	}
 
-	if (getHitpoints() <= 40)
+	if (getHitpoints() <= 20)
 	{
-		mHealthDisplay->setColor(sf::Color::Red);
+		mHealthDisplay->setFillColor(sf::Color(RED));
+	}
+	else if (getHitpoints() <= 20)
+	{
+		mHealthDisplay->setFillColor(sf::Color(ORANGE));
 	}
 	else
 	{
-		mHealthDisplay->setColor(sf::Color::Green);
+		mHealthDisplay->setFillColor(sf::Color(GREEN));
 	}
 }
 

@@ -46,8 +46,6 @@ private:
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const;
 
-	void resetVelocity();
-
 	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
 	void updateRollAnimation();
@@ -75,7 +73,7 @@ private:
 	Command mDropPickupCommand;
 	float mTravelledDistance;
 	std::size_t mDirectionIndex;
-	TextNode* mHealthDisplay;
+	ShapeNode* mHealthDisplay;
 	TextNode* mGrenadeDisplay;
 	ShapeNode* mGrenadePower;
 };

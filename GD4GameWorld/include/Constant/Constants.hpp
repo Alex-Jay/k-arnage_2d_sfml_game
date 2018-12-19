@@ -1,4 +1,5 @@
 #pragma once
+
 //++++++++++++ ANIMATION RECTANGLES ++++++++++++++
 const int PLAYERANIMATIONRECTWIDTH = 259;
 const int PLAYERANIMATIONRECTHEIGHT = 153;
@@ -37,8 +38,17 @@ const float LEVEL_ZOOM_FACTOR = 1.5f;
 const float M_PI = 3.14159265f;
 const float APPROACHRATE = 200;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++ COLOUR CONSTANTS ++++++++++++++++++
+
+const sf::Uint32 BLACK = 0x000000ff;
+const sf::Uint32 RED = 0Xb20000ff;
+const sf::Uint32 GREEN = 0X008432ff;
+const sf::Uint32 BLUE = 0X0056adff;
+const sf::Uint32 ORANGE = 0Xffa100ff;
 
 
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
