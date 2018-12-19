@@ -12,6 +12,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 
 #include <cmath>
+#include <iostream>
 
 
 namespace
@@ -48,7 +49,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mPlayerAnimation.setDuration(sf::seconds(1));
 	mPlayerAnimation.setRepeating(true);
 	mPlayerAnimation.setTextureRect();
-
+	
 	centreOrigin(mSprite);
 	centreOrigin(mPlayerAnimation);
 
@@ -106,11 +107,16 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	checkProjectileLaunch(dt, commands);
 
 	// Update enemy movement pattern; apply velocity
-	updateMovementPattern(dt);
+	//updateMovementPattern(dt);
 	
+<<<<<<< HEAD
 	//Handles rotation and movement
 	updateVelocity(dt);
 
+=======
+	//updateVelocity(dt);
+	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
+>>>>>>> feature/alex
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();
@@ -306,6 +312,7 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
+<<<<<<< HEAD
 	projectile->setRotation(getRotation() + 90);
 
 	float radians = toRadians(getRotation());
@@ -315,6 +322,11 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	float yVelocity = sin(radians) * speed;
 		
 	projectile->setVelocity(xVelocity, yVelocity);
+=======
+	projectile->setRotation(getRotation() + 90.f);
+	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
+	//std::cout << "Projectile Rotation: " << projectile->getRotation() << std::endl;
+>>>>>>> feature/alex
 
 	node.attachChild(std::move(projectile));
 	
@@ -399,4 +411,10 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 	});
 	commands.push(command);
 
+}
+
+// Alex - Get maximum rotation speed (Set in Constants.hpp & DataTables.cpp)
+float Character::getMaxRotationSpeed() const
+{
+	return Table[static_cast<int>(mType)].rotationSpeed;
 }

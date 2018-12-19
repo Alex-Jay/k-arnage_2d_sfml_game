@@ -33,6 +33,8 @@ public:
 	void launchGrenade();
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
+	float getMaxRotationSpeed() const;
+
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);

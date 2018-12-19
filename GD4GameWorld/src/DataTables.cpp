@@ -13,6 +13,7 @@ std::vector<CharacterData> initializeCharacterData()
 	std::vector<CharacterData> data(static_cast<int>(Character::Type::TypeCount));
 	data[static_cast<int>(Character::Type::Player)].hitpoints = PLAYERHITPOINTS;
 	data[static_cast<int>(Character::Type::Player)].speed = PLAYERSPEED;
+	data[static_cast<int>(Character::Type::Player)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
 	data[static_cast<int>(Character::Type::Player)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
 	data[static_cast<int>(Character::Type::Player)].texture = TextureIDs::PlayerMove;
 	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(0, 0, PLAYERANIMATIONRECTWIDTH, PLAYERANIMATIONRECTHEIGHT);
@@ -20,6 +21,7 @@ std::vector<CharacterData> initializeCharacterData()
 
 	data[static_cast<int>(Character::Type::Zombie)].hitpoints = ZOMBIEHITPOINTS;
 	data[static_cast<int>(Character::Type::Zombie)].speed = ZOMBIESPEED;
+	data[static_cast<int>(Character::Type::Zombie)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
 	data[static_cast<int>(Character::Type::Zombie)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(144, 0, ZOMBIEANIMATIONRECTWIDTH, ZOMBIEANIMATIONRECTHEIGHT);
 	data[static_cast<int>(Character::Type::Zombie)].fireInterval = sf::Time::Zero;

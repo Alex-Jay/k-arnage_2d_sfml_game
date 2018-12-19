@@ -11,7 +11,7 @@ const int ZOMBIEANIMATIONRECTHEIGHT = 153;
 //++++++++++++ PLAYER CONSTANTS ++++++++++++++++++
 const int PLAYERHITPOINTS = 100;
 const int GRENADEPICKUPAMMOVALUE = 3;
-const int PLAYERSPEED = 200;
+const float PLAYERSPEED = 300.f;
 const float PLAYERFIREINTERVAL = 1.f;
 const int HEALTHPICKUPREPAIRVALUE = 25;
 const int FIRERATELEVEL = 1;
@@ -35,6 +35,7 @@ const float LEVEL_ZOOM_FACTOR = 1.5f;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ GENERAL CONSTANTS ++++++++++++++++++
+const float ROTATION_SPEED = 200.f;
 const float M_PI = 3.14159265f;
 const float APPROACHRATE = 200;
 //++++++++++++++++++++++++++++++++++++++++++++++++++

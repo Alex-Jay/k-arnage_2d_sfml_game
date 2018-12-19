@@ -17,6 +17,9 @@ struct Command
 template<typename GameObject, typename Function>
 Command::Action derivedAction(Function fn)
 {
+	// []  - No capture list
+	// [=] - Copy capture list by value
+	// [&] - Pass capture list by reference
 	return [=](SceneNode& node, sf::Time dt)
 	{
 		//Check if the cast is safe

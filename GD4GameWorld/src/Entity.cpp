@@ -69,7 +69,24 @@ bool Entity::isDestroyed() const
 }
 
 //Mike
-void Entity::updateCurrent(sf::Time dt, CommandQueue&)
+void Entity::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	move(mVelocity * dt.asSeconds());
+}
+
+// Alex - Get/Set Angle, Separating movement and rotation
+void Entity::setAngle(float angle)
+{
+	mAngle = angle;
+}
+
+float Entity::getAngle() const
+{
+	return mAngle;
+}
+
+// da - Delta of angle
+void Entity::applyRotation(float da)
+{
+	mAngle += da;
 }

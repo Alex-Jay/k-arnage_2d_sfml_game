@@ -25,6 +25,7 @@ struct CharacterData
 {
 	int hitpoints;
 	float speed;
+	float rotationSpeed;
 	TextureIDs texture;
 	sf::IntRect textureRect;
 	sf::Time fireInterval;

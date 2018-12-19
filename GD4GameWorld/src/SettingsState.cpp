@@ -4,7 +4,6 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-
 SettingsState::SettingsState(StateStack& stack, Context context)
 	: State(stack, context)
 	, mGUIContainer()
@@ -16,13 +15,15 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 	addButtonLabel(Player::Action::MoveRight, 200.f, "Move Right", context);
 	addButtonLabel(Player::Action::MoveUp, 250.f, "Move Up", context);
 	addButtonLabel(Player::Action::MoveDown, 300.f, "Move Down", context);
-	addButtonLabel(Player::Action::Fire, 500.f, "Fire", context);
-	addButtonLabel(Player::Action::LaunchGrenade, 550.f, "Grenade", context);
+	addButtonLabel(Player::Action::RotateLeft, 350.f, "Rotate Left", context);
+	addButtonLabel(Player::Action::RotateRight, 400.f, "Rotate Right", context);
+	addButtonLabel(Player::Action::Fire, 450.f, "Fire", context);
+	addButtonLabel(Player::Action::LaunchGrenade, 500.f, "Grenade", context);
 
 	updateLabels();
 
 	auto backButton = std::make_shared<GUI::Button>(context);
-	backButton->setPosition(80.f, 375.f);
+	backButton->setPosition(80.f, 575.f);
 	backButton->setText("Back");
 	backButton->setCallback(std::bind(&SettingsState::requestStackPop, this));
 
@@ -52,7 +53,7 @@ bool SettingsState::handleEvent(const sf::Event& event)
 		if (mBindingButtons[action]->isActive())
 		{
 			isKeyBinding = true;
-			if (event.type == sf::Event::KeyReleased)
+			if (event.type == sf::Event::KeyReleased && !isReservedKey(event))
 			{
 				getContext().player->assignKey(static_cast<Player::Action>(action), event.key.code);
 				mBindingButtons[action]->deactivate();
@@ -66,6 +67,29 @@ bool SettingsState::handleEvent(const sf::Event& event)
 		updateLabels();
 	else
 		mGUIContainer.handleEvent(event);
+
+	return false;
+}
+
+// Alex - Test if the key pressed was a reserved key
+bool SettingsState::isReservedKey(sf::Event event)
+{
+	int reservedKeyCodes[] = {
+		sf::Keyboard::Enter,
+		sf::Keyboard::Space,
+		sf::Keyboard::Escape,
+		sf::Keyboard::LSystem,
+		sf::Keyboard::RSystem,
+		sf::Keyboard::Tilde
+	};
+
+	for (int keyCode : reservedKeyCodes)
+	{
+		if (keyCode == event.key.code)
+		{
+			return true;
+		}
+	}
 
 	return false;
 }

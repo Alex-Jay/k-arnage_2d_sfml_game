@@ -10,6 +10,9 @@ public:
 	sf::Vector2f getVelocity() const;
 	void accelerate(sf::Vector2f velocity);
 	void accelerate(float vx, float vy);
+	void setAngle(float angle);
+	float getAngle() const;
+	void applyRotation(float da);
 
 	int getHitpoints() const;
 	void repair(int points);
@@ -25,5 +28,6 @@ private:
 
 private:
 	sf::Vector2f mVelocity;
+	float mAngle;
 	int mHitpoints;
 };
