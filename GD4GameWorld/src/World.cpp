@@ -432,8 +432,8 @@ void World::guideGrenades()
 			}
 		}
 
-		if (closestEnemy)
-			grenade.guideTowards(closestEnemy->getWorldPosition());
+		//if (closestEnemy)
+			//grenade.guideTowards(closestEnemy->getWorldPosition());
 	});
 
 	// Push commands, reset active enemies

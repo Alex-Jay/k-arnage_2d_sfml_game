@@ -25,57 +25,13 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 {
 	centreOrigin(mSprite);
 
-
-	// Add Animation system for grenades
-	if (isGrenade())
-	{
-		mAnimation.setTexture(textures.get(TextureIDs::Explosion));
-		mAnimation.setFrameSize(sf::Vector2i(256, 256));
-		mAnimation.setNumFrames(16);
-		mAnimation.setDuration(sf::seconds(1));
-		centreOrigin(mAnimation);
-		mShowExplosion = true;
-		//OLD PARTICLE SYSTEM CODE
-		//std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Type::Smoke));
-		//smoke->setPosition(0.f, getBoundingRect().height / 2.f);
-		//attachChild(std::move(smoke));
-
-		//std::unique_ptr<EmitterNode> propellant(new EmitterNode(Particle::Type::Exhaust));
-		//propellant->setPosition(0.f, getBoundingRect().height / 2.f);
-		//attachChild(std::move(propellant));
-
-	}
-
-
 	mExplosionCommand.category = static_cast<int>(Category::SceneAirLayer);
-	mExplosionCommand.action = [this](SceneNode& node, sf::Time)
+	mExplosionCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
-		createExplosion(node);
-	};
-
-	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
-	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
-	{
-		createPickup(node, textures);
+		createExplosion(node, textures);
 	};
 
 	mSprite.setScale(Table[static_cast<int>(type)].textureScale, Table[static_cast<int>(type)].textureScale);
-}
-
-void Projectile::createPickup(SceneNode& node, const TextureHolder& textures) const
-{
-	auto type = static_cast<Pickup::PickupID>(randomInt(static_cast<int>(Pickup::PickupID::TypeCount)));
-
-	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
-	pickup->setPosition(getWorldPosition());
-	pickup->setVelocity(0.f, 1.f);
-	node.attachChild(std::move(pickup));
-}
-
-void Projectile::guideTowards(sf::Vector2f position)
-{
-	assert(isGrenade());
-	mTargetDirection = unitVector(position - getWorldPosition());
 }
 
 bool Projectile::isGrenade() const
@@ -137,84 +93,55 @@ void Projectile::remove()
 //Mike
 void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
-
 	if (isGrenade())
 	{
-		if (!mGrenadeTimerStarted)
-		{
-			StartTimer(dt);
-		}
-		else
-		{
-			mGrenadeTimer += dt;
-		}
-
-		setVelocity(MoveTowards(getVelocity(), sf::Vector2f(0.f, 0.f), 10.f));
-
-		if (mGrenadeTimer.asSeconds() > 3)
-		{
-			mGrenadeTimerStarted = false;
-			mAnimation.update(dt);
-			damage(1);
-		}
-
-		if (isDestroyed())
-		{
-			mAnimation.update(dt);
-
-			commands.push(mExplosionCommand);
-
-
-			
-			// Play explosion sound only once
-			if (!mPlayedExplosionSound)
-			{
-				SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
-				playLocalSound(commands, soundEffect);
-
-				mPlayedExplosionSound = true;
-			}
-			return;
-		}
-
+		handleGrenade(dt, commands);
 	}
 	Entity::updateCurrent(dt, commands);
 }
 
+void Projectile::handleGrenade(sf::Time dt, CommandQueue& commands)
+{
+	if (!mGrenadeTimerStarted)
+	{
+		StartTimer(dt);
+	}
+	else
+	{
+		mGrenadeTimer += dt;
+	}
 
-void Projectile::createExplosion(SceneNode& node) const
+	setVelocity(MoveTowards(getVelocity(), sf::Vector2f(0.f, 0.f), 10.f));
+
+	if (mGrenadeTimer.asSeconds() >= 3)
+	{
+		mGrenadeTimerStarted = false;
+		damage(1);
+	}
+
+	if (isDestroyed())
+	{
+		commands.push(mExplosionCommand);
+		return;
+	}
+}
+
+void Projectile::createExplosion(SceneNode& node, const TextureHolder& textures) const
 {
 	auto type = static_cast<Explosion::ExplosionIDs>(static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion));
 
-	std::unique_ptr<Explosion> explosion(new Explosion(type));
+	std::unique_ptr<Explosion> explosion(new Explosion(type, textures));
 	explosion->setPosition(getWorldPosition());
 	node.attachChild(std::move(explosion));
 }
 
 void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (isDestroyed() && mShowExplosion)
-		target.draw(mAnimation, states);
-	else
-		target.draw(mSprite, states);
+	target.draw(mSprite, states);
 }
 
 void Projectile::StartTimer(sf::Time dt)
 {
 	mGrenadeTimerStarted = true;
 	mGrenadeTimer = dt;
-}
-
-void Projectile::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
-{
-	sf::Vector2f worldPosition = getWorldPosition();
-
-	Command command;
-	command.category = static_cast<int>(Category::SoundEffect);
-	command.action = derivedAction<SoundNode>([effect, worldPosition](SoundNode& node, sf::Time)
-	{
-		node.playSound(effect, worldPosition);
-	});
-	commands.push(command);
-
 }
