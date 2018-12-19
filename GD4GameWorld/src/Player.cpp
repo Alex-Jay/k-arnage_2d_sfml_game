@@ -32,27 +32,17 @@ Player::Player()
 	: mCurrentMissionStatus(MissionStatus::MissionRunning)
 {
 	//Set initial key bindings
-<<<<<<< HEAD
+
 	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
 	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
 	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
 	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
 	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
 	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
-
 	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
-=======
-	mKeyBinding[sf::Keyboard::Left] = Action::MoveLeft;
-	mKeyBinding[sf::Keyboard::Right] = Action::MoveRight;
-	mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
-	mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
 	// Alex - Init. rotation keys -------------------------
-	mKeyBinding[sf::Keyboard::Numpad4] = Action::RotateLeft;
-	mKeyBinding[sf::Keyboard::Numpad6] = Action::RotateRight;
-	//-----------------------------------------------------
-	mKeyBinding[sf::Keyboard::Space] = Action::Fire;
-	mKeyBinding[sf::Keyboard::M] = Action::LaunchGrenade;
->>>>>>> feature/alex
+	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
+	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
 
 	//set initial action bindings
 	initializeActions();
@@ -90,14 +80,9 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 
 void Player::handleRealtimeInput(CommandQueue& commands)
 {
-	//Check if any key binding keys are pressed
-<<<<<<< HEAD
 	for (auto pair : mKeyBindingPressed)
-	{
-=======
-	for (auto pair : mKeyBinding)
 	{		
->>>>>>> feature/alex
+
 		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
 		{
 			commands.push(mActionBinding[pair.second]);

@@ -109,20 +109,15 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Update enemy movement pattern; apply velocity
 	//updateMovementPattern(dt);
 	
-<<<<<<< HEAD
-	//Handles rotation and movement
-	updateVelocity(dt);
 
-=======
-	//updateVelocity(dt);
 	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
->>>>>>> feature/alex
+
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();
 }
 
-void Character::updateVelocity(sf::Time dt)
+void Character::updateVelocity(sf::Time dt)//TO DELETE//TODO
 {
 	rotate(getVelocity().x * dt.asSeconds());
 	setVelocity((cos((getRotation()) * M_PI / 180) * -getVelocity().y), (sin((getRotation())* M_PI / 180)* -getVelocity().y));
@@ -312,7 +307,6 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
-<<<<<<< HEAD
 	projectile->setRotation(getRotation() + 90);
 
 	float radians = toRadians(getRotation());
@@ -322,11 +316,6 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	float yVelocity = sin(radians) * speed;
 		
 	projectile->setVelocity(xVelocity, yVelocity);
-=======
-	projectile->setRotation(getRotation() + 90.f);
-	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
-	//std::cout << "Projectile Rotation: " << projectile->getRotation() << std::endl;
->>>>>>> feature/alex
 
 	node.attachChild(std::move(projectile));
 	
