@@ -167,6 +167,7 @@
     <ClCompile Include="src/TitleState.cpp" />
     <ClCompile Include="src/Utility.cpp" />
     <ClCompile Include="src/World.cpp" />
+    <ClCompile Include="src\ShapeNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Entity\Character.hpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="include/State/TitleState.hpp" />
     <ClInclude Include="include/Structural/Utility.hpp" />
     <ClInclude Include="include/Core/World.hpp" />
+    <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

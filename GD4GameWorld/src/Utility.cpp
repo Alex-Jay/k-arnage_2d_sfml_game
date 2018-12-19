@@ -4,6 +4,7 @@
 
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include "SFML/Graphics/RectangleShape.hpp"
 
 #include <cmath>
 #include <random>
@@ -22,6 +23,12 @@ void centreOrigin(sf::Sprite & sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();
 	sprite.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+}
+
+void centreOrigin(sf::RectangleShape & shape)
+{
+	sf::FloatRect bounds = shape.getLocalBounds();
+	shape.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
 }
 
 void centreOrigin(sf::Text & text)

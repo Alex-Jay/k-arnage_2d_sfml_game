@@ -40,6 +40,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mDirectionIndex(0)
 	, mHealthDisplay(nullptr)
 	, mGrenadeDisplay(nullptr)
+	, mGrenadePower(nullptr)
 {
 	mPlayerAnimation.setFrameSize(sf::Vector2i(263, 156));
 	mPlayerAnimation.setNumFrames(18);
@@ -61,7 +62,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
 		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures);
+		mGrenadeVelocity = 0.f;
 	};
+	
 
 	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
 	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
@@ -79,6 +82,11 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		grenadeDisplay->setPosition(0, 70);
 		mGrenadeDisplay = grenadeDisplay.get();
 		attachChild(std::move(grenadeDisplay));
+
+		std::unique_ptr<ShapeNode> grenadePower(new ShapeNode(sf::Color::Blue));
+		grenadePower->setPosition(0, 100);
+		mGrenadePower = grenadePower.get();
+		attachChild(std::move(grenadePower));
 	}
 
 	updateTexts();
@@ -193,6 +201,7 @@ void Character::launchGrenade()
 {
 	if (mGrenadeStarted)
 	{
+
 		mIsLaunchingGrenade = true;
 		--mGrenadeAmmo;
 	}
@@ -308,8 +317,9 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	projectile->setVelocity(xVelocity, yVelocity);
 
 	node.attachChild(std::move(projectile));
-
+	
 }
+
 
 void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
 {
@@ -327,6 +337,12 @@ void Character::updateTexts()
 	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
 	mHealthDisplay->setOrigin(0.0f, -100.f);
+
+	mGrenadePower->setPosition(0.f, 0.f);
+	mGrenadePower->setRotation(-getRotation());
+	mGrenadePower->setOrigin(0.0f, -140.f);
+
+	mGrenadePower->setSize(((mGrenadeVelocity != 0) ? (mGrenadeVelocity / 5) : 0), ((mGrenadeVelocity != 0) ? 5.f : 0));
 
 	if (mGrenadeDisplay)
 	{

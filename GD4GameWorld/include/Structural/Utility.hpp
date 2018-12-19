@@ -8,11 +8,13 @@ namespace sf
 {
 	class Sprite;
 	class Text;
+	class RectangleShape;
 }
 
 class Animation;
 
 void centreOrigin(sf::Sprite& sprite);
+void centreOrigin(sf::RectangleShape & shape);
 void centreOrigin(sf::Text& text);
 void centreOrigin(Animation& animation);
 float toRadians(float degrees);
