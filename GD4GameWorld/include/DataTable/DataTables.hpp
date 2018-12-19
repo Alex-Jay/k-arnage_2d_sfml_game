@@ -9,7 +9,7 @@
 #include <functional>
 
 class Character;
-
+class Explosion;
 
 struct Direction
 {
@@ -40,7 +40,15 @@ struct ProjectileData
 	float textureScale;
 	TextureIDs texture;
 	sf::IntRect textureRect;
+};
 
+struct ExplosionData
+{
+	int damage;
+	float radious;
+	int lifeTimeSeconds;
+	TextureIDs texture;
+	sf::IntRect textureRect;
 };
 
 struct PickupData
@@ -57,9 +65,7 @@ struct ParticleData
 };
 
 std::vector<CharacterData> initializeCharacterData();
-
-std::vector<CharacterData> initializeCharacterData();
-
+std::vector<ExplosionData> initializeExplosionData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
 std::vector<ParticleData> initializeParticleData();

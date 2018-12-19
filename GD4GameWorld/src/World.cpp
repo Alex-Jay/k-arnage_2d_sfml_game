@@ -1,11 +1,13 @@
 #include "World.hpp"
 #include "Projectile.hpp"
+#include "Explosion.hpp"
 #include "Pickup.hpp"
 #include "TextNode.hpp"
 #include "ParticleNode.hpp"
 #include "PostEffect.hpp"
 #include "SoundNode.hpp"
 #include "Constants.hpp"
+
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
@@ -228,7 +230,7 @@ void World::handleCollisions()
 		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Pickup))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
-			auto& pickup = static_cast<Character&>(*pair.second);
+			auto& pickup = static_cast<Pickup&>(*pair.second);
 
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
@@ -240,11 +242,20 @@ void World::handleCollisions()
 			|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
 		{
 			auto& character = static_cast<Character&>(*pair.first);
-			auto& projectile = static_cast<Character&>(*pair.second);
+			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			// Apply projectile damage to Character, destroy projectile
 			//character.damage(projectile.getDamage());
 			//projectile.destroy();
+		}
+
+		else if (matchesCategories(pair, Category::Character, Category::Explosion))
+		{
+			auto& character = static_cast<Character&>(*pair.first);
+			auto& explosion = static_cast<Explosion&>(*pair.second);
+
+			character.damage(10);
+
 		}
 	}
 }

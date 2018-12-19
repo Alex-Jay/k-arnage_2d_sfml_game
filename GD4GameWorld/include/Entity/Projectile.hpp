@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.hpp"
+#include "Explosion.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
@@ -17,6 +18,8 @@ public:
 public:
 	Projectile(ProjectileIDs type, const TextureHolder& textures);
 
+	void createPickup(SceneNode & node, const TextureHolder & textures) const;
+
 	void guideTowards(sf::Vector2f position);
 	bool isGrenade() const;
 
@@ -33,6 +36,7 @@ public:
 
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
+	void createExplosion(SceneNode & node) const;
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void StartTimer(sf::Time dt);
@@ -42,6 +46,9 @@ private:
 private:
 	ProjectileIDs mType;
 	Animation mAnimation;
+	Command mExplosionCommand;
+	Command mDropPickupCommand;
+
 	sf::Sprite mSprite;
 	sf::Vector2f mTargetDirection;
 	sf::Time mGrenadeTimer;

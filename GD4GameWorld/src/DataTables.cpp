@@ -1,6 +1,6 @@
 #include "DataTables.hpp"
 #include "Character.hpp"
-#include "Character.hpp"
+#include "Explosion.hpp"
 #include "Projectile.hpp"
 #include "Particle.hpp"
 #include "Pickup.hpp"
@@ -55,6 +55,20 @@ std::vector<ProjectileData> initializeProjectileData()
 
 	return data;
 }
+
+std::vector<ExplosionData> initializeExplosionData()
+{
+	std::vector<ExplosionData> data(static_cast<int>(Explosion::ExplosionIDs::TypeCount));
+
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].damage = GRENADEDAMAGE;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].radious = 100;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].lifeTimeSeconds = 1;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].texture = TextureIDs::Entities;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].textureRect = sf::IntRect(0, 64, 40, 40);
+
+	return data;
+}
+
 
 std::vector<PickupData> initializePickupData()
 {

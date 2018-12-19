@@ -12,6 +12,7 @@ enum class Category {
 	EnemyProjectile = 1 << 6,
 	ParticleSystem = 1 << 7,
 	SoundEffect = 1 << 8,
+	Explosion = 1 << 10,
 
 
 	Character = PlayerCharacter | AlliedCharacter | EnemyCharacter,

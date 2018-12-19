@@ -2,9 +2,10 @@
 #include "DataTables.hpp"
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
+#include "Pickup.hpp"
 #include "Constants.hpp"
 #include "EmitterNode.hpp"
-
+#include "Explosion.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/RenderStates.hpp"
 
@@ -23,6 +24,7 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 	, mTargetDirection()
 {
 	centreOrigin(mSprite);
+
 
 	// Add Animation system for grenades
 	if (isGrenade())
@@ -44,7 +46,30 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 
 	}
 
+
+	mExplosionCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mExplosionCommand.action = [this](SceneNode& node, sf::Time)
+	{
+		createExplosion(node);
+	};
+
+	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
+	{
+		createPickup(node, textures);
+	};
+
 	mSprite.setScale(Table[static_cast<int>(type)].textureScale, Table[static_cast<int>(type)].textureScale);
+}
+
+void Projectile::createPickup(SceneNode& node, const TextureHolder& textures) const
+{
+	auto type = static_cast<Pickup::PickupID>(randomInt(static_cast<int>(Pickup::PickupID::TypeCount)));
+
+	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	pickup->setPosition(getWorldPosition());
+	pickup->setVelocity(0.f, 1.f);
+	node.attachChild(std::move(pickup));
 }
 
 void Projectile::guideTowards(sf::Vector2f position)
@@ -113,8 +138,6 @@ void Projectile::remove()
 void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 
-
-
 	if (isGrenade())
 	{
 		if (!mGrenadeTimerStarted)
@@ -139,6 +162,10 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 		{
 			mAnimation.update(dt);
 
+			commands.push(mExplosionCommand);
+
+
+			
 			// Play explosion sound only once
 			if (!mPlayedExplosionSound)
 			{
@@ -152,6 +179,16 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	}
 	Entity::updateCurrent(dt, commands);
+}
+
+
+void Projectile::createExplosion(SceneNode& node) const
+{
+	auto type = static_cast<Explosion::ExplosionIDs>(static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion));
+
+	std::unique_ptr<Explosion> explosion(new Explosion(type));
+	explosion->setPosition(getWorldPosition());
+	node.attachChild(std::move(explosion));
 }
 
 void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const

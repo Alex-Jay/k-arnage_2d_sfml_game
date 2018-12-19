@@ -34,7 +34,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSpawnedPickup(false)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
-	, mGrenadeAmmo(9)
+	, mGrenadeAmmo(100)
 	, mDropPickupCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)

@@ -192,6 +192,9 @@
     <ClCompile Include="src\ShapeNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
+    <ClCompile Include="src\Explosion.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
@@ -316,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="include\SceneNode\ShapeNode.hpp">
       <Filter>Header Files\SceneNode</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entity\Explosion.hpp">
+      <Filter>Header Files\Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
