@@ -34,7 +34,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mSpawnedPickup(false)
 	, mFireRateLevel(1)
 	, mSpreadLevel(1)
-	, mGrenadeAmmo(200)
+	, mGrenadeAmmo(9)
 	, mDropPickupCommand()
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
@@ -84,7 +84,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		attachChild(std::move(grenadeDisplay));
 
 		std::unique_ptr<ShapeNode> grenadePower(new ShapeNode(sf::Color(BLUE)));
-		grenadePower->setPosition(0, 100);
+		grenadePower->setPosition(0, 70);
 		mGrenadePower = grenadePower.get();
 		attachChild(std::move(grenadePower));
 	}
@@ -336,12 +336,12 @@ void Character::updateTexts()
 	//mHealthDisplay->setString(std::to_string(getHitpoints()) + " HP");
 	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
-	mHealthDisplay->setOrigin(0.0f, -100.f);
+	mHealthDisplay->setOrigin(30.0f, -90.f);
 	mHealthDisplay->setSize(getHitpoints(), 5.f);
 
 	mGrenadePower->setPosition(0.f, 0.f);
 	mGrenadePower->setRotation(-getRotation());
-	mGrenadePower->setOrigin(0.0f, -140.f);
+	mGrenadePower->setOrigin(30.0f, -100.f);
 
 	mGrenadePower->setSize(((mGrenadeVelocity != 0) ? (mGrenadeVelocity / 5) : 0), ((mGrenadeVelocity != 0) ? 5.f : 0));
 
@@ -349,11 +349,8 @@ void Character::updateTexts()
 	{
 		mGrenadeDisplay->setPosition(0.f, 0.f);
 		mGrenadeDisplay->setRotation(-getRotation());
-		mGrenadeDisplay->setOrigin(0.0f, -120.f);
-		if (mGrenadeAmmo == 0)
-			mGrenadeDisplay->setString("");
-		else
-			mGrenadeDisplay->setString("M: " + std::to_string(mGrenadeAmmo));
+		mGrenadeDisplay->setOrigin(50.f, -100.f);
+		mGrenadeDisplay->setString(std::to_string(mGrenadeAmmo));
 	}
 
 	if (getHitpoints() <= 20)
