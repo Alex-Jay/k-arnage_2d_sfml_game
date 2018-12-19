@@ -12,6 +12,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 
 #include <cmath>
+#include <iostream>
 
 
 namespace
@@ -47,7 +48,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mPlayerAnimation.setDuration(sf::seconds(1));
 	mPlayerAnimation.setRepeating(true);
 	mPlayerAnimation.setTextureRect();
-
+	
 	centreOrigin(mSprite);
 	centreOrigin(mPlayerAnimation);
 
@@ -127,6 +128,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	//updateMovementPattern(dt);
 	
 	//updateVelocity(dt);
+	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();
@@ -299,8 +301,9 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
-	projectile->setRotation(getRotation() + 90);
+	projectile->setRotation(getRotation() + 90.f);
 	projectile->setVelocity((cos((getRotation()) * M_PI / 180) * projectile->getMaxSpeed()), (sin((getRotation())* M_PI / 180)* projectile->getMaxSpeed()));
+	std::cout << "Projectile Rotation: " << projectile->getRotation() << std::endl;
 
 	node.attachChild(std::move(projectile));
 }

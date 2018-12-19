@@ -23,8 +23,8 @@ struct CharacterMover
 	{
 		Character.accelerate(velocity * Character.getMaxSpeed());
 		Character.applyRotation(angle * Character.getMaxRotationSpeed());
-		std::cout << "Velocity [X,Y]: " << velocity.x << ", " << velocity.y << std::endl;
-		std::cout << "Angle: " << angle << std::endl;
+		//std::cout << "Velocity [X,Y]: " << velocity.x << ", " << velocity.y << std::endl;
+		//std::cout << "Angle: " << angle << std::endl;
 	}
 };
 
@@ -37,8 +37,8 @@ Player::Player()
 	mKeyBinding[sf::Keyboard::Up] = Action::MoveUp;
 	mKeyBinding[sf::Keyboard::Down] = Action::MoveDown;
 	// Alex - Init. rotation keys -------------------------
-	mKeyBinding[sf::Keyboard::Num4] = Action::RotateLeft;
-	mKeyBinding[sf::Keyboard::Num6] = Action::RotateRight;
+	mKeyBinding[sf::Keyboard::Numpad4] = Action::RotateLeft;
+	mKeyBinding[sf::Keyboard::Numpad6] = Action::RotateRight;
 	//-----------------------------------------------------
 	mKeyBinding[sf::Keyboard::Space] = Action::Fire;
 	mKeyBinding[sf::Keyboard::M] = Action::LaunchGrenade;

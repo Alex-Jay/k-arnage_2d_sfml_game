@@ -72,7 +72,6 @@ bool Entity::isDestroyed() const
 void Entity::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	move(mVelocity * dt.asSeconds());
-	setRotation(mAngle * dt.asSeconds()); // Alex - update players current rotation
 }
 
 // Alex - Get/Set Angle, Separating movement and rotation
