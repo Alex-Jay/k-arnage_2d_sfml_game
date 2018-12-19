@@ -18,7 +18,8 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 	addButtonLabel(Player::Action::RotateLeft, 350.f, "Rotate Left", context);
 	addButtonLabel(Player::Action::RotateRight, 400.f, "Rotate Right", context);
 	addButtonLabel(Player::Action::Fire, 450.f, "Fire", context);
-	addButtonLabel(Player::Action::LaunchGrenade, 500.f, "Grenade", context);
+	addButtonLabel(Player::Action::StartGrenade, 500.f, "Grenade", context);
+
 
 	updateLabels();
 
@@ -56,6 +57,12 @@ bool SettingsState::handleEvent(const sf::Event& event)
 			if (event.type == sf::Event::KeyReleased && !isReservedKey(event))
 			{
 				getContext().player->assignKey(static_cast<Player::Action>(action), event.key.code);
+
+				if (static_cast<Player::Action>(action) == Player::Action::StartGrenade)
+				{
+					getContext().player->assignReleaseKey(Player::Action::LaunchGrenade, event.key.code);
+				}
+
 				mBindingButtons[action]->deactivate();
 			}
 			break;

@@ -39,10 +39,12 @@ Player::Player()
 	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
 	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
 	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
-	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
 	// Alex - Init. rotation keys -------------------------
 	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
 	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+
+	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
+
 
 	//set initial action bindings
 	initializeActions();
@@ -66,7 +68,7 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 			commands.push(mActionBinding[found->second]);
 		}
 	}
-	
+
 	if (event.type == sf::Event::KeyReleased)
 	{
 		auto found = mKeyBindingReleased.find(event.key.code);
@@ -76,6 +78,7 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 			commands.push(mActionBinding[found->second]);
 		}
 	}
+	
 }
 
 void Player::handleRealtimeInput(CommandQueue& commands)
@@ -105,6 +108,24 @@ void Player::assignKey(Action action, sf::Keyboard::Key key)
 		}
 		//insert new binding
 		mKeyBindingPressed[key] = action;
+	}
+}
+
+void Player::assignReleaseKey(Action action, sf::Keyboard::Key key)
+{
+	//Remove all keys that are already mapped to an action
+	for (auto itr = mKeyBindingReleased.begin(); itr != mKeyBindingReleased.end();)
+	{
+		if (itr->second == action)
+		{
+			mKeyBindingReleased.erase(itr++);
+		}
+		else
+		{
+			++itr;
+		}
+		//insert new binding
+		mKeyBindingReleased[key] = action;
 	}
 }
 
@@ -141,17 +162,6 @@ void Player::initializeActions()
 	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
 	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
-}
-
-bool Player::isReleaseAction(Action action)
-{
-	switch (action)
-	{
-	case Action::LaunchGrenade:
-		return true;
-	default:
-		return false;
-	}
 }
 
 bool Player::isRealtimeAction(Action action)
