@@ -9,7 +9,7 @@ class Player
 {
 public:
 
-	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, RotateLeft, RotateRight, Fire, StartGrenade, LaunchGrenade, ActionCount};
+	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, RotateLeft, RotateRight, Fire, LaunchGrenade, ActionCount, StartGrenade};
 	enum class MissionStatus{MissionRunning, MissionSuccess, MissionFailure};
 
 public:
