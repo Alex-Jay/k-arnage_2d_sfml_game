@@ -1,15 +1,17 @@
 #include "MapTiler.hpp"
+#include "ResourceHolder.hpp"
 
-MapTiler::MapTiler()
+
+
+
+MapTiler::MapTiler(TextureHolder& textures)
 	:mMapFile("map.txt")
+	, mTexture(textures.get(TextureIDs::MapTiles))
 {
 	mTileWidth = 32;
 	mTileHeight = 32;
 	if (mMapFile.is_open())
 	{
-		std::string tileLocation;
-		mMapFile >> tileLocation;
-		mTexture.loadFromFile(tileLocation);
 		mTile.setTexture(mTexture);
 		drawMap();
 		renderToWindow();

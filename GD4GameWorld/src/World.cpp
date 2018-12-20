@@ -8,6 +8,7 @@
 #include "SoundNode.hpp"
 #include "Constants.hpp"
 
+#include "MapTiler.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
@@ -40,10 +41,13 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
-	buildScene();
+	//buildScene();
+
+	MapTiler mapTiler(mTextures);
+
 
 	// Prepare the view
-	mWorldView.setCenter(mSpawnPosition);
+	//mWorldView.setCenter(mSpawnPosition);
 }
 
 void World::update(sf::Time dt)
@@ -141,6 +145,7 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::ZombieDeath, "Media/Textures/ZombieDeath.png");
 
 	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
+	mTextures.load(TextureIDs::MapTiles, "Media/Textures/Tiles.png");
 }
 
 void World::adaptPlayerPosition()

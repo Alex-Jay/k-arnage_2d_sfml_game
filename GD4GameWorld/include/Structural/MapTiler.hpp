@@ -8,11 +8,13 @@
 #include <vector>
 #include <sstream>
 
+#include "ResourceIdentifiers.hpp"
+
 class MapTiler
 {
 
 public:
-	MapTiler();
+	MapTiler(TextureHolder& textures);
 	void drawMap();
 	void populateMap();
 	void findCharacter(int & i, std::string line);
