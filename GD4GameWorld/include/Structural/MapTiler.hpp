@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "ResourceIdentifiers.hpp"
+#include "World.hpp"
 
 class MapTiler
 {
@@ -18,11 +19,8 @@ public:
 	void drawMap();
 	void populateMap();
 	void findCharacter(int & i, std::string line);
-	void renderToWindow();
 
-	void drawTiles(sf::RenderWindow & Window);
-
-	void drawTile(sf::RenderWindow & Window, int x, int y);
+	std::vector<std::vector<sf::Vector2i>> getMap();
 
 private:
 	std::ifstream mMapFile;

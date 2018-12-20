@@ -1,7 +1,7 @@
 #include "MapTiler.hpp"
 #include "ResourceHolder.hpp"
-
-
+#include "SpriteNode.hpp"
+#include <array>
 
 
 MapTiler::MapTiler(TextureHolder& textures)
@@ -14,7 +14,7 @@ MapTiler::MapTiler(TextureHolder& textures)
 	{
 		mTile.setTexture(mTexture);
 		drawMap();
-		renderToWindow();
+		//renderToWindow();
 	}
 }
 
@@ -69,47 +69,7 @@ void MapTiler::findCharacter(int& i, std::string line)
 	}
 }
 
-void MapTiler::renderToWindow()
+std::vector<std::vector<sf::Vector2i>> MapTiler::getMap()
 {
-	sf::RenderWindow Window(sf::VideoMode(640, 480, 32), "Loading Map");
-
-	while (Window.isOpen())
-	{
-		sf::Event event;
-
-		while (Window.pollEvent(event))
-		{
-			switch (event.type)
-			{
-			case sf::Event::Closed:
-				Window.close();
-				break;
-			}
-		}
-
-		Window.clear(sf::Color::White);
-		drawTiles(Window);
-		Window.display();
-	}
-}
-
-void MapTiler::drawTiles(sf::RenderWindow & Window)
-{
-	for (int i = 0; i < map.size(); i++)
-	{
-		for (int j = 0; j < map[i].size(); j++)
-		{
-			if (map[i][j].x != -1 && map[i][j].y != -1)
-			{
-				drawTile(Window, i, j);
-			}
-		}
-	}
-}
-
-void MapTiler::drawTile(sf::RenderWindow & Window, int x, int y)
-{
-	mTile.setPosition(y * mTileHeight, x * mTileWidth);
-	mTile.setTextureRect(sf::IntRect(map[x][y].x * mTileWidth, map[x][y].y * mTileHeight, mTileWidth, mTileHeight));
-	Window.draw(mTile);
+	return map;
 }

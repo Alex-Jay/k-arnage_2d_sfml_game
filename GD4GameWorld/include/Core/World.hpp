@@ -22,9 +22,10 @@ namespace sf
 {
 	class RenderTarget;
 }
-
+enum Layer { Background, LowerAir, UpperAir, LayerCount };
 class World : private sf::NonCopyable {
 public:
+	
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
 	void update(sf::Time dt);
 	void draw();
@@ -37,6 +38,7 @@ public:
 private:
 	void loadTextures();
 	void buildScene();
+	void placeTiles();
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
@@ -52,7 +54,7 @@ private:
 	sf::FloatRect getBattlefieldBounds() const;
 
 private:
-	enum Layer { Background, LowerAir, UpperAir, LayerCount };
+	
 
 	struct SpawnPoint
 	{

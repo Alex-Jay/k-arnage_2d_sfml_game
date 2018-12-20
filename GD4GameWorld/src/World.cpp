@@ -41,10 +41,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
-	//buildScene();
-
-	MapTiler mapTiler(mTextures);
-
+	buildScene();
 
 	// Prepare the view
 	//mWorldView.setCenter(mSpawnPosition);
@@ -295,17 +292,7 @@ void World::buildScene()
 	}
 
 	// Prepare the tiled background
-	sf::Texture& jungleTexture = mTextures.get(TextureIDs::Jungle);
-	jungleTexture.setRepeated(true);
-
-	float viewHeight = mWorldView.getSize().y;
-	sf::IntRect textureRect(mWorldBounds);
-	textureRect.height += static_cast<int>(viewHeight);
-
-	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> jungleSprite(new SpriteNode(jungleTexture, textureRect));
-	jungleSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
-	mSceneLayers[Layer::Background]->attachChild(std::move(jungleSprite));
+	placeTiles();
 
 	// Alex - Disable finish line
 	// Add the finish line to the scene
@@ -334,6 +321,32 @@ void World::buildScene()
 
 	// Add enemy Character
 	addEnemies();
+}
+
+void World::placeTiles()
+{
+	//Mike
+	MapTiler mapTiler(mTextures);
+	std::vector<std::vector<sf::Vector2i>> map;
+	map = mapTiler.getMap();
+
+	sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
+
+	for (int i = 0; i < map.size(); i++)
+	{
+		for (int j = 0; j < map[i].size(); j++)
+		{
+			if (map[i][j].x != -1 && map[i][j].y != -1)
+			{
+
+				std::unique_ptr<SpriteNode> sprite1(new SpriteNode(tiles, sf::IntRect(map[i][j].x * 32, map[i][j].y * 32, 32, 32)));
+
+				sprite1->setPosition(j * 32, i * 32);
+
+				mSceneLayers[Layer::Background]->attachChild(std::move(sprite1));
+			}
+		}
+	}
 }
 
 void World::addEnemies()
