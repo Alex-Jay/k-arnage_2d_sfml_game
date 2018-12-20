@@ -55,7 +55,7 @@ std::vector<ProjectileData> initializeProjectileData()
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].speed = BULLETSPEED;
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureRect = sf::IntRect(175, 64, 3, 14);
-	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureScale = 10;
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureScale = 1;
 
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].damage = BULLETDAMAGE;
 	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].speed = BULLETSPEED;

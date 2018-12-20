@@ -141,7 +141,8 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	}
 	else if (mType == Character::Type::Player)
 	{
-		setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
+		//setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
+		updateVelocity(dt);
 	}
 	Entity::updateCurrent(dt, commands);
 

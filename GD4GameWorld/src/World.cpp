@@ -252,8 +252,8 @@ void World::handleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
 			// Apply projectile damage to Character, destroy projectile
-			//character.damage(projectile.getDamage());
-			//projectile.destroy();
+			character.damage(projectile.getDamage());
+			projectile.destroy();
 		}
 
 		else if (matchesCategories(pair, Category::Character, Category::Explosion))
@@ -335,19 +335,19 @@ void World::addEnemies()
 {
 	// Add enemies to the spawn point container
 
-	addEnemy(Character::Type::Zombie, 0.f, 100.f);
-	addEnemy(Character::Type::Zombie, +100.f, 150.f);
-	addEnemy(Character::Type::Zombie, -100.f, 1150.f);
-	addEnemy(Character::Type::Zombie, 300.f, 220.f);
-	addEnemy(Character::Type::Zombie, -300.f, 220.f);
-	addEnemy(Character::Type::Zombie, 0.f, 20.f);
-	addEnemy(Character::Type::Zombie, 0.f, 500.f);
-	addEnemy(Character::Type::Zombie, 0.f, 300.f);
-	addEnemy(Character::Type::Zombie, 250.f, 320.f);
+	addEnemy(Character::Type::Zombie, -1000.f, -1000.f);
+	addEnemy(Character::Type::Zombie, 1000.f, 500.f);
+	addEnemy(Character::Type::Zombie, 4000.f, 1150.f);
+	addEnemy(Character::Type::Zombie, 8000.f, -1220.f);
+	addEnemy(Character::Type::Zombie, -3000.f, -1220.f);
+	addEnemy(Character::Type::Zombie, 1100.f, 20.f);
+	addEnemy(Character::Type::Zombie, 2000.f, -500.f);
+	addEnemy(Character::Type::Zombie, 6000.f, -300.f);
+	addEnemy(Character::Type::Zombie, -250.f, -3020.f);
 	addEnemy(Character::Type::Zombie, -250.f, 3250.f);
-	addEnemy(Character::Type::Zombie, 0.f, 800.f);
-	addEnemy(Character::Type::Zombie, 200.f, 400.f);
-	addEnemy(Character::Type::Zombie, 0.f, 200.f);
+	addEnemy(Character::Type::Zombie, 600.f, 800.f);
+	addEnemy(Character::Type::Zombie, 800.f, 400.f);
+	addEnemy(Character::Type::Zombie, 450.f, 200.f);
 	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
 	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
 	{
