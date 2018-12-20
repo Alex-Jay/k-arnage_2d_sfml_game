@@ -9,6 +9,8 @@
 #include <cctype>
 #include <string>
 #include <windows.h>
+#include <vector>
+#include <sstream>
 
 int main()
 {
@@ -23,14 +25,11 @@ int main()
 	//}
 
 	std::ifstream mapFile("map.txt");
-	//char buf[256];
-	//GetCurrentDirectoryA(256, buf);
-	//std::cout << std::string(buf) + '\\';
 	sf::Texture tileTexture;
 	sf::Sprite tiles;
 
-	sf::Vector2i map[100][100];
-	sf::Vector2i loadCounter = sf::Vector2i(0, 0);
+	std::vector<std::vector<sf::Vector2i>> map;
+	std::vector<sf::Vector2i> tempMap;
 
 	if (mapFile.is_open())
 	{
@@ -43,34 +42,45 @@ int main()
 
 		while (!mapFile.eof())
 		{
-			std::string str;
-			mapFile >> str;
-			char x = str[0], y = str[2];
-			if (!isdigit(x) || !isdigit(y))
-			{
-				// if value is not a number dont draw anything
-				map[loadCounter.x][loadCounter.y] = sf::Vector2i(-1, -1);
-			}
-			else
-			{
-				// else set value to value of number, -'0' gets the numerical value
-				map[loadCounter.x][loadCounter.y] = sf::Vector2i(x - '0', y - '0');
-			}
+			std::string str, value;
+			std::getline(mapFile, str);
+			std::stringstream stream(str);
 
-			//if next character is new line
-			if (mapFile.peek() == '\n')
+			while (std::getline(stream, value, ' '))
 			{
-				//Move down to next line and first character
-				loadCounter.x = 0;
-				loadCounter.y++;
+				//ignore trailing spaces
+				if (value.length() > 0)
+				{
+					std::string xx = value.substr(0, value.find(','));
+					std::string yy = value.substr(value.find(',') + 1);
+
+					int x, y, i, j;
+
+					for (i = 0; i < xx.length(); i++)
+					{
+						if (!isdigit(xx[i]))
+						{
+							break;
+						}
+					}
+
+					for (j = 0; j < yy.length(); j++)
+					{
+						if (!isdigit(yy[j]))
+						{
+							break;
+						}
+					}
+
+					x = (i == xx.length()) ? atoi(xx.c_str()) : -1;
+					y = (j == yy.length()) ? atoi(yy.c_str()) : -1;
+
+					tempMap.push_back(sf::Vector2i(x, y));
+				}
 			}
-			else
-			{
-				loadCounter.x++;
-			}
+				map.push_back(tempMap);
+				tempMap.clear();
 		}
-
-		loadCounter.y++;
 	}
 
 	sf::RenderWindow Window(sf::VideoMode(640, 480, 32), "Loading Map");
@@ -88,16 +98,16 @@ int main()
 				break;
 			}
 		}
-		Window.clear();
+		Window.clear(sf::Color::White);
 		
 
-		for (int i = 0; i < loadCounter.x; i++)
+		for (int i = 0; i < map.size(); i++)
 		{
-			for (int j = 0; j < loadCounter.y; j++)
+			for (int j = 0; j < map[i].size(); j++)
 			{
 				if (map[i][j].x != -1 && map[i][j].y != -1)
 				{
-					tiles.setPosition(i * 32, j * 32);
+					tiles.setPosition(j * 32, i * 32);
 					tiles.setTextureRect(sf::IntRect(map[i][j].x * 32, map[i][j].y * 33, 32, 32));
 					Window.draw(tiles);
 				}
