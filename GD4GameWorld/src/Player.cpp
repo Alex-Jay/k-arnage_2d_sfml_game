@@ -111,7 +111,7 @@ void Player::assignKey(Action action, sf::Keyboard::Key key)
 	}
 }
 
-void Player::assignReleaseKey(Action action, sf::Keyboard::Key key)
+void Player::assignReleaseKey(Action action, sf::Keyboard::Key key)//Mike
 {
 	//Remove all keys that are already mapped to an action
 	for (auto itr = mKeyBindingReleased.begin(); itr != mKeyBindingReleased.end();)

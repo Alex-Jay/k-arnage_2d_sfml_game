@@ -133,6 +133,7 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
 
 	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
+	mTextures.load(TextureIDs::Blood, "Media/Textures/Blood.png");
 	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
 }
 

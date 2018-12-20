@@ -51,12 +51,12 @@ private:
 
 	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
-	void updateRollAnimation();
 
 private:
 	Type mType;
 	sf::Sprite mSprite;
-	Animation mPlayerAnimation;
+	Animation mPlayerMoveAnimation;
+	Animation mPlayerDeathAnimation;
 	Command mFireCommand;
 	Command mGrenadeCommand;
 	sf::Time mFireCountdown;
@@ -64,7 +64,7 @@ private:
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
 	bool mGrenadeStarted;
-	bool mShowExplosion;
+	bool mShowDeath;
 	bool mPlayedExplosionSound;
 	bool mSpawnedPickup;
 

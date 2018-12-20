@@ -24,13 +24,14 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	: Entity(Table[static_cast<int>(type)].hitpoints)
 	, mType(type)
 	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
-	, mPlayerAnimation(textures.get(TextureIDs::PlayerMove))
+	, mPlayerMoveAnimation(textures.get(TextureIDs::PlayerMove))
+	, mPlayerDeathAnimation(textures.get(TextureIDs::Blood))
 	, mFireCommand()
 	, mGrenadeCommand()
 	, mFireCountdown(sf::Time::Zero)
 	, mIsFiring(false)
 	, mIsLaunchingGrenade(false)
-	, mShowExplosion(true)
+	, mShowDeath(true)
 	, mPlayedExplosionSound(false)
 	, mSpawnedPickup(false)
 	, mFireRateLevel(1)
@@ -43,15 +44,22 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mGrenadeDisplay(nullptr)
 	, mGrenadePower(nullptr)
 {
-	mPlayerAnimation.setFrameSize(sf::Vector2i(263, 156));
-	mPlayerAnimation.setNumFrames(18);
-	mPlayerAnimation.setScale(0.5f, 0.5f);
-	mPlayerAnimation.setDuration(sf::seconds(1));
-	mPlayerAnimation.setRepeating(true);
-	mPlayerAnimation.setTextureRect();
+	mPlayerMoveAnimation.setFrameSize(sf::Vector2i(263, 156));
+	mPlayerMoveAnimation.setNumFrames(18);
+	mPlayerMoveAnimation.setScale(0.5f, 0.5f);
+	mPlayerMoveAnimation.setDuration(sf::seconds(1));
+	mPlayerMoveAnimation.setRepeating(true);
+	mPlayerMoveAnimation.setTextureRect();
+
+	mPlayerDeathAnimation.setFrameSize(sf::Vector2i(550, 434));
+	mPlayerDeathAnimation.setNumFrames(5);
+	mPlayerDeathAnimation.setScale(0.5f, 0.5f);
+	mPlayerDeathAnimation.setDuration(sf::seconds(0.25f));
+//	mPlayerDeathAnimation.setTextureRect();
 	
 	centreOrigin(mSprite);
-	centreOrigin(mPlayerAnimation);
+	centreOrigin(mPlayerMoveAnimation);
+	centreOrigin(mPlayerDeathAnimation);
 
 	mFireCommand.category = static_cast<int>(Category::SceneAirLayer);
 	mFireCommand.action = [this, &textures](SceneNode& node, sf::Time)
@@ -95,7 +103,15 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(mPlayerAnimation, states);
+	if (isDestroyed() && mShowDeath)
+	{
+		target.draw(mPlayerDeathAnimation, states);
+	}
+	else
+	{
+		target.draw(mPlayerMoveAnimation, states);
+	}
+	
 }
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
@@ -125,9 +141,23 @@ void Character::updateVelocity(sf::Time dt)//TO DELETE//TODO
 
 void Character::updateAnimations(sf::Time dt)
 {
-	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
+	if (isDestroyed())
 	{
-		mPlayerAnimation.update(dt);
+		mPlayerDeathAnimation.update(dt);
+
+		// Play Death sound TODO
+		//if (!mPlayedExplosionSound)
+		//{
+		//	SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
+		//	playLocalSound(commands, soundEffect);
+
+		//	mPlayedExplosionSound = true;
+		//}
+		return;
+	}
+	else if (getVelocity().x != 0.f || getVelocity().y != 0.f)
+	{
+		mPlayerMoveAnimation.update(dt);
 	}
 }
 
@@ -146,13 +176,13 @@ sf::FloatRect Character::getBoundingRect() const
 
 bool Character::isMarkedForRemoval() const
 {
-	return isDestroyed() && (mPlayerAnimation.isFinished() || !mShowExplosion);
+	return isDestroyed() && (mPlayerDeathAnimation.isFinished() || !mShowDeath);
 }
 
 void Character::remove()
 {
 	Entity::remove();
-	mShowExplosion = false;
+	mShowDeath = false;
 }
 
 bool Character::isAllied() const
