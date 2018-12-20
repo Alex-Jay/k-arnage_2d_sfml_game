@@ -113,6 +113,12 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 	
 }
 
+void Character::guideTowards(sf::Vector2f position)
+{
+	assert(mType == Character::Type::Zombie);
+	mTargetDirection = unitVector(position - getWorldPosition());
+}
+
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	//Update Player Animations
@@ -123,6 +129,23 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	// Update enemy movement pattern; apply velocity
 	//updateMovementPattern(dt);
+
+	if (mType == Character::Type::Zombie)
+	{
+		const float approachRate = APPROACHRATE;
+		sf::Vector2f vel = getVelocity();
+
+		if ((vel == sf::Vector2f(0,0) && mTargetDirection == sf::Vector2f(0, 0)))
+		{
+			mTargetDirection = sf::Vector2f(-0.1f,0.1f);
+		}
+
+		sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection) + vel;
+		newVelocity *= getMaxSpeed();
+		float angle = std::atan2(newVelocity.y, newVelocity.x);
+		setRotation(toDegrees(angle) + 90.f);
+		setVelocity(newVelocity);
+	}
 	
 
 	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation

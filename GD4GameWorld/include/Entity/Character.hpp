@@ -27,6 +27,7 @@ public:
 	void increaseFireRate();
 	void increaseSpread();
 	void collectGrenades(unsigned int count);
+	void guideTowards(sf::Vector2f position);
 
 	void fire();
 	void startGrenade();
@@ -35,13 +36,13 @@ public:
 
 	float getMaxRotationSpeed() const;
 
+
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
+
 	void updateVelocity(sf::Time dt);
-
 	void updateAnimations(sf::Time dt);
-
 	void updateMovementPattern(sf::Time dt);
 	void checkPickupDrop(CommandQueue& commands);
 	void checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
@@ -54,12 +55,21 @@ private:
 
 private:
 	Type mType;
-	sf::Sprite mSprite;
+
 	Animation mCharacterMoveAnimation;
 	Animation mCharacterDeathAnimation;
+
 	Command mFireCommand;
 	Command mGrenadeCommand;
+	Command mDropPickupCommand;
+
+	ShapeNode* mHealthDisplay;
+	TextNode* mGrenadeDisplay;
+	ShapeNode* mGrenadePower;
+
+	sf::Sprite mSprite;
 	sf::Time mFireCountdown;
+	sf::Vector2f mTargetDirection;
 
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
@@ -73,11 +83,9 @@ private:
 	int mFireRateLevel;
 	int mSpreadLevel;
 	int mGrenadeAmmo;
-
-	Command mDropPickupCommand;
+	
 	float mTravelledDistance;
+
 	std::size_t mDirectionIndex;
-	ShapeNode* mHealthDisplay;
-	TextNode* mGrenadeDisplay;
-	ShapeNode* mGrenadePower;
+
 };

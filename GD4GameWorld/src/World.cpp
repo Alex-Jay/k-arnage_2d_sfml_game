@@ -72,7 +72,7 @@ void World::update(sf::Time dt)
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
-	guideGrenades();
+	guideZombies();
 
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
@@ -391,25 +391,25 @@ void World::destroyEntitiesOutsideView()
 	mCommandQueue.push(command);
 }
 
-void World::guideGrenades()
+void World::guideZombies()
 {
-	// Setup command that stores all enemies in mActiveEnemies
+	// Setup command that stores all players in mActiveEnemies
 	Command enemyCollector;
-	enemyCollector.category = static_cast<int>(Category::EnemyCharacter);
-	enemyCollector.action = derivedAction<Character>([this](Character& enemy, sf::Time)
+	enemyCollector.category = static_cast<int>(Category::PlayerCharacter);
+	enemyCollector.action = derivedAction<Character>([this](Character& player, sf::Time)
 	{
-		if (!enemy.isDestroyed())
-			mActiveEnemies.push_back(&enemy);
+		if (!player.isDestroyed())
+			mActiveEnemies.push_back(&player);
 	});
 
 	// Setup command that guides all grenades to the enemy which is currently closest to the player
-	Command grenadeGuider;
-	grenadeGuider.category = static_cast<int>(Category::AlliedProjectile);
-	grenadeGuider.action = derivedAction<Projectile>([this](Projectile& grenade, sf::Time)
+	Command zombieGuider;
+	zombieGuider.category = static_cast<int>(Category::EnemyCharacter);
+	zombieGuider.action = derivedAction<Character>([this](Character& zombie, sf::Time)
 	{
 		// Ignore unguided bullets
-		if (!grenade.isGrenade())
-			return;
+		//if (!zombie.isGrenade())
+		//	return;
 
 		float minDistance = std::numeric_limits<float>::max();
 		Character* closestEnemy = nullptr;
@@ -417,7 +417,7 @@ void World::guideGrenades()
 		// Find closest enemy
 		for (Character* enemy : mActiveEnemies)
 		{
-			float enemyDistance = distance(grenade, *enemy);
+			float enemyDistance = distance(zombie, *enemy);
 
 			if (enemyDistance < minDistance)
 			{
@@ -426,13 +426,13 @@ void World::guideGrenades()
 			}
 		}
 
-		//if (closestEnemy)
-			//grenade.guideTowards(closestEnemy->getWorldPosition());
+		if (closestEnemy)
+			zombie.guideTowards(closestEnemy->getWorldPosition());
 	});
 
 	// Push commands, reset active enemies
 	mCommandQueue.push(enemyCollector);
-	mCommandQueue.push(grenadeGuider);
+	mCommandQueue.push(zombieGuider);
 	mActiveEnemies.clear();
 }
 

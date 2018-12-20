@@ -47,7 +47,7 @@ private:
 	void addEnemy(Character::Type type, float relX, float relY);
 	void spawnEnemies();
 	void destroyEntitiesOutsideView();
-	void guideGrenades();
+	void guideZombies();
 	sf::FloatRect getViewBounds() const;
 	sf::FloatRect getBattlefieldBounds() const;
 
