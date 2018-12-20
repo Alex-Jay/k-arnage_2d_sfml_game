@@ -13,7 +13,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-	:mWindow(sf::VideoMode::getDesktopMode(), "Audio", sf::Style::Close)
+	:mWindow(sf::VideoMode(1024, 768), "K-ARNAGE", sf::Style::Close)
 	, mTextures()
 	, mFonts()
 	, mPlayer()
@@ -85,7 +85,7 @@ void Application::update(sf::Time dt)
 
 void Application::render()
 {
-	mWindow.clear();
+	mWindow.clear(sf::Color(0, 97, 255, 255));
 	mStateStack.draw();
 	mWindow.setView(mWindow.getDefaultView());
 	mWindow.draw(mStatisticsText);

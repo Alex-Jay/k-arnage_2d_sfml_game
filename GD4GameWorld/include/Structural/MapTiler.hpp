@@ -21,7 +21,7 @@ public:
 	void findCharacter(int & i, std::string line);
 
 	std::vector<std::vector<sf::Vector2i>> getMap();
-
+	int getTileSize();
 private:
 	std::ifstream mMapFile;
 	sf::Texture mTexture;
@@ -30,7 +30,6 @@ private:
 	std::vector<std::vector<sf::Vector2i>> map;
 	std::vector<sf::Vector2i> tempMap;
 
-	int mTileWidth;
-	int mTileHeight;
+	int mTileSize;
 
 };

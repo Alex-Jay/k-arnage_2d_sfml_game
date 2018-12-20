@@ -8,8 +8,7 @@ MapTiler::MapTiler(TextureHolder& textures)
 	:mMapFile("map.txt")
 	, mTexture(textures.get(TextureIDs::MapTiles))
 {
-	mTileWidth = 32;
-	mTileHeight = 32;
+	mTileSize = 128;
 	if (mMapFile.is_open())
 	{
 		mTile.setTexture(mTexture);
@@ -72,4 +71,9 @@ void MapTiler::findCharacter(int& i, std::string line)
 std::vector<std::vector<sf::Vector2i>> MapTiler::getMap()
 {
 	return map;
+}
+
+int MapTiler::getTileSize()
+{
+	return mTileSize;
 }

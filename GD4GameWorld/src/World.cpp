@@ -99,7 +99,7 @@ void World::draw()
 {
 	if (PostEffect::isSupported())
 	{
-		mSceneTexture.clear();
+		mSceneTexture.clear(sf::Color(114, 168, 255, 255));
 		mSceneTexture.setView(mWorldView);
 		mSceneTexture.draw(mSceneGraph);
 		mSceneTexture.display();
@@ -330,6 +330,8 @@ void World::placeTiles()
 	std::vector<std::vector<sf::Vector2i>> map;
 	map = mapTiler.getMap();
 
+	int tileSize = mapTiler.getTileSize();
+
 	sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
 
 	for (int i = 0; i < map.size(); i++)
@@ -339,9 +341,9 @@ void World::placeTiles()
 			if (map[i][j].x != -1 && map[i][j].y != -1)
 			{
 
-				std::unique_ptr<SpriteNode> sprite1(new SpriteNode(tiles, sf::IntRect(map[i][j].x * 32, map[i][j].y * 32, 32, 32)));
+				std::unique_ptr<SpriteNode> sprite1(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
 
-				sprite1->setPosition(j * 32, i * 32);
+				sprite1->setPosition(j * tileSize, i * tileSize);
 
 				mSceneLayers[Layer::Background]->attachChild(std::move(sprite1));
 			}
