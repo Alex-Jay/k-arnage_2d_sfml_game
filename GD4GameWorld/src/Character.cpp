@@ -24,8 +24,8 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	: Entity(Table[static_cast<int>(type)].hitpoints)
 	, mType(type)
 	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
-	, mPlayerMoveAnimation(textures.get(TextureIDs::PlayerMove))
-	, mPlayerDeathAnimation(textures.get(TextureIDs::Blood))
+	, mCharacterMoveAnimation(textures.get(Table[static_cast<int>(type)].moveAnimation))
+	, mCharacterDeathAnimation(textures.get(Table[static_cast<int>(type)].deathAnimation))
 	, mFireCommand()
 	, mGrenadeCommand()
 	, mFireCountdown(sf::Time::Zero)
@@ -44,22 +44,21 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mGrenadeDisplay(nullptr)
 	, mGrenadePower(nullptr)
 {
-	mPlayerMoveAnimation.setFrameSize(sf::Vector2i(263, 156));
-	mPlayerMoveAnimation.setNumFrames(18);
-	mPlayerMoveAnimation.setScale(0.5f, 0.5f);
-	mPlayerMoveAnimation.setDuration(sf::seconds(1));
-	mPlayerMoveAnimation.setRepeating(true);
-	mPlayerMoveAnimation.setTextureRect();
+	mCharacterMoveAnimation.setFrameSize(Table[static_cast<int>(type)].moveRect);
+	mCharacterMoveAnimation.setNumFrames(Table[static_cast<int>(type)].moveFrames);
+	mCharacterMoveAnimation.setScale(Table[static_cast<int>(type)].moveScale, Table[static_cast<int>(type)].moveScale);
+	mCharacterMoveAnimation.setDuration(sf::seconds(1));
+	mCharacterMoveAnimation.setRepeating(true);
+	mCharacterMoveAnimation.setTextureRect();
 
-	mPlayerDeathAnimation.setFrameSize(sf::Vector2i(550, 434));
-	mPlayerDeathAnimation.setNumFrames(5);
-	mPlayerDeathAnimation.setScale(0.5f, 0.5f);
-	mPlayerDeathAnimation.setDuration(sf::seconds(0.25f));
-//	mPlayerDeathAnimation.setTextureRect();
+	mCharacterDeathAnimation.setFrameSize(Table[static_cast<int>(type)].deathRect);
+	mCharacterDeathAnimation.setNumFrames(Table[static_cast<int>(type)].deathFrames);
+	mCharacterDeathAnimation.setScale(Table[static_cast<int>(type)].deathScale, Table[static_cast<int>(type)].deathScale);
+	mCharacterDeathAnimation.setDuration(sf::seconds(1));
 	
 	centreOrigin(mSprite);
-	centreOrigin(mPlayerMoveAnimation);
-	centreOrigin(mPlayerDeathAnimation);
+	centreOrigin(mCharacterMoveAnimation);
+	centreOrigin(mCharacterDeathAnimation);
 
 	mFireCommand.category = static_cast<int>(Category::SceneAirLayer);
 	mFireCommand.action = [this, &textures](SceneNode& node, sf::Time)
@@ -105,11 +104,11 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 {
 	if (isDestroyed() && mShowDeath)
 	{
-		target.draw(mPlayerDeathAnimation, states);
+		target.draw(mCharacterDeathAnimation, states);
 	}
 	else
 	{
-		target.draw(mPlayerMoveAnimation, states);
+		target.draw(mCharacterMoveAnimation, states);
 	}
 	
 }
@@ -143,7 +142,7 @@ void Character::updateAnimations(sf::Time dt)
 {
 	if (isDestroyed())
 	{
-		mPlayerDeathAnimation.update(dt);
+		mCharacterDeathAnimation.update(dt);
 
 		// Play Death sound TODO
 		//if (!mPlayedExplosionSound)
@@ -157,7 +156,7 @@ void Character::updateAnimations(sf::Time dt)
 	}
 	else if (getVelocity().x != 0.f || getVelocity().y != 0.f)
 	{
-		mPlayerMoveAnimation.update(dt);
+		mCharacterMoveAnimation.update(dt);
 	}
 }
 
@@ -176,7 +175,7 @@ sf::FloatRect Character::getBoundingRect() const
 
 bool Character::isMarkedForRemoval() const
 {
-	return isDestroyed() && (mPlayerDeathAnimation.isFinished() || !mShowDeath);
+	return isDestroyed() && (mCharacterDeathAnimation.isFinished() || !mShowDeath);
 }
 
 void Character::remove()
@@ -370,14 +369,14 @@ void Character::updateTexts()
 	mHealthDisplay->setOrigin(30.0f, -90.f);
 	mHealthDisplay->setSize(getHitpoints(), 5.f);
 
-	mGrenadePower->setPosition(0.f, 0.f);
-	mGrenadePower->setRotation(-getRotation());
-	mGrenadePower->setOrigin(30.0f, -100.f);
-
-	mGrenadePower->setSize(((mGrenadeVelocity != 0) ? (mGrenadeVelocity / 5) : 0), ((mGrenadeVelocity != 0) ? 5.f : 0));
-
 	if (mGrenadeDisplay)
 	{
+		mGrenadePower->setPosition(0.f, 0.f);
+		mGrenadePower->setRotation(-getRotation());
+		mGrenadePower->setOrigin(30.0f, -100.f);
+
+		mGrenadePower->setSize(((mGrenadeVelocity != 0) ? (mGrenadeVelocity / 5) : 0), ((mGrenadeVelocity != 0) ? 5.f : 0));
+
 		mGrenadeDisplay->setPosition(0.f, 0.f);
 		mGrenadeDisplay->setRotation(-getRotation());
 		mGrenadeDisplay->setOrigin(50.f, -100.f);

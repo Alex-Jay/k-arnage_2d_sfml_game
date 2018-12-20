@@ -55,8 +55,8 @@ private:
 private:
 	Type mType;
 	sf::Sprite mSprite;
-	Animation mPlayerMoveAnimation;
-	Animation mPlayerDeathAnimation;
+	Animation mCharacterMoveAnimation;
+	Animation mCharacterDeathAnimation;
 	Command mFireCommand;
 	Command mGrenadeCommand;
 	sf::Time mFireCountdown;

@@ -26,11 +26,18 @@ struct CharacterData
 	int hitpoints;
 	float speed;
 	float rotationSpeed;
+	float deathScale;
+	float moveScale;
 	TextureIDs texture;
+	TextureIDs moveAnimation;
+	int moveFrames;
+	TextureIDs deathAnimation;
+	int deathFrames;
 	sf::IntRect textureRect;
+	sf::IntRect deathRect;
+	sf::IntRect moveRect;
 	sf::Time fireInterval;
 	std::vector<Direction> directions;
-	bool hasAnimation;
 };
 
 

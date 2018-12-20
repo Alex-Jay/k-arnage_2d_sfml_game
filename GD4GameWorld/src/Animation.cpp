@@ -54,6 +54,11 @@ void Animation::setFrameSize(sf::Vector2i frameSize)
 	mFrameSize = frameSize;
 }
 
+void Animation::setFrameSize(sf::IntRect frameSize)
+{
+	mFrameSize = sf::Vector2i(frameSize.width, frameSize.height);
+}
+
 sf::Vector2i Animation::getFrameSize() const
 {
 	return mFrameSize;

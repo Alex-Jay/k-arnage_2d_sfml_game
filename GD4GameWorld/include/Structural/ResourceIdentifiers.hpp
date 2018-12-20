@@ -8,7 +8,14 @@ namespace sf
 	class SoundBuffer;
 }
 
-enum class TextureIDs{Entities, Grenade, Jungle, TitleScreen, Buttons, Explosion, Particle, FinishLine, PlayerMove, Blood};
+enum class TextureIDs{
+	Entities, Jungle, 
+	TitleScreen, Buttons,
+	Explosion, Grenade,
+	Particle, FinishLine,
+	PlayerMove, PlayerDeath,
+	ZombieMove, ZombieDeath};
+
 enum class Shaders{BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass};
 enum class FontIDs{Main};
 enum class MusicIDs{MenuTheme, MissionTheme};

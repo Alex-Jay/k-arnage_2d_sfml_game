@@ -16,19 +16,33 @@ std::vector<CharacterData> initializeCharacterData()
 	data[static_cast<int>(Character::Type::Player)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
 	data[static_cast<int>(Character::Type::Player)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
 	data[static_cast<int>(Character::Type::Player)].texture = TextureIDs::PlayerMove;
-	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(0, 0, PLAYERANIMATIONRECTWIDTH, PLAYERANIMATIONRECTHEIGHT);
-	data[static_cast<int>(Character::Type::Player)].hasAnimation = true;
+	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Player)].moveScale = 0.5f;
+	data[static_cast<int>(Character::Type::Player)].deathScale = 0.5f;
+	data[static_cast<int>(Character::Type::Player)].moveFrames = 18;
+	data[static_cast<int>(Character::Type::Player)].deathFrames = 6;
+	data[static_cast<int>(Character::Type::Player)].moveAnimation = TextureIDs::PlayerMove;
+	data[static_cast<int>(Character::Type::Player)].moveRect = sf::IntRect(0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Player)].deathAnimation = TextureIDs::PlayerDeath;
+	data[static_cast<int>(Character::Type::Player)].deathRect = sf::IntRect(0, 0, PLAYER_DEATH_ANIMATION_WIDTH, PLAYER_DEATH_ANIMATION_HEIGHT);
 
 	data[static_cast<int>(Character::Type::Zombie)].hitpoints = ZOMBIEHITPOINTS;
 	data[static_cast<int>(Character::Type::Zombie)].speed = ZOMBIESPEED;
 	data[static_cast<int>(Character::Type::Zombie)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
 	data[static_cast<int>(Character::Type::Zombie)].texture = TextureIDs::Entities;
-	data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(144, 0, ZOMBIEANIMATIONRECTWIDTH, ZOMBIEANIMATIONRECTHEIGHT);
+	data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(144, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
 	data[static_cast<int>(Character::Type::Zombie)].fireInterval = sf::Time::Zero;
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(-45.f, 160.f));
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
-	data[static_cast<int>(Character::Type::Zombie)].hasAnimation = true;
+	data[static_cast<int>(Character::Type::Zombie)].moveAnimation = TextureIDs::ZombieMove;
+	data[static_cast<int>(Character::Type::Zombie)].moveRect = sf::IntRect(0, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Zombie)].deathAnimation = TextureIDs::ZombieDeath;
+	data[static_cast<int>(Character::Type::Zombie)].deathRect = sf::IntRect(0, 0, ZOMBIE_DEATH_ANIMATION_WIDTH, ZOMBIE_DEATH_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Zombie)].moveScale = 2.f;
+	data[static_cast<int>(Character::Type::Zombie)].deathScale = 2.f;
+	data[static_cast<int>(Character::Type::Zombie)].moveFrames = 28;
+	data[static_cast<int>(Character::Type::Zombie)].deathFrames = 17;
 
 	return data;
 }

@@ -133,7 +133,11 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
 
 	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
-	mTextures.load(TextureIDs::Blood, "Media/Textures/Blood.png");
+	mTextures.load(TextureIDs::PlayerDeath, "Media/Textures/Blood.png");
+
+	mTextures.load(TextureIDs::ZombieMove, "Media/Textures/ZombieWalk.png");
+	mTextures.load(TextureIDs::ZombieDeath, "Media/Textures/ZombieDeath.png");
+
 	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
 }
 
@@ -322,37 +326,26 @@ void World::buildScene()
 	mSceneLayers[Layer::UpperAir]->attachChild(std::move(player));
 
 	// Add enemy Character
-	//addEnemies();
+	addEnemies();
 }
 
 void World::addEnemies()
 {
 	// Add enemies to the spawn point container
 
-	//addEnemy(Character::Type::Zombie, 0.f, 1000.f);
-	//addEnemy(Character::Type::Zombie, +100.f, 1150.f);
-	//addEnemy(Character::Type::Zombie, -100.f, 1150.f);
-	//addEnemy(Character::Type::Avenger, 70.f, 1500.f);
-	//addEnemy(Character::Type::Avenger, -70.f, 1500.f);
-	//addEnemy(Character::Type::Avenger, -70.f, 1710.f);
-	//addEnemy(Character::Type::Avenger, 70.f, 1700.f);
-	//addEnemy(Character::Type::Avenger, 30.f, 1850.f);
-	//addEnemy(Character::Type::Zombie, 300.f, 2200.f);
-	//addEnemy(Character::Type::Zombie, -300.f, 2200.f);
-	//addEnemy(Character::Type::Zombie, 0.f, 2200.f);
-	//addEnemy(Character::Type::Zombie, 0.f, 2500.f);
-	//addEnemy(Character::Type::Avenger, -300.f, 2700.f);
-	//addEnemy(Character::Type::Avenger, -300.f, 2700.f);
-	//addEnemy(Character::Type::Zombie, 0.f, 3000.f);
-	//addEnemy(Character::Type::Zombie, 250.f, 3250.f);
-	//addEnemy(Character::Type::Zombie, -250.f, 3250.f);
-	//addEnemy(Character::Type::Avenger, 0.f, 3500.f);
-	//addEnemy(Character::Type::Avenger, 0.f, 3700.f);
-	//addEnemy(Character::Type::Zombie, 0.f, 3800.f);
-	//addEnemy(Character::Type::Avenger, 0.f, 4000.f);
-	//addEnemy(Character::Type::Avenger, -200.f, 4200.f);
-	//addEnemy(Character::Type::Zombie, 200.f, 4200.f);
-	//addEnemy(Character::Type::Zombie, 0.f, 4400.f);
+	addEnemy(Character::Type::Zombie, 0.f, 100.f);
+	addEnemy(Character::Type::Zombie, +100.f, 150.f);
+	addEnemy(Character::Type::Zombie, -100.f, 1150.f);
+	addEnemy(Character::Type::Zombie, 300.f, 220.f);
+	addEnemy(Character::Type::Zombie, -300.f, 220.f);
+	addEnemy(Character::Type::Zombie, 0.f, 20.f);
+	addEnemy(Character::Type::Zombie, 0.f, 500.f);
+	addEnemy(Character::Type::Zombie, 0.f, 300.f);
+	addEnemy(Character::Type::Zombie, 250.f, 320.f);
+	addEnemy(Character::Type::Zombie, -250.f, 3250.f);
+	addEnemy(Character::Type::Zombie, 0.f, 800.f);
+	addEnemy(Character::Type::Zombie, 200.f, 400.f);
+	addEnemy(Character::Type::Zombie, 0.f, 200.f);
 	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
 	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
 	{

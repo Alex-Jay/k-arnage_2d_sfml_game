@@ -1,11 +1,17 @@
 #pragma once
 
 //++++++++++++ ANIMATION RECTANGLES ++++++++++++++
-const int PLAYERANIMATIONRECTWIDTH = 259;
-const int PLAYERANIMATIONRECTHEIGHT = 153;
+const int PLAYER_MOVE_ANIMATION_HEIGHT = 156;
+const int PLAYER_MOVE_ANIMATION_WIDTH = 263;
 
-const int ZOMBIEANIMATIONRECTWIDTH = 259;
-const int ZOMBIEANIMATIONRECTHEIGHT = 153;
+const int PLAYER_DEATH_ANIMATION_HEIGHT = 434;
+const int PLAYER_DEATH_ANIMATION_WIDTH = 550;
+
+const int ZOMBIE_MOVE_ANIMATION_HEIGHT = 40;
+const int ZOMBIE_MOVE_ANIMATION_WIDTH = 77;
+
+const int ZOMBIE_DEATH_ANIMATION_HEIGHT = 78; //TODO Fix Sprite sheet as pixels are not even number
+const int ZOMBIE_DEATH_ANIMATION_WIDTH = 149;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ PLAYER CONSTANTS ++++++++++++++++++
