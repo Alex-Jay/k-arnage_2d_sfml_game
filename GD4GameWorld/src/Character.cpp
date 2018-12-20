@@ -132,24 +132,17 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	if (mType == Character::Type::Zombie)
 	{
-		const float approachRate = APPROACHRATE;
-		sf::Vector2f vel = getVelocity();
+		sf::Vector2f newVelocity = (mTargetDirection * dt.asSeconds());
+		newVelocity *= (getMaxSpeed() * 50);
 
-		if ((vel == sf::Vector2f(0,0) && mTargetDirection == sf::Vector2f(0, 0)))
-		{
-			mTargetDirection = sf::Vector2f(-0.1f,0.1f);
-		}
-
-		sf::Vector2f newVelocity = unitVector(approachRate * dt.asSeconds() * mTargetDirection) + vel;
-		newVelocity *= getMaxSpeed();
 		float angle = std::atan2(newVelocity.y, newVelocity.x);
-		setRotation(toDegrees(angle) + 90.f);
+		setRotation(toDegrees(angle));
 		setVelocity(newVelocity);
 	}
-	
-
-	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
-
+	else if (mType == Character::Type::Player)
+	{
+		setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
+	}
 	Entity::updateCurrent(dt, commands);
 
 	updateTexts();

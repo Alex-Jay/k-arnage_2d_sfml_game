@@ -28,7 +28,7 @@ const int GRENADEAMMO = 2;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ ENEMY CONSTANTS ++++++++++++++++++++
 const int ZOMBIEHITPOINTS = 20;
-const int ZOMBIESPEED = 1;
+const int ZOMBIESPEED = 100.f;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
 const int BULLETDAMAGE = 10;

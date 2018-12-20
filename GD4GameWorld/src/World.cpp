@@ -84,12 +84,14 @@ void World::update(sf::Time dt)
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
-	spawnEnemies();
+	
 
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
 	updateSounds();
+
+	spawnEnemies();
 }
 
 void World::draw()
@@ -408,8 +410,8 @@ void World::guideZombies()
 	zombieGuider.action = derivedAction<Character>([this](Character& zombie, sf::Time)
 	{
 		// Ignore unguided bullets
-		//if (!zombie.isGrenade())
-		//	return;
+		if (zombie.isAllied())
+			return;
 
 		float minDistance = std::numeric_limits<float>::max();
 		Character* closestEnemy = nullptr;

@@ -21,6 +21,7 @@ float toRadians(float degrees);
 float toDegrees(float radians);
 int randomInt(int range);
 sf::Vector2f unitVector(sf::Vector2f vector);
+sf::Vector2f normalize(const sf::Vector2f& source);
 float length(sf::Vector2f vector);
 void clamp(float& value, float min, float max);
 sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDelta);

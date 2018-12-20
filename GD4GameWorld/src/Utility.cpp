@@ -61,8 +61,17 @@ int randomInt(int exclusiveMax)
 
 sf::Vector2f unitVector(sf::Vector2f vector)
 {
-	//assert(vector != sf::Vector2f(0.f, 0.f));
+	assert(vector != sf::Vector2f(0.f, 0.f));
 	return vector/length(vector);
+}
+
+sf::Vector2f normalize(const sf::Vector2f& source)
+{
+	float length = sqrt((source.x * source.x) + (source.y * source.y));
+	if (length != 0)
+		return sf::Vector2f(source.x / length, source.y / length);
+	else
+		return source;
 }
 
 float length(sf::Vector2f vector)
