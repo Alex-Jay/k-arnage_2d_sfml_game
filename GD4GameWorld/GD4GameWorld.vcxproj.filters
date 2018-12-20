@@ -195,6 +195,9 @@
     <ClCompile Include="src\Explosion.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="include\Structural\MapTiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
@@ -322,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="include\Entity\Explosion.hpp">
       <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Structural\MapTiler.hpp">
+      <Filter>Header Files\Structural</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
