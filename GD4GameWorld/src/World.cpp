@@ -130,7 +130,7 @@ bool World::hasPlayerReachedEnd() const
 void World::loadTextures()
 {
 	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
-	mTextures.load(TextureIDs::Jungle, "Media/Textures/Jungle.png");
+	mTextures.load(TextureIDs::Sand, "Media/Textures/Sand.png");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
@@ -292,14 +292,20 @@ void World::buildScene()
 	}
 
 	// Prepare the tiled background
-	placeTiles();
+	sf::Texture& SandTexture = mTextures.get(TextureIDs::Sand);
+	SandTexture.setRepeated(true);
 
-	// Alex - Disable finish line
-	// Add the finish line to the scene
-	//sf::Texture& finishTexture = mTextures.get(TextureIDs::FinishLine);
-	//std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
-	//finishSprite->setPosition(0.f, -76.f);
-	//mSceneLayers[Background]->attachChild(std::move(finishSprite));
+	float viewHeight = mWorldView.getSize().y;
+	sf::IntRect textureRect(mWorldBounds);
+	textureRect.height += static_cast<int>(viewHeight);
+
+	// Add the background sprite to the scene
+	std::unique_ptr<SpriteNode> SandSprite(new SpriteNode(SandTexture, textureRect));
+	SandSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
+	mSceneLayers[Layer::Background]->attachChild(std::move(SandSprite));
+
+	// Prepare the tiled background
+	placeTiles();
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
@@ -334,21 +340,24 @@ void World::placeTiles()
 
 	sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
 
+	int count = 0;
+
 	for (int i = 0; i < map.size(); i++)
 	{
 		for (int j = 0; j < map[i].size(); j++)
 		{
 			if (map[i][j].x != -1 && map[i][j].y != -1)
 			{
+				count++;
+				std::unique_ptr<SpriteNode> tileSprite(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
 
-				std::unique_ptr<SpriteNode> sprite1(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
+				tileSprite->setPosition(j * tileSize, i * tileSize);
 
-				sprite1->setPosition(j * tileSize, i * tileSize);
-
-				mSceneLayers[Layer::Background]->attachChild(std::move(sprite1));
+				mSceneLayers[Layer::Background]->attachChild(std::move(tileSprite));
 			}
 		}
 	}
+
 }
 
 void World::addEnemies()

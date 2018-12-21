@@ -69,6 +69,11 @@ void SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const
 	// Do nothing by default
 }
 
+void SceneNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states, const Ptr& child) const
+{
+	child->draw(target, states);
+}
+
 void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for(const Ptr& child : mChildren)
