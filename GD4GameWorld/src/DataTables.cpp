@@ -5,6 +5,8 @@
 #include "Particle.hpp"
 #include "Pickup.hpp"
 #include "Constants.hpp"
+#include "MapTiler.hpp"
+
 
 using namespace std::placeholders;
 
@@ -84,6 +86,18 @@ std::vector<ExplosionData> initializeExplosionData()
 
 	return data;
 }
+
+std::vector<MapTileData> initializeMapTileData()
+{
+	std::vector<MapTileData> data(static_cast<int>(MapTiler::MapID::TypeCount));
+
+	data[static_cast<int>(MapTiler::MapID::Dessert)].mapFile = "map.txt";
+	data[static_cast<int>(MapTiler::MapID::Dessert)].texture = TextureIDs::MapTiles;
+	data[static_cast<int>(MapTiler::MapID::Dessert)].tileSize = sf::Vector2u(DESSERT_TILE_WIDTH, DESSERT_TILE_HEIGHT);;
+
+	return data;
+}
+
 
 
 std::vector<PickupData> initializePickupData()

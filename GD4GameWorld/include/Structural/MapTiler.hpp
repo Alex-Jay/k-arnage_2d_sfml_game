@@ -4,19 +4,22 @@
 #include <fstream>
 #include <cctype>
 #include <string>
-#include <windows.h>
 #include <vector>
 #include <sstream>
 #include "SceneNode.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "World.hpp"
 
+//Mike
+
 class MapTiler : public SceneNode 
 {
+public:
+	//Add more Maps at later stage
+	enum class MapID { Dessert, City, Forrest, TypeCount};
 
 public:
-	//MapTiler(TextureHolder& textures);
-	MapTiler();
+	MapTiler(MapID type, TextureHolder& textures);
 
 	void populateMap();
 	void populateLine();
@@ -39,6 +42,8 @@ private:
 
 	int mMapWidth;
 	int mMapHeight;
+
+	MapID mType;
 };
 
 

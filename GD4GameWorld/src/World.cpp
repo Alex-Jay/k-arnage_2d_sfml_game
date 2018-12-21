@@ -296,7 +296,7 @@ void World::buildScene()
 	}
 
 	//// Prepare the tiled background
-	std::unique_ptr<MapTiler> map(new MapTiler());
+	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert,mTextures));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 

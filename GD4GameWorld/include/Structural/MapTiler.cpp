@@ -1,19 +1,22 @@
 #include "MapTiler.hpp"
 #include "ResourceHolder.hpp"
-#include "SpriteNode.hpp"
+#include "DataTables.hpp"
 #include <array>
 
-
-MapTiler::MapTiler()//(TextureHolder& textures)
-	:mMapFile("map.txt")
-	//, mTexture(textures.get(TextureIDs::MapTiles))
+namespace
 {
-	mTileSize = sf::Vector2u(32, 32);
+	const std::vector<MapTileData> Table = initializeMapTileData();
+}
 
-	mMapWidth = 0;
-	mMapHeight = -1;
-	mTexture.loadFromFile("colors.png");
-
+//Mike
+MapTiler::MapTiler(MapID type, TextureHolder& textures)
+	:mMapFile(Table[static_cast<int>(type)].mapFile)
+	,mTexture(textures.get(Table[static_cast<int>(type)].texture))
+	,mTileSize(Table[static_cast<int>(type)].tileSize)
+	,mMapWidth(0)
+	,mMapHeight(-1)
+	,mType(type)
+{
 	if (mMapFile.is_open())
 	{
 		populateMap();
@@ -33,39 +36,48 @@ void MapTiler::populateMap()
 void MapTiler::populateLine()
 {
 	std::string line, value;
+	//Retrive line from txt file
 	std::getline(mMapFile, line);
+	//set contents of buffer
 	std::stringstream stream(line);
 
+	//set width of line to 0
 	int width = 0;
 
+	//delimits lines by space
 	while (std::getline(stream, value, ' '))
 	{
 		//ignore trailing spaces
 		if (value.length() > 0)
 		{
+			//count characters for map width
 			++width;
-			std::string xx = value.substr(0, value.find(','));
 
 			int x, i;
 
-			findCharacter(i, xx);
+			findCharacter(i, value);
 
-			x = (i == xx.length()) ? atoi(xx.c_str()) : -1;
+			//if i is the length of value convert it to int value, else set it to -1
+			x = (i == value.length()) ? atoi(value.c_str()) : -1;
 
+			// add value to array
 			tempMap.push_back(x);
 		}
 	}
 
+	//sets the map dimensions to character count of line for width and line count for height
 	setMapDimensions(width);
 
-	//Add Line in Txt File
+	//Add Line from Txt File to array
 	intMap.insert(intMap.end(), tempMap.begin(), tempMap.end());
-
+	//clear the tmpmap
 	tempMap.clear();
 }
 
 void MapTiler::findCharacter(int& i, std::string line)
 {
+	// will return when it finds a character thats not a number
+	//if all are numbers by the end of loop, i will == lenth of the line
 	for (i = 0; i < line.length(); i++)
 	{
 		if (!isdigit(line[i]))
@@ -113,21 +125,13 @@ bool MapTiler::loadMap()
 	return true;
 }
 
-//std::vector<std::vector<sf::Vector2i>> MapTiler::getMap()
-//{
-//	return map;
-//}
-
-//int MapTiler::getTileSize()
-//{
-//	return mTileSize;
-//}
-
 void MapTiler::setMapDimensions(int width)
 {
+	//sets width of line to largest value
 	if (width > mMapWidth)
 		mMapWidth = width;
 
+	//Counts the lines to set height
 	++mMapHeight;
 }
 void MapTiler::draw(sf::RenderTarget & target, sf::RenderStates states) const

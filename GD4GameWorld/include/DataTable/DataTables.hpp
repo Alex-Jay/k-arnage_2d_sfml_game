@@ -8,6 +8,8 @@
 #include <vector>
 #include <functional>
 
+#include <string>
+
 class Character;
 class Explosion;
 
@@ -40,6 +42,12 @@ struct CharacterData
 	std::vector<Direction> directions;
 };
 
+struct MapTileData
+{
+	std::string mapFile;
+	sf::Vector2u tileSize;
+	TextureIDs texture;
+};
 
 struct ProjectileData
 {
@@ -72,6 +80,7 @@ struct ParticleData
 	sf::Time lifetime;
 };
 
+std::vector<MapTileData> initializeMapTileData();
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ExplosionData> initializeExplosionData();
 std::vector<ProjectileData> initializeProjectileData();
