@@ -7,11 +7,11 @@
 #include <windows.h>
 #include <vector>
 #include <sstream>
-
+#include "SceneNode.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "World.hpp"
 
-class MapTiler : public sf::Drawable, public sf::Transformable
+class MapTiler : public SceneNode 
 {
 
 public:

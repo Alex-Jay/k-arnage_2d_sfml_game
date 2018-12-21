@@ -97,6 +97,7 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
+	//MapTiler m;
 	if (PostEffect::isSupported())
 	{
 		mSceneTexture.clear(sf::Color(114, 168, 255, 255));
@@ -104,11 +105,14 @@ void World::draw()
 		mSceneTexture.draw(mSceneGraph);
 		mSceneTexture.display();
 		mBloomEffect.apply(mSceneTexture, mTarget);
+		//mTarget.draw(m);
 	}
 	else
 	{
+		
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
+		//mTarget.draw(m);
 	}
 }
 
@@ -291,21 +295,12 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	// Prepare the tiled background
-	sf::Texture& SandTexture = mTextures.get(TextureIDs::Sand);
-	SandTexture.setRepeated(true);
+	//// Prepare the tiled background
+	std::unique_ptr<MapTiler> map(new MapTiler());
 
-	float viewHeight = mWorldView.getSize().y;
-	sf::IntRect textureRect(mWorldBounds);
-	textureRect.height += static_cast<int>(viewHeight);
+	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 
-	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> SandSprite(new SpriteNode(SandTexture, textureRect));
-	SandSprite->setPosition(mWorldBounds.left, mWorldBounds.top);
-	mSceneLayers[Layer::Background]->attachChild(std::move(SandSprite));
-
-	// Prepare the tiled background
-	placeTiles();
+	mSceneLayers[Layer::Background]->attachChild(std::move(map));
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
@@ -329,36 +324,6 @@ void World::buildScene()
 	addEnemies();
 }
 
-void World::placeTiles()
-{
-	//Mike
-	//MapTiler mapTiler(mTextures);
-	//std::vector<std::vector<sf::Vector2i>> map;
-	//map = mapTiler.getMap();
-
-	//int tileSize = mapTiler.getTileSize();
-
-	//sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
-
-	//int count = 0;
-
-	//for (int i = 0; i < map.size(); i++)
-	//{
-	//	for (int j = 0; j < map[i].size(); j++)
-	//	{
-	//		if (map[i][j].x != -1 && map[i][j].y != -1)
-	//		{
-	//			count++;
-	//			std::unique_ptr<SpriteNode> tileSprite(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
-
-	//			tileSprite->setPosition(j * tileSize, i * tileSize);
-
-	//			mSceneLayers[Layer::Background]->attachChild(std::move(tileSprite));
-	//		}
-	//	}
-	//}
-
-}
 
 void World::addEnemies()
 {
