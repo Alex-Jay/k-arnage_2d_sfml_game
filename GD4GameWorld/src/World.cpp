@@ -332,31 +332,31 @@ void World::buildScene()
 void World::placeTiles()
 {
 	//Mike
-	MapTiler mapTiler(mTextures);
-	std::vector<std::vector<sf::Vector2i>> map;
-	map = mapTiler.getMap();
+	//MapTiler mapTiler(mTextures);
+	//std::vector<std::vector<sf::Vector2i>> map;
+	//map = mapTiler.getMap();
 
-	int tileSize = mapTiler.getTileSize();
+	//int tileSize = mapTiler.getTileSize();
 
-	sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
+	//sf::Texture& tiles = mTextures.get(TextureIDs::MapTiles);
 
-	int count = 0;
+	//int count = 0;
 
-	for (int i = 0; i < map.size(); i++)
-	{
-		for (int j = 0; j < map[i].size(); j++)
-		{
-			if (map[i][j].x != -1 && map[i][j].y != -1)
-			{
-				count++;
-				std::unique_ptr<SpriteNode> tileSprite(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
+	//for (int i = 0; i < map.size(); i++)
+	//{
+	//	for (int j = 0; j < map[i].size(); j++)
+	//	{
+	//		if (map[i][j].x != -1 && map[i][j].y != -1)
+	//		{
+	//			count++;
+	//			std::unique_ptr<SpriteNode> tileSprite(new SpriteNode(tiles, sf::IntRect(map[i][j].x * tileSize, map[i][j].y * tileSize, tileSize, tileSize)));
 
-				tileSprite->setPosition(j * tileSize, i * tileSize);
+	//			tileSprite->setPosition(j * tileSize, i * tileSize);
 
-				mSceneLayers[Layer::Background]->attachChild(std::move(tileSprite));
-			}
-		}
-	}
+	//			mSceneLayers[Layer::Background]->attachChild(std::move(tileSprite));
+	//		}
+	//	}
+	//}
 
 }
 

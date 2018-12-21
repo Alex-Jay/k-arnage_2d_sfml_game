@@ -11,25 +11,34 @@
 #include "ResourceIdentifiers.hpp"
 #include "World.hpp"
 
-class MapTiler
+class MapTiler : public sf::Drawable, public sf::Transformable
 {
 
 public:
-	MapTiler(TextureHolder& textures);
-	void drawMap();
-	void populateMap();
-	void findCharacter(int & i, std::string line);
+	//MapTiler(TextureHolder& textures);
+	MapTiler();
 
-	std::vector<std::vector<sf::Vector2i>> getMap();
-	int getTileSize();
+	void populateMap();
+	void populateLine();
+
+	void findCharacter(int & i, std::string line);
+	//std::vector<std::vector<sf::Vector2i>> getMap();
+private:
+	void setMapDimensions(int width);
+	bool loadMap();
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
 	std::ifstream mMapFile;
 	sf::Texture mTexture;
-	sf::Sprite mTile;
 
-	std::vector<std::vector<sf::Vector2i>> map;
-	std::vector<sf::Vector2i> tempMap;
+	std::vector<int> tempMap;
+	std::vector<int> intMap;
 
-	int mTileSize;
+	sf::Vector2u mTileSize;
+	sf::VertexArray m_vertices;
 
+	int mMapWidth;
+	int mMapHeight;
 };
+
+
