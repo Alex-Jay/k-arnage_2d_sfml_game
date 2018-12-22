@@ -6,6 +6,7 @@
 #include "SoundNode.hpp"
 #include "Constants.hpp"
 #include "MapTiler.hpp"
+#include "Obstacle.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
@@ -122,6 +123,8 @@ bool World::hasPlayerReachedEnd() const
 
 void World::loadTextures()
 {
+
+	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS
 	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
 	mTextures.load(TextureIDs::Sand, "Media/Textures/Sand.png");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
@@ -136,6 +139,8 @@ void World::loadTextures()
 
 	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
 	mTextures.load(TextureIDs::MapTiles, "Media/Textures/Tiles.png");
+
+	mTextures.load(TextureIDs::Crate, "Media/Textures/Crate.png");
 }
 
 void World::adaptPlayerPosition()
@@ -214,7 +219,7 @@ void World::handleCollisions()
 {
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
-
+	//TODO Replace this stuff wit a switch statement and make it more readable/efficient
 	for (SceneNode::Pair pair : collisionPairs)
 	{
 		if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter))
@@ -236,6 +241,18 @@ void World::handleCollisions()
 			//pickup.apply(player);
 			pickup.destroy();
 			player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
+		}
+
+
+		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
+		{
+			auto& player = static_cast<Character&>(*pair.first);
+			auto& pickup = static_cast<Obstacle&>(*pair.second);
+
+			// Apply pickup effect to player, destroy projectile
+			//pickup.apply(player);
+			//pickup.destroy();
+			player.setVelocity(-player.getVelocity());
 		}
 
 		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
@@ -303,6 +320,11 @@ void World::buildScene()
 	mPlayerCharacter = player.get();
 	mPlayerCharacter->setPosition(mSpawnPosition);
 	mSceneLayers[UpperAir]->attachChild(std::move(player));
+
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+	obstacle->setPosition(sf::Vector2f(200, 500));
+	mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+
 
 	// Add enemy Character
 	addEnemies();
@@ -430,4 +452,12 @@ sf::FloatRect World::getBattlefieldBounds() const
 	//bounds.height += 100.f;
 
 	return bounds;
+}
+
+
+void World::createObstacle(SceneNode& node, const TextureHolder& textures) const
+{
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
+	obstacle->setPosition(sf::Vector2f(0,0));
+	node.attachChild(std::move(obstacle));
 }

@@ -15,19 +15,24 @@ namespace
 Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
 	: Entity(1)
 	, mType(type)
-	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
+	, mSprite(textures.get(TextureIDs::Crate))
 {
+	mSprite.scale(sf::Vector2f(0.25f, 0.25f));
 	centreOrigin(mSprite);
 }
 
 unsigned int Obstacle::getCategory() const
 {
-	return static_cast<int>(Category::Pickup);
+	return static_cast<int>(Category::Obstacle);
 }
 
 sf::FloatRect Obstacle::getBoundingRect() const
 {
-	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
+	//TODO Fix Scaleing
+	sf::FloatRect f = mSprite.getGlobalBounds();
+	f.height *= 0.25f;
+	f.width *= 0.25f;
+	return getWorldTransform().transformRect(f);
 }
 
 void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const

@@ -15,7 +15,7 @@ enum class TextureIDs{
 	Particle, FinishLine,
 	PlayerMove, PlayerDeath,
 	ZombieMove, ZombieDeath,
-	MapTiles
+	MapTiles, Crate
 };
 
 enum class Shaders{BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass};

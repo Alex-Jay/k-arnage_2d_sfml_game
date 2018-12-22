@@ -150,6 +150,7 @@
     <ClCompile Include="src\Entity\Character.cpp" />
     <ClCompile Include="src\Entity\Entity.cpp" />
     <ClCompile Include="src\Entity\Explosion.cpp" />
+    <ClCompile Include="src\Entity\Obstacle.cpp" />
     <ClCompile Include="src\Entity\Pickup.cpp" />
     <ClCompile Include="src\Entity\Projectile.cpp" />
     <ClCompile Include="src\Node\EmitterNode.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="include/Structural/Utility.hpp" />
     <ClInclude Include="include/Core/World.hpp" />
     <ClInclude Include="include\Entity\Explosion.hpp" />
+    <ClInclude Include="include\Entity\Obstacle.hpp" />
     <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
     <ClInclude Include="include\Structural\MapTiler.hpp" />
   </ItemGroup>

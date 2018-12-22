@@ -52,6 +52,8 @@ private:
 	sf::FloatRect getViewBounds() const;
 	sf::FloatRect getBattlefieldBounds() const;
 
+	void createObstacle(SceneNode & node, const TextureHolder & textures) const;
+
 private:
 	enum Layer { Background, LowerAir, UpperAir, LayerCount };
 	struct SpawnPoint
