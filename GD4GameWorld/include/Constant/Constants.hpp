@@ -49,8 +49,6 @@ const sf::Uint32 ORANGE = 0Xffa100ff;
 
 
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
+//+++++++++++ CONTROLLER CONSTANS ++++++++++++++++++
+const float TRIGGER_THRESHOLD = 70.0f;
+const float THUMBSTICK_THRESHOLD = 50.0f;

@@ -10,6 +10,8 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Window/Joystick.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <cmath>
 #include <iostream>
@@ -100,6 +102,17 @@ void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	#pragma region Test joystick controls & buttons
+
+	//sf::Event evt = ;
+
+	//if (sf::Joystick::isConnected(0))
+	//{
+	//	std::cout << "Button Pressed: " << evt.joystickButton.button << std::endl;
+	//}
+
+	#pragma endregion
+
 	//Update Player Animations
 	updateAnimations(dt);
 
@@ -109,7 +122,6 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Update enemy movement pattern; apply velocity
 	//updateMovementPattern(dt);
 	
-
 	setRotation(Entity::getAngle() * dt.asSeconds()); // Alex - update players current rotation
 
 	Entity::updateCurrent(dt, commands);

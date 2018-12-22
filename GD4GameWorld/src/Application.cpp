@@ -8,7 +8,9 @@
 #include "PauseState.hpp"
 #include "SettingsState.hpp"
 #include "GameOverState.hpp"
+#include "Xbox360Controller.hpp"
 
+#include <iostream>
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
@@ -70,11 +72,33 @@ void Application::processInput()
 	while (mWindow.pollEvent(event))
 	{
 		mStateStack.handleEvent(event);
-		
+
 		if (event.type == sf::Event::Closed)
 		{
 			mWindow.close();
 		}
+	}
+
+	Xbox360Controller xboxController;
+
+	if (xboxController.Up())
+	{
+		std::cout << "Up" << std::endl;
+	}
+
+	if (xboxController.Down())
+	{
+		std::cout << "Down" << std::endl;
+	}
+
+	if (xboxController.Left())
+	{
+		std::cout << "Left" << std::endl;
+	}
+
+	if (xboxController.Right())
+	{
+		std::cout << "Right" << std::endl;
 	}
 }
 

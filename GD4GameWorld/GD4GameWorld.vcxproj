@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src/Xbox360Controller.cpp" />
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src/Animation.cpp" />
     <ClCompile Include="src/Application.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="include/Core/World.hpp" />
     <ClInclude Include="include\Entity\Explosion.hpp" />
     <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
+    <ClInclude Include="include\Structural\Xbox360Controller.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

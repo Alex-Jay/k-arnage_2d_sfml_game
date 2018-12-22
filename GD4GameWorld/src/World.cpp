@@ -8,7 +8,6 @@
 #include "SoundNode.hpp"
 #include "Constants.hpp"
 
-
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <algorithm>
@@ -67,7 +66,7 @@ void World::update(sf::Time dt)
 	handlePlayerCollision();
 
 	#pragma endregion
-
+	
 	mPlayerCharacter->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide grenades
