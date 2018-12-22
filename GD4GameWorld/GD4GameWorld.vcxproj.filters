@@ -87,116 +87,116 @@
     <ClCompile Include="src/Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/Animation.cpp">
+    <ClCompile Include="src\Animation\Animation.cpp">
       <Filter>Source Files\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="src/MusicPlayer.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src/SoundPlayer.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src/Command.cpp">
+    <ClCompile Include="src\Command\Command.cpp">
       <Filter>Source Files\Command</Filter>
     </ClCompile>
-    <ClCompile Include="src/CommandQueue.cpp">
+    <ClCompile Include="src\Command\CommandQueue.cpp">
       <Filter>Source Files\Command</Filter>
     </ClCompile>
-    <ClCompile Include="src/Button.cpp">
+    <ClCompile Include="src\Component\Button.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src/Component.cpp">
+    <ClCompile Include="src\Component\Component.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src/Container.cpp">
+    <ClCompile Include="src\Component\Container.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src/Label.cpp">
+    <ClCompile Include="src\Component\Label.cpp">
       <Filter>Source Files\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src/Application.cpp">
+    <ClCompile Include="src\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src/World.cpp">
+    <ClCompile Include="src\Core\World.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src/DataTables.cpp">
+    <ClCompile Include="src\DataTable\DataTables.cpp">
       <Filter>Source Files\DataTable</Filter>
     </ClCompile>
-    <ClCompile Include="src/Entity.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src/Pickup.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src/Projectile.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src/BloomEffect.cpp">
+    <ClCompile Include="src\Effect\BloomEffect.cpp">
       <Filter>Source Files\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src/PostEffect.cpp">
+    <ClCompile Include="src\Effect\PostEffect.cpp">
       <Filter>Source Files\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src/SceneNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/TextNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/EmitterNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/ParticleNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/SoundNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/SpriteNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src/GameOverState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/GameState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/MenuState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/PauseState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/SettingsState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/StateStack.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/TitleState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src/Utility.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
-    <ClCompile Include="src/State.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
-    <ClCompile Include="src/Player.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Character.cpp">
+    <ClCompile Include="src\Entity\Character.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShapeNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Explosion.cpp">
+    <ClCompile Include="src\Entity\Entity.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="include\Structural\MapTiler.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Entity\Explosion.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entity\Pickup.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entity\Projectile.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\EmitterNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\ParticleNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\SceneNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\ShapeNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\SoundNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\SpriteNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\TextNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\GameOverState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\GameState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\MenuState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\PauseState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\SettingsState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\State.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\StateStack.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\State\TitleState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Structural\Player.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Structural\Utility.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Structural\MapTiler.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\MusicPlayer.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\SoundPlayer.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

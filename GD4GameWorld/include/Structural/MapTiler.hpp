@@ -24,10 +24,9 @@ public:
 	void populateMap();
 	void populateLine();
 
-	void findCharacter(int & i, std::string line);
-	//std::vector<std::vector<sf::Vector2i>> getMap();
+	void findCharacter(unsigned int & i, std::string line);
 private:
-	void setMapDimensions(int width);
+	void setMapDimensions(unsigned int width);
 	bool loadMap();
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
@@ -40,10 +39,9 @@ private:
 	sf::Vector2u mTileSize;
 	sf::VertexArray m_vertices;
 
-	int mMapWidth;
-	int mMapHeight;
+	unsigned int mMapWidth;
+	unsigned int mMapHeight;
 
-	MapID mType;
 };
 
 

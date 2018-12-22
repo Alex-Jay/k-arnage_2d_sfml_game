@@ -17,7 +17,7 @@ void ShapeNode::setFillColor(sf::Color color)
 	mShape.setFillColor(color);
 }
 
-void ShapeNode::setSize(float x, float y)
+void ShapeNode::setSize(int x, int y)
 {
 	mShape.setSize(sf::Vector2f(x, y));
 	//Dont center origin as bar will fill from both sides

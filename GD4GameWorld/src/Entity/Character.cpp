@@ -381,7 +381,7 @@ void Character::updateTexts()
 	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
 	mHealthDisplay->setOrigin(30.0f, -90.f);
-	mHealthDisplay->setSize(getHitpoints(), 5.f);
+	mHealthDisplay->setSize(getHitpoints(), 5);
 
 	if (mGrenadeDisplay)
 	{

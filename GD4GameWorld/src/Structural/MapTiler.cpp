@@ -14,7 +14,6 @@ MapTiler::MapTiler(MapID type, TextureHolder& textures)
 	  , mTileSize(Table[static_cast<int>(type)].tileSize)
 	  , mMapWidth(0)
 	  , mMapHeight(-1)
-	  , mType(type)
 {
 	if (mMapFile.is_open())
 	{
@@ -41,7 +40,7 @@ void MapTiler::populateLine()
 	std::stringstream stream(line);
 
 	//set width of line to 0
-	int width = 0;
+	unsigned int width = 0;
 
 	//delimits lines by space
 	while (std::getline(stream, value, ' '))
@@ -52,7 +51,7 @@ void MapTiler::populateLine()
 			//count characters for map width
 			++width;
 
-			int x, i;
+			unsigned int x, i;
 
 			findCharacter(i, value);
 
@@ -73,7 +72,7 @@ void MapTiler::populateLine()
 	tempMap.clear();
 }
 
-void MapTiler::findCharacter(int& i, std::string line)
+void MapTiler::findCharacter(unsigned int& i, std::string line)
 {
 	// will return when it finds a character that is not a number
 	//if all are numbers by the end of loop, i will == length of the line
@@ -124,7 +123,7 @@ bool MapTiler::loadMap()
 	return true;
 }
 
-void MapTiler::setMapDimensions(int width)
+void MapTiler::setMapDimensions(unsigned int width)
 {
 	//sets width of line to largest value
 	if (width > mMapWidth)
