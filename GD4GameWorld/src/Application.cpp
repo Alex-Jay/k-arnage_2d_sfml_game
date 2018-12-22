@@ -78,28 +78,6 @@ void Application::processInput()
 			mWindow.close();
 		}
 	}
-
-	Xbox360Controller xboxController;
-
-	if (xboxController.Up())
-	{
-		std::cout << "Up" << std::endl;
-	}
-
-	if (xboxController.Down())
-	{
-		std::cout << "Down" << std::endl;
-	}
-
-	if (xboxController.Left())
-	{
-		std::cout << "Left" << std::endl;
-	}
-
-	if (xboxController.Right())
-	{
-		std::cout << "Right" << std::endl;
-	}
 }
 
 void Application::update(sf::Time dt)
