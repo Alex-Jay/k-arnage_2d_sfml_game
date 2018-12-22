@@ -74,6 +74,11 @@ struct PickupData
 	sf::IntRect textureRect;
 };
 
+struct ObstacleData
+{
+	
+};
+
 struct ParticleData
 {
 	sf::Color color;
@@ -85,4 +90,5 @@ std::vector<CharacterData> initializeCharacterData();
 std::vector<ExplosionData> initializeExplosionData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
+std::vector<ObstacleData> initializeObstacleData();
 std::vector<ParticleData> initializeParticleData();

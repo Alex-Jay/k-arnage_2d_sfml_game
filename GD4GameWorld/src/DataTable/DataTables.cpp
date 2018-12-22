@@ -132,6 +132,11 @@ std::vector<PickupData> initializePickupData()
 	return data;
 }
 
+std::vector<ObstacleData> initializeObstacleData()
+{
+	return std::vector<ObstacleData>();
+}
+
 std::vector<ParticleData> initializeParticleData()
 {
 	std::vector<ParticleData> data(static_cast<int>(Particle::Type::ParticleCount));
