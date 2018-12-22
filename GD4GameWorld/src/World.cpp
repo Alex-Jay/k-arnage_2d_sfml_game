@@ -1,13 +1,10 @@
 #include "World.hpp"
 #include "Projectile.hpp"
-#include "Explosion.hpp"
 #include "Pickup.hpp"
-#include "TextNode.hpp"
 #include "ParticleNode.hpp"
 #include "PostEffect.hpp"
 #include "SoundNode.hpp"
 #include "Constants.hpp"
-
 #include "MapTiler.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -15,25 +12,19 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <iostream>
 
 
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds)
 	: mTarget(outputTarget)
-	, mSceneTexture()
-	, mWorldView(outputTarget.getDefaultView())
-	, mTextures()
-	, mFonts(fonts)
-	, mSounds(sounds)
-	, mSceneGraph()
-	, mSceneLayers()
-	// Alex - Increased map size
-	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x * 2, 1000.f)
-	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
-	, mScrollSpeed(0.f)
-	, mPlayerCharacter(nullptr)
-	, mEnemySpawnPoints()
-	, mActiveEnemies()
+	  , mWorldView(outputTarget.getDefaultView())
+	  , mFonts(fonts)
+	  , mSounds(sounds)
+	  , mSceneLayers()
+	  // Alex - Increased map size
+	  , mWorldBounds(0.f, 0.f, mWorldView.getSize().x * 2, 1000.f)
+	  , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
+	  , mScrollSpeed(0.f)
+	  , mPlayerCharacter(nullptr)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
@@ -49,13 +40,12 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 
 void World::update(sf::Time dt)
 {
-
-	#pragma region Author: Alex
+#pragma region Author: Alex
 
 	// Scroll the world, reset player velocity
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 
-	sf::Vector2f playerVelocity = mPlayerCharacter->getVelocity();
+	//sf::Vector2f playerVelocity = mPlayerCharacter->getVelocity();
 
 	// Stick view to player position
 	mWorldView.setCenter(mPlayerCharacter->getPosition());
@@ -67,7 +57,7 @@ void World::update(sf::Time dt)
 	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
 
-	#pragma endregion
+#pragma endregion
 
 	mPlayerCharacter->setVelocity(0.f, 0.f);
 
@@ -85,7 +75,7 @@ void World::update(sf::Time dt)
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
-	
+
 
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
@@ -109,7 +99,6 @@ void World::draw()
 	}
 	else
 	{
-		
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 		//mTarget.draw(m);
@@ -185,15 +174,12 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 	{
 		return true;
 	}
-	else if (static_cast<int>(type1) & category2 && static_cast<int>(type2) & category1)
+	if (static_cast<int>(type1) & category2 && static_cast<int>(type2) & category1)
 	{
 		std::swap(colliders.first, colliders.second);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 void World::handlePlayerCollision()
@@ -217,9 +203,10 @@ void World::handlePlayerCollision()
 		Check if player is out of bounds (bottom side)
 		getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
 	*/
-	if (mPlayerCharacter->getPosition().y >= (getBattlefieldBounds().height + mWorldBounds.height))
+	if (mPlayerCharacter->getPosition().y >= getBattlefieldBounds().height + mWorldBounds.height)
 	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, (getBattlefieldBounds().height + mWorldBounds.height));
+		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x,
+		                              getBattlefieldBounds().height + mWorldBounds.height);
 	}
 }
 
@@ -265,10 +252,7 @@ void World::handleCollisions()
 		else if (matchesCategories(pair, Category::Character, Category::Explosion))
 		{
 			auto& character = static_cast<Character&>(*pair.first);
-			auto& explosion = static_cast<Explosion&>(*pair.second);
-
 			character.damage(10);
-
 		}
 	}
 }
@@ -285,9 +269,9 @@ void World::updateSounds()
 void World::buildScene()
 {
 	// Initialize the different layers
-	for (std::size_t i = 0; i < Layer::LayerCount; ++i)
+	for (std::size_t i = 0; i < LayerCount; ++i)
 	{
-		Category category = (i == Layer::LowerAir) ? Category::SceneAirLayer : Category::None;
+		Category category = i == LowerAir ? Category::SceneAirLayer : Category::None;
 
 		SceneNode::Ptr layer(new SceneNode(category));
 		mSceneLayers[i] = layer.get();
@@ -296,11 +280,11 @@ void World::buildScene()
 	}
 
 	//// Prepare the tiled background
-	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert,mTextures));
+	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 
-	mSceneLayers[Layer::Background]->attachChild(std::move(map));
+	mSceneLayers[Background]->attachChild(std::move(map));
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
@@ -318,7 +302,7 @@ void World::buildScene()
 	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
 	mPlayerCharacter = player.get();
 	mPlayerCharacter->setPosition(mSpawnPosition);
-	mSceneLayers[Layer::UpperAir]->attachChild(std::move(player));
+	mSceneLayers[UpperAir]->attachChild(std::move(player));
 
 	// Add enemy Character
 	addEnemies();
@@ -367,7 +351,7 @@ void World::spawnEnemies()
 		enemy->setPosition(spawn.x, spawn.y);
 		enemy->setRotation(180.f);
 
-		mSceneLayers[Layer::UpperAir]->attachChild(std::move(enemy));
+		mSceneLayers[UpperAir]->attachChild(std::move(enemy));
 
 		// Enemy is spawned, remove from the list to spawn
 		mEnemySpawnPoints.pop_back();

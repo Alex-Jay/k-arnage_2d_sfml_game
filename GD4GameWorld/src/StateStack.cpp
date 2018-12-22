@@ -3,10 +3,7 @@
 #include <cassert>
 
 StateStack::StateStack(State::Context context)
-	: mStack()
-	, mPendingList()
-	, mContext(context)
-	, mFactories()
+	: mContext(context)
 {
 }
 
@@ -32,7 +29,7 @@ void StateStack::draw()
 	}
 }
 
-void StateStack::handleEvent(const sf::Event & event)
+void StateStack::handleEvent(const sf::Event& event)
 {
 	//Iterate from top to bottom, stop as soon as handleEvent returns false
 	for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr)

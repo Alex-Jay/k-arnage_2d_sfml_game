@@ -29,7 +29,7 @@ public:
 private:
 	void setMapDimensions(int width);
 	bool loadMap();
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
 	std::ifstream mMapFile;
 	sf::Texture mTexture;

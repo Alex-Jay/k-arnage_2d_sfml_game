@@ -1,6 +1,4 @@
 #include "Application.hpp"
-
-#include <stdexcept>
 #include <iostream>
 
 #include "MapTiler.hpp"

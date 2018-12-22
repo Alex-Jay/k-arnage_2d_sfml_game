@@ -14,11 +14,10 @@ namespace
 
 ParticleNode::ParticleNode(Particle::Type type, const TextureHolder& textures)
 	: SceneNode()
-	, mParticles()
-	, mTexture(textures.get(TextureIDs::Particle))
-	, mType(type)
-	, mVertexArray(sf::TriangleStrip)
-	, mNeedsVertexUpdate(true)
+	  , mTexture(textures.get(TextureIDs::Particle))
+	  , mType(type)
+	  , mVertexArray(sf::TriangleStrip)
+	  , mNeedsVertexUpdate(true)
 {
 }
 
@@ -42,10 +41,10 @@ unsigned int ParticleNode::getCategory() const
 	return static_cast<unsigned int>(Category::ParticleSystem);
 }
 
-void ParticleNode::updateCurrent(sf::Time dt, CommandQueue & commands)
+void ParticleNode::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	//Remove expired particles
-	while (!mParticles.empty() && (mParticles.front().lifetime <= sf::Time::Zero))
+	while (!mParticles.empty() && mParticles.front().lifetime <= sf::Time::Zero)
 	{
 		mParticles.pop_front();
 	}
@@ -58,7 +57,7 @@ void ParticleNode::updateCurrent(sf::Time dt, CommandQueue & commands)
 	mNeedsVertexUpdate = true;
 }
 
-void ParticleNode::drawCurrent(sf::RenderTarget & target, sf::RenderStates states) const
+void ParticleNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (mNeedsVertexUpdate)
 	{
@@ -73,7 +72,8 @@ void ParticleNode::drawCurrent(sf::RenderTarget & target, sf::RenderStates state
 	target.draw(mVertexArray, states);
 }
 
-void ParticleNode::addVertex(float worldX, float worldY, float textCoordX, float textCoordY, const sf::Color& color) const
+void ParticleNode::addVertex(float worldX, float worldY, float textCoordX, float textCoordY,
+                             const sf::Color& color) const
 {
 	sf::Vertex vertex;
 	vertex.position = sf::Vector2f(worldX, worldY);
@@ -90,7 +90,7 @@ void ParticleNode::computeVertices() const
 
 	// Refill vertex array
 	mVertexArray.clear();
-	for(const Particle& particle : mParticles)
+	for (const Particle& particle : mParticles)
 	{
 		sf::Vector2f pos = particle.position;
 		sf::Color color = particle.color;

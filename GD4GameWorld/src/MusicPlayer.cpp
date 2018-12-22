@@ -2,7 +2,7 @@
 
 //In SFML volume = 0 is mute and = 100 is max volume
 MusicPlayer::MusicPlayer()
-	:mMusic(), mFilenames(), mVolume(1.f)
+	: mVolume(1.f)
 {
 	mFilenames[MusicIDs::MenuTheme] = "Media/Music/MenuTheme.ogg";
 	mFilenames[MusicIDs::MissionTheme] = "Media/Music/MissionTheme.ogg";

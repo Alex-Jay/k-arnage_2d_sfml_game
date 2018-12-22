@@ -8,13 +8,11 @@
 
 namespace GUI
 {
-
 	Button::Button(State::Context context)
-		: mCallback()
-		, mSprite(context.textures->get(TextureIDs::Buttons))
-		, mText("", context.fonts->get(FontIDs::Main), 16)
-		, mIsToggle(false)
-		, mSounds(*context.sounds)
+		: mSprite(context.textures->get(TextureIDs::Buttons))
+		  , mText("", context.fonts->get(FontIDs::Main), 16)
+		  , mIsToggle(false)
+		  , mSounds(*context.sounds)
 	{
 		changeTexture(Type::Normal);
 
@@ -105,5 +103,4 @@ namespace GUI
 		sf::IntRect textureRect(0, 50 * static_cast<int>(buttonType), 200, 50);
 		mSprite.setTextureRect(textureRect);
 	}
-
 }

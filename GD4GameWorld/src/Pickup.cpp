@@ -1,7 +1,6 @@
 #include "Pickup.hpp"
 #include "DataTables.hpp"
 #include "Category.hpp"
-#include "CommandQueue.hpp"
 #include "Utility.hpp"
 #include "ResourceHolder.hpp"
 
@@ -15,8 +14,8 @@ namespace
 
 Pickup::Pickup(PickupID type, const TextureHolder& textures)
 	: Entity(1)
-	, mType(type)
-	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
+	  , mType(type)
+	  , mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
 {
 	centreOrigin(mSprite);
 }
@@ -40,4 +39,3 @@ void Pickup::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) cons
 {
 	target.draw(mSprite, states);
 }
-

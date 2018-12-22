@@ -3,14 +3,12 @@
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 #include "Pickup.hpp"
-#include "Constants.hpp"
 #include "EmitterNode.hpp"
 #include "Explosion.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/RenderStates.hpp"
 
 #include <cassert>
-#include <cmath>
 
 namespace
 {
@@ -18,10 +16,9 @@ namespace
 }
 
 Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
-	:Entity(1)
-	, mType(type)
-	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
-	, mTargetDirection()
+	: Entity(1)
+	  , mType(type)
+	  , mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
 {
 	centreOrigin(mSprite);
 
@@ -43,8 +40,7 @@ unsigned int Projectile::getCategory() const
 {
 	if (mType == ProjectileIDs::EnemyBullet)
 		return static_cast<int>(Category::EnemyProjectile);
-	else
-		return static_cast<int>(Category::AlliedProjectile);
+	return static_cast<int>(Category::AlliedProjectile);
 }
 
 sf::FloatRect Projectile::getBoundingRect() const
@@ -122,7 +118,6 @@ void Projectile::handleGrenade(sf::Time dt, CommandQueue& commands)
 	if (isDestroyed())
 	{
 		commands.push(mExplosionCommand);
-		return;
 	}
 }
 

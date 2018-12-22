@@ -4,9 +4,10 @@
 #include <cassert>
 
 
-Entity::Entity(int hitpoints) : mVelocity(), mHitpoints(hitpoints)
+Entity::Entity(int hitpoints) : 
+	mAngle(0),
+	mHitpoints(hitpoints)
 {
-
 }
 
 void Entity::setVelocity(sf::Vector2f velocity)

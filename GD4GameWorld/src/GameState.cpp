@@ -3,10 +3,10 @@
 #include "MusicPlayer.hpp"
 
 
-GameState::GameState(StateStack& stack, Context context) 
+GameState::GameState(StateStack& stack, Context context)
 	:State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds)
-	, mPlayer(*context.player)	
+	, mPlayer(*context.player)
 {
 	mPlayer.setMissionStatus(Player::MissionStatus::MissionRunning);
 
@@ -30,9 +30,8 @@ bool GameState::update(sf::Time dt)
 	}
 	else if (mWorld.hasPlayerReachedEnd())
 	{
-		// Disable win state
-		//mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		//requestStackPush(StateIDs::GameOver);
+		mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
+		requestStackPush(StateIDs::GameOver);
 	}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
@@ -54,5 +53,3 @@ bool GameState::handleEvent(const sf::Event & event)
 	}
 	return true;
 }
-
-

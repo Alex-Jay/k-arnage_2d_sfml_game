@@ -4,13 +4,10 @@
 #include "MusicPlayer.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 
-#include <iostream>
-
-TitleState::TitleState(StateStack & stack, Context context)
+TitleState::TitleState(StateStack& stack, Context context)
 	: State(stack, context)
-	, mText()
-	, mShowText(true)
-	, mTextEffectTime(sf::Time::Zero)
+	  , mShowText(true)
+	  , mTextEffectTime(sf::Time::Zero)
 {
 	mBackgroundSprite.setTexture(context.textures->get(TextureIDs::TitleScreen));
 	mText.setFont(context.fonts->get(FontIDs::Main));
@@ -49,7 +46,7 @@ bool TitleState::update(sf::Time dt)
 bool TitleState::handleEvent(const sf::Event& event)
 {
 	//If any key is pressed move to menu state
- 	if (event.type == sf::Event::KeyReleased)
+	if (event.type == sf::Event::KeyReleased)
 	{
 		requestStackPop();
 		requestStackPush(StateIDs::Menu);

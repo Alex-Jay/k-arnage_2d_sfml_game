@@ -6,9 +6,9 @@
 
 EmitterNode::EmitterNode(Particle::Type type)
 	: SceneNode()
-	, mAccumulatedTime(sf::Time::Zero)
-	, mType(type)
-	, mParticleSystem(nullptr)
+	  , mAccumulatedTime(sf::Time::Zero)
+	  , mType(type)
+	  , mParticleSystem(nullptr)
 {
 }
 

@@ -1,5 +1,4 @@
 #include "Application.hpp"
-#include "Utility.hpp"
 #include "State.hpp"
 #include "StateIdentifiers.hpp"
 #include "TitleState.hpp"
@@ -13,16 +12,9 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-	:mWindow(sf::VideoMode(1024, 768), "K-ARNAGE", sf::Style::Close)
-	, mTextures()
-	, mFonts()
-	, mPlayer()
-	, mMusic()
-	, mSounds()
-	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer, mMusic, mSounds))
-	, mStatisticsText()
-	, mStatisticsUpdateTime()
-	, mStatisticsNumFrames(0)
+	: mWindow(sf::VideoMode(1024, 768), "K-ARNAGE", sf::Style::Close)
+	  , mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer, mMusic, mSounds))
+	  , mStatisticsNumFrames(0)
 {
 	mWindow.setKeyRepeatEnabled(false);
 
@@ -70,7 +62,7 @@ void Application::processInput()
 	while (mWindow.pollEvent(event))
 	{
 		mStateStack.handleEvent(event);
-		
+
 		if (event.type == sf::Event::Closed)
 		{
 			mWindow.close();

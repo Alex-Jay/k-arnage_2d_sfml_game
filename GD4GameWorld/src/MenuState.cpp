@@ -1,16 +1,13 @@
 #include "MenuState.hpp"
 #include "Button.hpp"
-#include "Utility.hpp"
 #include "ResourceHolder.hpp"
 #include "MusicPlayer.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
 
 
 MenuState::MenuState(StateStack& stack, Context context)
 	: State(stack, context)
-	, mGUIContainer()
 {
 	sf::Texture& texture = context.textures->get(TextureIDs::TitleScreen);
 	mBackgroundSprite.setTexture(texture);

@@ -1,7 +1,6 @@
 #include "Command.hpp"
-Command::Command()
-	: action()
-	, category(static_cast<unsigned int>(Category::None))
-{
 
+Command::Command()
+	: category(static_cast<unsigned int>(Category::None))
+{
 }

@@ -1,7 +1,6 @@
 #include "MapTiler.hpp"
 #include "ResourceHolder.hpp"
 #include "DataTables.hpp"
-#include <array>
 
 namespace
 {
@@ -10,12 +9,12 @@ namespace
 
 //Mike
 MapTiler::MapTiler(MapID type, TextureHolder& textures)
-	:mMapFile(Table[static_cast<int>(type)].mapFile)
-	,mTexture(textures.get(Table[static_cast<int>(type)].texture))
-	,mTileSize(Table[static_cast<int>(type)].tileSize)
-	,mMapWidth(0)
-	,mMapHeight(-1)
-	,mType(type)
+	: mMapFile(Table[static_cast<int>(type)].mapFile)
+	  , mTexture(textures.get(Table[static_cast<int>(type)].texture))
+	  , mTileSize(Table[static_cast<int>(type)].tileSize)
+	  , mMapWidth(0)
+	  , mMapHeight(-1)
+	  , mType(type)
 {
 	if (mMapFile.is_open())
 	{
@@ -36,7 +35,7 @@ void MapTiler::populateMap()
 void MapTiler::populateLine()
 {
 	std::string line, value;
-	//Retrive line from txt file
+	//Retrieve line from txt file
 	std::getline(mMapFile, line);
 	//set contents of buffer
 	std::stringstream stream(line);
@@ -58,7 +57,7 @@ void MapTiler::populateLine()
 			findCharacter(i, value);
 
 			//if i is the length of value convert it to int value, else set it to -1
-			x = (i == value.length()) ? atoi(value.c_str()) : -1;
+			x = i == value.length() ? atoi(value.c_str()) : -1;
 
 			// add value to array
 			tempMap.push_back(x);
@@ -70,14 +69,14 @@ void MapTiler::populateLine()
 
 	//Add Line from Txt File to array
 	intMap.insert(intMap.end(), tempMap.begin(), tempMap.end());
-	//clear the tmpmap
+	//clear the tempMap
 	tempMap.clear();
 }
 
 void MapTiler::findCharacter(int& i, std::string line)
 {
-	// will return when it finds a character thats not a number
-	//if all are numbers by the end of loop, i will == lenth of the line
+	// will return when it finds a character that is not a number
+	//if all are numbers by the end of loop, i will == length of the line
 	for (i = 0; i < line.length(); i++)
 	{
 		if (!isdigit(line[i]))
@@ -89,19 +88,19 @@ void MapTiler::findCharacter(int& i, std::string line)
 
 bool MapTiler::loadMap()
 {
-// resize the vertex array to fit the level size
+	// resize the vertex array to fit the level size
 	m_vertices.setPrimitiveType(sf::Quads);
 	m_vertices.resize(mMapWidth * mMapHeight * 4);
 
-	 //populate the vertex array, with one quad per tile
+	//populate the vertex array, with one quad per tile
 	for (unsigned int i = 0; i < mMapWidth; ++i)
 		for (unsigned int j = 0; j < mMapHeight; ++j)
 		{
 			// get the current tile number
 			int tileNumber = intMap[i + j * mMapWidth];
-			if (tileNumber != -1 )
+			if (tileNumber != -1)
 			{
-				// find its position in the tileset texture
+				// find its position in the tile set texture
 				int tu = tileNumber % (mTexture.getSize().x / mTileSize.x);
 				int tv = tileNumber / (mTexture.getSize().x / mTileSize.x);
 
@@ -134,16 +133,15 @@ void MapTiler::setMapDimensions(int width)
 	//Counts the lines to set height
 	++mMapHeight;
 }
-void MapTiler::draw(sf::RenderTarget & target, sf::RenderStates states) const
-{
 
+void MapTiler::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
 	// apply the transform
 	states.transform *= getTransform();
 
-	// apply the tileset texture
+	// apply the tile set texture
 	states.texture = &mTexture;
 
 	// draw the vertex array
 	target.draw(m_vertices, states);
 }
-

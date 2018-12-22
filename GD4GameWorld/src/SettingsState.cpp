@@ -6,7 +6,6 @@
 
 SettingsState::SettingsState(StateStack& stack, Context context)
 	: State(stack, context)
-	, mGUIContainer()
 {
 	mBackgroundSprite.setTexture(context.textures->get(TextureIDs::TitleScreen));
 

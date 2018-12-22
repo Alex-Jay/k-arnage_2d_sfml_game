@@ -2,8 +2,8 @@
 #include "SoundPlayer.hpp"
 
 SoundNode::SoundNode(SoundPlayer& player)
-	:SceneNode()
-	, mSounds(player)
+	: SceneNode()
+	  , mSounds(player)
 {
 }
 

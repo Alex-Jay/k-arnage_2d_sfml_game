@@ -75,7 +75,7 @@ private:
 
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
-	bool mGrenadeStarted;
+	bool mGrenadeStarted{};
 	bool mShowDeath;
 	bool mPlayedExplosionSound;
 	bool mSpawnedPickup;

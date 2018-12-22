@@ -6,12 +6,12 @@
 
 namespace GUI
 {
-	GUI::Container::Container()
-		:mChildren(0), mSelectedChild(-1)
+	Container::Container()
+		: mChildren(0), mSelectedChild(-1)
 	{
 	}
 
-	void GUI::Container::pack(Component::Ptr component)
+	void Container::pack(Component::Ptr component)
 	{
 		mChildren.push_back(component);
 		if (!hasSelection() && component->isSelectable())
@@ -20,12 +20,12 @@ namespace GUI
 		}
 	}
 
-	bool GUI::Container::isSelectable() const
+	bool Container::isSelectable() const
 	{
 		return false;
 	}
 
-	void GUI::Container::handleEvent(const sf::Event & event)
+	void Container::handleEvent(const sf::Event& event)
 	{
 		//If we have selected a child pass the event on to them
 		if (hasSelection() && mChildren[mSelectedChild]->isActive())
@@ -50,10 +50,9 @@ namespace GUI
 				}
 			}
 		}
-		
 	}
 
-	void GUI::Container::draw(sf::RenderTarget & target, sf::RenderStates states) const
+	void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		states.transform *= getTransform();
 
@@ -63,12 +62,12 @@ namespace GUI
 		}
 	}
 
-	bool GUI::Container::hasSelection() const
+	bool Container::hasSelection() const
 	{
 		return mSelectedChild >= 0;
 	}
 
-	void GUI::Container::select(std::size_t index)
+	void Container::select(std::size_t index)
 	{
 		if (mChildren[index]->isSelectable())
 		{
@@ -82,7 +81,7 @@ namespace GUI
 		}
 	}
 
-	void GUI::Container::selectNext()
+	void Container::selectNext()
 	{
 		if (!hasSelection())
 		{
@@ -93,13 +92,14 @@ namespace GUI
 		do
 		{
 			next = (next + 1) % mChildren.size();
-		} while (!mChildren[next]->isSelectable());
+		}
+		while (!mChildren[next]->isSelectable());
 
 		//Select the component
 		select(next);
 	}
 
-	void GUI::Container::selectPrevious()
+	void Container::selectPrevious()
 	{
 		if (!hasSelection())
 		{
@@ -109,8 +109,9 @@ namespace GUI
 		int prev = mSelectedChild;
 		do
 		{
-			prev = (prev + mChildren.size()- 1) % mChildren.size();
-		} while (!mChildren[prev]->isSelectable());
+			prev = (prev + mChildren.size() - 1) % mChildren.size();
+		}
+		while (!mChildren[prev]->isSelectable());
 
 		//Select the component
 		select(prev);

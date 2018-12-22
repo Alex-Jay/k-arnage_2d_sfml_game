@@ -16,7 +16,6 @@ namespace
 }
 
 SoundPlayer::SoundPlayer()
-	: mSoundBuffers(), mSounds()
 {
 	mSoundBuffers.load(SoundEffectIDs::AlliedGunfire, "Media/Sound/AlliedGunfire.wav");
 	mSoundBuffers.load(SoundEffectIDs::EnemyGunfire, "Media/Sound/EnemyGunfire.wav");

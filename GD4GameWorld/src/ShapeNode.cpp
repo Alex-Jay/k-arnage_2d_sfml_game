@@ -8,7 +8,7 @@ ShapeNode::ShapeNode(sf::Color fillColor)
 	mShape.setFillColor(fillColor);
 	mShape.setOutlineColor(sf::Color::Black);
 	mShape.setOutlineThickness(1);
-	mShape.setSize(sf::Vector2f(0,0));
+	mShape.setSize(sf::Vector2f(0, 0));
 	//centreOrigin(mShape);
 }
 
@@ -24,7 +24,7 @@ void ShapeNode::setSize(float x, float y)
 	//centreOrigin(mShape);
 }
 
-void ShapeNode::drawCurrent(sf::RenderTarget & target, sf::RenderStates states) const
+void ShapeNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(mShape, states);
 }

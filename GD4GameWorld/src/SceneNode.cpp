@@ -7,13 +7,11 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cmath>
 
 
 SceneNode::SceneNode(Category category)
-	: mChildren()
-	, mParent(nullptr)
-	, mDefaultCategory(category)
+	: mParent(nullptr)
+	  , mDefaultCategory(category)
 {
 }
 
@@ -47,7 +45,7 @@ void SceneNode::updateCurrent(sf::Time, CommandQueue&)
 
 void SceneNode::updateChildren(sf::Time dt, CommandQueue& commands)
 {
-	for(Ptr& child : mChildren)
+	for (Ptr& child : mChildren)
 		child->update(dt, commands);
 }
 
@@ -76,7 +74,7 @@ void SceneNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states, c
 
 void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	for(const Ptr& child : mChildren)
+	for (const Ptr& child : mChildren)
 		child->draw(target, states);
 }
 
@@ -116,7 +114,7 @@ void SceneNode::onCommand(const Command& command, sf::Time dt)
 		command.action(*this, dt);
 
 	// Command children
-	for(Ptr& child : mChildren)
+	for (Ptr& child : mChildren)
 		child->onCommand(command, dt);
 }
 
@@ -129,7 +127,7 @@ void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& colli
 {
 	checkNodeCollision(sceneGraph, collisionPairs);
 
-	for(Ptr& child : sceneGraph.mChildren)
+	for (Ptr& child : sceneGraph.mChildren)
 		checkSceneCollision(*child, collisionPairs);
 }
 
@@ -138,14 +136,15 @@ void SceneNode::checkNodeCollision(SceneNode& node, std::set<Pair>& collisionPai
 	if (this != &node && collision(*this, node) && !isDestroyed() && !node.isDestroyed())
 		collisionPairs.insert(std::minmax(this, &node));
 
-	for(Ptr& child : mChildren)
+	for (Ptr& child : mChildren)
 		child->checkNodeCollision(node, collisionPairs);
 }
 
 void SceneNode::removeWrecks()
 {
 	// Remove all children which request so
-	auto wreckfieldBegin = std::remove_if(mChildren.begin(), mChildren.end(), std::mem_fn(&SceneNode::isMarkedForRemoval));
+	auto wreckfieldBegin = std::remove_if(mChildren.begin(), mChildren.end(),
+	                                      std::mem_fn(&SceneNode::isMarkedForRemoval));
 	mChildren.erase(wreckfieldBegin, mChildren.end());
 
 	// Call function recursively for all remaining children

@@ -3,30 +3,23 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
-#include <cassert>
-
 Animation::Animation()
-	: mSprite()
-	, mFrameSize()
-	, mNumFrames(0)
-	, mCurrentFrame(0)
-	, mDuration(sf::Time::Zero)
-	, mElapsedTime(sf::Time::Zero)
-	, mRepeat(false)
+	: mNumFrames(0)
+	  , mCurrentFrame(0)
+	  , mDuration(sf::Time::Zero)
+	  , mElapsedTime(sf::Time::Zero)
+	  , mRepeat(false)
 {
-
 }
 
 Animation::Animation(const sf::Texture& texture)
 	: mSprite(texture)
-	, mFrameSize()
-	, mNumFrames(0)
-	, mCurrentFrame(0)
-	, mDuration(sf::Time::Zero)
-	, mElapsedTime(sf::Time::Zero)
-	, mRepeat(false)
+	  , mNumFrames(0)
+	  , mCurrentFrame(0)
+	  , mDuration(sf::Time::Zero)
+	  , mElapsedTime(sf::Time::Zero)
+	  , mRepeat(false)
 {
-
 }
 
 void Animation::setTexture(const sf::Texture& texture)
@@ -39,12 +32,14 @@ void Animation::setTextureRect()
 {
 	mSprite.setTextureRect(sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y));
 }
+
 //Mike
 sf::Sprite Animation::getSprite()
 {
 	return mSprite;
 }
-const sf::Texture * Animation::getTexture() const
+
+const sf::Texture* Animation::getTexture() const
 {
 	return mSprite.getTexture();
 }
@@ -163,5 +158,3 @@ void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	states.transform *= getTransform();
 	target.draw(mSprite, states);
 }
-
-

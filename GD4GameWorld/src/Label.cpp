@@ -1,5 +1,4 @@
 #include "Label.hpp"
-#include "Utility.hpp"
 
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -7,7 +6,6 @@
 
 namespace GUI
 {
-
 	Label::Label(const std::string& text, const FontHolder& fonts)
 		: mText(text, fonts.get(FontIDs::Main), 16)
 	{
@@ -32,5 +30,4 @@ namespace GUI
 	{
 		mText.setString(text);
 	}
-
 }

@@ -10,8 +10,7 @@
 
 GameOverState::GameOverState(StateStack& stack, Context context)
 	: State(stack, context)
-	, mGameOverText()
-	, mElapsedTime(sf::Time::Zero)
+	  , mElapsedTime(sf::Time::Zero)
 {
 	sf::Font& font = context.fonts->get(FontIDs::Main);
 	sf::Vector2f windowSize(context.window->getSize());

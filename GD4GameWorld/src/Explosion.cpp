@@ -4,8 +4,8 @@
 #include "Command.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Utility.hpp"
+#include "CommandQueue.hpp"
 
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 namespace
@@ -14,8 +14,10 @@ namespace
 }
 
 Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
-	: Entity(1)
-	, mType(type)
+	: Entity(1),
+	mType(type),
+	mPlayedExplosionSound(false),
+	explosionTimerStarted(false)
 {
 	mAnimation.setTexture(textures.get(TextureIDs::Explosion));
 	mAnimation.setFrameSize(sf::Vector2i(256, 256));
@@ -30,11 +32,6 @@ unsigned int Explosion::getCategory() const
 	return static_cast<int>(Category::Explosion);
 }
 
-int Explosion::getRadious() const
-{
-	return Table[static_cast<int>(mType)].radious;
-}
-
 int Explosion::getDamage() const
 {
 	return Table[static_cast<int>(mType)].damage;
@@ -42,8 +39,8 @@ int Explosion::getDamage() const
 
 sf::FloatRect Explosion::getBoundingRect() const
 {
-	float radious = Table[static_cast<int>(mType)].radious;//TODO Change to circle collision size of animation texture
-	return getWorldTransform().transformRect(sf::FloatRect(0,0, radious, radious));
+	float radius = Table[static_cast<int>(mType)].radious; //TODO Change to circle collision size of animation texture
+	return getWorldTransform().transformRect(sf::FloatRect(0, 0, radius, radius));
 }
 
 bool Explosion::isMarkedForRemoval() const
@@ -51,13 +48,13 @@ bool Explosion::isMarkedForRemoval() const
 	return isDestroyed() && (mAnimation.isFinished() || !mShowExplosion);
 }
 
-void Explosion::updateCurrent(sf::Time dt, CommandQueue & commands)
+void Explosion::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	mAnimation.update(dt);
 
 	if (!mPlayedExplosionSound)
 	{
-		SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
+		SoundEffectIDs soundEffect = randomInt(2) == 0 ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
 		playLocalSound(commands, soundEffect);
 		mPlayedExplosionSound = true;
 	}
@@ -84,7 +81,6 @@ void Explosion::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 		node.playSound(effect, worldPosition);
 	});
 	commands.push(command);
-
 }
 
 void Explosion::StartTimer(sf::Time dt)
