@@ -55,6 +55,7 @@ private:
 	void createObstacle(SceneNode & node, const TextureHolder & textures) const;
 
 private:
+	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...
 	enum Layer { Background, LowerAir, UpperAir, LayerCount };
 	struct SpawnPoint
 	{

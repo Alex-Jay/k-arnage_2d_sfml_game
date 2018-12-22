@@ -63,7 +63,9 @@ private:
 
 	Command mFireCommand;
 	Command mGrenadeCommand;
-	Command mDropPickupCommand;
+
+	////TODO Remove Pickups from character class
+	//Command mDropPickupCommand;
 
 	ShapeNode* mHealthDisplay;
 	TextNode* mGrenadeDisplay;

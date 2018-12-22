@@ -72,11 +72,11 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	};
 
 
-	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
-	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
-	{
-		createPickup(node, textures);
-	};
+	//mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
+	//mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
+	//{
+	//	createPickup(node, textures);
+	//};
 
 	std::unique_ptr<ShapeNode> healthDisplay(new ShapeNode(sf::Color::Green));
 	mHealthDisplay = healthDisplay.get();
@@ -273,13 +273,13 @@ void Character::updateMovementPattern(sf::Time dt)
 	}
 }
 
-void Character::checkPickupDrop(CommandQueue& commands)
-{
-	if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
-		commands.push(mDropPickupCommand);
-
-	mSpawnedPickup = true;
-}
+//void Character::checkPickupDrop(CommandQueue& commands)
+//{
+//	if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
+//		commands.push(mDropPickupCommand);
+//
+//	mSpawnedPickup = true;
+//}
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {

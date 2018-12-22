@@ -220,6 +220,8 @@ void World::handleCollisions()
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 	//TODO Replace this stuff wit a switch statement and make it more readable/efficient
+	//Have one check for collison e.g
+	// of colidee is obsticle then handle that by checking if the collider is player, bullet etc..
 	for (SceneNode::Pair pair : collisionPairs)
 	{
 		if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter))
@@ -240,6 +242,8 @@ void World::handleCollisions()
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
 			pickup.destroy();
+
+			//TODO Change that annoying ass pickup sound
 			player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
 		}
 
@@ -253,6 +257,21 @@ void World::handleCollisions()
 			//pickup.apply(player);
 			//pickup.destroy();
 			player.setVelocity(-player.getVelocity());
+		}
+
+		else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
+			|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
+		{
+			auto& projectile = static_cast<Projectile&>(*pair.second);
+			auto& obstacle = static_cast<Obstacle&>(*pair.first);
+
+			// Apply pickup effect to player, destroy projectile
+			//pickup.apply(player);
+ 			projectile.destroy();
+			//TODO Fix bug where game crashes when trying to remove obsticle
+			//obstacle.remove();//Damage?
+			obstacle.setVelocity(100, -200);
+			obstacle.checkPickupDrop(mCommandQueue);
 		}
 
 		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
@@ -322,7 +341,7 @@ void World::buildScene()
 	mSceneLayers[UpperAir]->attachChild(std::move(player));
 
 	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
-	obstacle->setPosition(sf::Vector2f(200, 500));
+	obstacle->setPosition(sf::Vector2f(1000, 500));
 	mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
 
 
