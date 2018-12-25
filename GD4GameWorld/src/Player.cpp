@@ -13,26 +13,56 @@ struct CharacterMover
 {
 	sf::Vector2f velocity;
 	float angle;
+	unsigned int localIdentifier;
 
-	CharacterMover(float vx, float vy, float da) : velocity(vx, vy), angle(da)
+	CharacterMover(float vx, float vy, float da, unsigned int id) 
+		: velocity(vx, vy)
+		, angle(da)
+		, localIdentifier(id)
 	{
 
 	}
 
 	void operator() (Character& Character, sf::Time) const
 	{
-		Character.accelerate(velocity * Character.getMaxSpeed());
-		Character.applyRotation(angle * Character.getMaxRotationSpeed());
-		//std::cout << "Velocity [X,Y]: " << velocity.x << ", " << velocity.y << std::endl;
-		//std::cout << "Angle: " << angle << std::endl;
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.accelerate(velocity * Character.getMaxSpeed());
+			Character.applyRotation(angle * Character.getMaxRotationSpeed());
+		}
 	}
 };
 
-Player::Player()
-	: mCurrentMissionStatus(MissionStatus::MissionRunning)
+struct CharacterFireTrigger
 {
-	//Set initial key bindings
+	unsigned int localIdentifier;
 
+	CharacterFireTrigger(unsigned int id)
+		: localIdentifier(id)
+	{
+
+	}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.fire();
+		}
+	}
+};
+
+Player::Player(int localIdentifier)
+	: mCurrentMissionStatus(MissionStatus::MissionRunning)
+	, mJoystick(nullptr)
+	, mLocalIdentifier(localIdentifier)
+{
+	if (mJoystick == nullptr && sf::Joystick::Count > 0)
+	{
+		setJoystick(new Xbox360Controller(localIdentifier));
+	}
+
+	//Set initial key bindings
 	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
 	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
 	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
@@ -44,8 +74,12 @@ Player::Player()
 	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
 	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
 
+	// Set intial joystick button bindings
+	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;
+
 	//set initial action bindings
 	initializeActions();
+
 	//Assign all categories to the player's Character
 	for (auto& pair : mActionBinding)
 	{
@@ -53,6 +87,7 @@ Player::Player()
 	}
 }
 
+// Executes when button is pressed once
 void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
 	//check if key pressed is in the key bindings, if so trigger command
@@ -78,14 +113,59 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 	}
 }
 
+// Executes while holding a button
 void Player::handleRealtimeInput(CommandQueue& commands)
 {
 	for (auto pair : mKeyBindingPressed)
-	{		
-
+	{
 		if (sf::Keyboard::isKeyPressed(pair.first) && isRealtimeAction(pair.second))
 		{
 			commands.push(mActionBinding[pair.second]);
+		}
+	}
+
+	// If joystick exists and is set in Player class
+	if (mJoystick->IsConnected())
+	{
+		for (auto pair : mJoystickBindingPressed)
+		{
+			if (sf::Joystick::isButtonPressed(mLocalIdentifier, static_cast<unsigned int>(pair.first)) && isRealtimeAction(pair.second))
+			{
+				commands.push(mActionBinding[pair.second]);
+			}
+		}
+
+		if (sf::Event::JoystickMoved)
+		{
+			if (mJoystick->Up())
+			{
+				commands.push(mActionBinding[Action::MoveUp]);
+			}
+
+			if (mJoystick->Down())
+			{
+				commands.push(mActionBinding[Action::MoveDown]);
+			}
+
+			if (mJoystick->Left())
+			{
+				commands.push(mActionBinding[Action::MoveLeft]);
+			}
+
+			if (mJoystick->Right())
+			{
+				commands.push(mActionBinding[Action::MoveRight]);
+			}
+
+			if (mJoystick->RAnalogLeft())
+			{
+				commands.push(mActionBinding[Action::RotateLeft]);
+			}
+
+			if (mJoystick->RAnalogRight())
+			{
+				commands.push(mActionBinding[Action::RotateRight]);
+			}
 		}
 	}
 }
@@ -130,17 +210,32 @@ Player::MissionStatus Player::getMissionStatus() const
 	return mCurrentMissionStatus;
 }
 
+Xbox360Controller * Player::getJoystick() const
+{
+	if (mJoystick != nullptr)
+	{
+		return mJoystick;
+	}
+	return nullptr;
+}
+
+void Player::setJoystick(Xbox360Controller * joystick)
+{
+	mJoystick = joystick;
+}
+
 void Player::initializeActions()
 {
-	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f));
-	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f, 0.f));
-	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f, 0.f));
-	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f));
-	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f)); // Alex - Rotate left action
-	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f)); // Alex - Rotate right action
-	mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
-	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
-	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f, mLocalIdentifier));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f, 0.f, mLocalIdentifier));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f, 0.f, mLocalIdentifier));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f, mLocalIdentifier));
+	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
+	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
+	//mActionBinding[Action::Fire].action = derivedAction<Character>([](Character& a, sf::Time) { a.fire(); });
+	//mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
+	//mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mLocalIdentifier));
 }
 
 bool Player::isReleaseAction(Action action)

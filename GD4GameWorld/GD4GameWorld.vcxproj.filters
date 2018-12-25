@@ -76,11 +76,11 @@
     <Filter Include="Source Files\Node">
       <UniqueIdentifier>{44cf0c12-1a65-48b4-9e5f-bd630034bef9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\State">
-      <UniqueIdentifier>{39bc6e83-1071-4755-b8c6-30eb9b161601}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Structural">
       <UniqueIdentifier>{ee895e11-dc2d-4535-9cc9-336f3ce688a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node\State">
+      <UniqueIdentifier>{39bc6e83-1071-4755-b8c6-30eb9b161601}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -157,25 +157,25 @@
       <Filter>Source Files\Node</Filter>
     </ClCompile>
     <ClCompile Include="src/GameOverState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/GameState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/MenuState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/PauseState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/SettingsState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/StateStack.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/TitleState.cpp">
-      <Filter>Source Files\State</Filter>
+      <Filter>Source Files\Node\State</Filter>
     </ClCompile>
     <ClCompile Include="src/Utility.cpp">
       <Filter>Source Files\Structural</Filter>
@@ -196,6 +196,9 @@
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
     <ClCompile Include="src/Xbox360Controller.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyBinding.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
   </ItemGroup>
@@ -327,6 +330,9 @@
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
     <ClInclude Include="include\Structural\Xbox360Controller.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyBinding.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,6 +44,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	, mHealthDisplay(nullptr)
 	, mGrenadeDisplay(nullptr)
 	, mGrenadePower(nullptr)
+	, mLocalIdentifier(0)
 {
 	mPlayerAnimation.setFrameSize(sf::Vector2i(263, 156));
 	mPlayerAnimation.setNumFrames(18);
@@ -418,4 +419,14 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 float Character::getMaxRotationSpeed() const
 {
 	return Table[static_cast<int>(mType)].rotationSpeed;
+}
+
+unsigned int const Character::getLocalIdentifier() const
+{
+	return mLocalIdentifier;
+}
+
+void Character::setLocalIdentifier(unsigned int localID)
+{
+	mLocalIdentifier = localID;
 }

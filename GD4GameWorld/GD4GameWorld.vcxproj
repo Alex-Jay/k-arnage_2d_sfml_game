@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src/KeyBinding.cpp" />
     <ClCompile Include="src/Xbox360Controller.cpp" />
     <ClCompile Include="src\Character.cpp" />
     <ClCompile Include="src/Animation.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="include\Entity\Explosion.hpp" />
     <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
     <ClInclude Include="include\Structural\Xbox360Controller.hpp" />
+    <ClInclude Include="include/Structural/KeyBinding.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

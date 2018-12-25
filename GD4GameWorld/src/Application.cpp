@@ -8,7 +8,6 @@
 #include "PauseState.hpp"
 #include "SettingsState.hpp"
 #include "GameOverState.hpp"
-#include "Xbox360Controller.hpp"
 
 #include <iostream>
 
@@ -18,7 +17,7 @@ Application::Application()
 	:mWindow(sf::VideoMode(1024, 768), "Audio", sf::Style::Close)
 	, mTextures()
 	, mFonts()
-	, mPlayer()
+	, mPlayer(0)
 	, mMusic()
 	, mSounds()
 	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer, mMusic, mSounds))
@@ -47,6 +46,7 @@ void Application::run()
 {
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
 	while (mWindow.isOpen())
 	{
 		sf::Time elapsedTime = clock.restart();

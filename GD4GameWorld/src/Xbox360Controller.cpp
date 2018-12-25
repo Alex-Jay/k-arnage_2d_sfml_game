@@ -2,32 +2,26 @@
 
 #include <SFML/Window/Joystick.hpp>
 
-Xbox360Controller::Xbox360Controller()
-	: mControllerIndex(0), mTriggerThreshold(70.f), mThumbstickThreshold(50.0f)
-{
-}
-
 Xbox360Controller::Xbox360Controller(int controllerIndex)
-	: mTriggerThreshold(70.f), mThumbstickThreshold(50.0f)
+	: mControllerIndex(controllerIndex), mTriggerThreshold(70.f), mThumbstickThreshold(50.f)
 {
-	mControllerIndex = controllerIndex;
 }
 
-Xbox360Controller Xbox360Controller::GetController()
-{
-	for (unsigned int i = 0; i < sf::Joystick::Count; i++)
-	{
-		if (sf::Joystick::isConnected(i))
-		{
-			Xbox360Controller controller(i);
-			return controller;
-		}
-	}
-
-	// Return default controller
-	Xbox360Controller controller(0);
-	return controller;
-}
+//Xbox360Controller Xbox360Controller::GetController()
+//{
+//	for (unsigned int i = 0; i < sf::Joystick::Count; i++)
+//	{
+//		if (sf::Joystick::isConnected(i))
+//		{
+//			Xbox360Controller controller(i);
+//			return controller;
+//		}
+//	}
+//
+//	// Return default controller
+//	Xbox360Controller controller(0);
+//	return controller;
+//}
 
 bool Xbox360Controller::IsConnected()
 {
@@ -172,6 +166,18 @@ bool Xbox360Controller::Right()
 {
 	return DPad().x > mThumbstickThreshold || LAnalog().x > mThumbstickThreshold;
 }
+
+bool Xbox360Controller::RAnalogLeft()
+{
+	return RAnalog().x < -mThumbstickThreshold;
+}
+
+bool Xbox360Controller::RAnalogRight()
+{
+	return RAnalog().x > mThumbstickThreshold;
+}
+
+// ------------------ MUTATORS ----------------------------
 
 int Xbox360Controller::GetControllerIndex() const
 {

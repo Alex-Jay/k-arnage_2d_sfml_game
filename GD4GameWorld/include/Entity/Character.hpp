@@ -35,6 +35,9 @@ public:
 
 	float getMaxRotationSpeed() const;
 
+	unsigned int const getLocalIdentifier() const;
+	void setLocalIdentifier(unsigned int localID);
+
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
@@ -80,4 +83,6 @@ private:
 	ShapeNode* mHealthDisplay;
 	TextNode* mGrenadeDisplay;
 	ShapeNode* mGrenadePower;
+
+	int mLocalIdentifier;
 };
