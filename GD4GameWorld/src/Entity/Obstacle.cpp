@@ -4,6 +4,7 @@
 #include "Utility.hpp"
 #include "ResourceHolder.hpp"
 #include "Pickup.hpp"
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
@@ -13,8 +14,8 @@ namespace
 	const std::vector<ObstacleData> Table = initializeObstacleData();
 }
 
-Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
-	: Entity(1)
+Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures, int obstacleHitpoints)
+	: Entity(obstacleHitpoints)
 	, mType(type)
 	, mSprite(textures.get(TextureIDs::Crate))
 {
@@ -77,6 +78,17 @@ sf::FloatRect Obstacle::getBoundingRect() const
 
 void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	//sf::FloatRect rect = getBoundingRect();
+
+	//sf::RectangleShape shape;
+	//shape.setPosition(sf::Vector2f(rect.left, rect.top));
+	//shape.setSize(sf::Vector2f(rect.width, rect.height));
+	//shape.setFillColor(sf::Color::Transparent);
+	//shape.setOutlineColor(sf::Color::Green);
+	//shape.setOutlineThickness(1.f);
+
+	//target.draw(shape);
+
 	target.draw(mSprite, states);
 }
 

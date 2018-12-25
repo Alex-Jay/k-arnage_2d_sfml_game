@@ -268,10 +268,15 @@ void World::handleCollisions()
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
  			projectile.destroy();
-			//TODO Fix bug where game crashes when trying to remove obsticle
-			//obstacle.remove();//Damage?
-			obstacle.setVelocity(100, -200);
-			obstacle.checkPickupDrop(mCommandQueue);
+			std::cout << "Obstacle HP: " << obstacle.getHitpoints() << std::endl;
+			obstacle.damage(10);
+			std::cout << "Obstacle HP: " << obstacle.getHitpoints() << std::endl;
+			//TODO Fixed bug, Entity is removed automatically if its hitpoints drops below 0
+			//obstacle.setVelocity(100, -200);
+			if (!obstacle.isDestroyed())
+			{
+				obstacle.checkPickupDrop(mCommandQueue);
+			}
 		}
 
 		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
@@ -340,10 +345,11 @@ void World::buildScene()
 	mPlayerCharacter->setPosition(mSpawnPosition);
 	mSceneLayers[UpperAir]->attachChild(std::move(player));
 
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
-	obstacle->setPosition(sf::Vector2f(1000, 500));
-	mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-
+	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+	//obstacle->setPosition(sf::Vector2f(1000, 500));
+	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+	
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(50, 50), 50);
 
 	// Add enemy Character
 	addEnemies();
@@ -474,9 +480,9 @@ sf::FloatRect World::getBattlefieldBounds() const
 }
 
 
-void World::createObstacle(SceneNode& node, const TextureHolder& textures) const
+void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position, int obstacleHitpoints) const
 {
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
-	obstacle->setPosition(sf::Vector2f(0,0));
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures, obstacleHitpoints));
+	obstacle->setPosition(position);
 	node.attachChild(std::move(obstacle));
 }

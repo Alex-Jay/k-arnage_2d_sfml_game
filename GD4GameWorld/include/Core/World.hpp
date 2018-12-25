@@ -52,7 +52,7 @@ private:
 	sf::FloatRect getViewBounds() const;
 	sf::FloatRect getBattlefieldBounds() const;
 
-	void createObstacle(SceneNode & node, const TextureHolder & textures) const;
+	void createObstacle(SceneNode & node, const TextureHolder & textures, sf::Vector2f position, int obstacleHitpoints) const;
 
 private:
 	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...

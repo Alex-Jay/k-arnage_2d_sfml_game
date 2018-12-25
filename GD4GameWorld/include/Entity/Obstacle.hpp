@@ -16,7 +16,7 @@ public:
 	};
 
 public:
-	Obstacle(ObstacleID type, const TextureHolder& textures);
+	Obstacle(ObstacleID type, const TextureHolder& textures, int obstacleHitpoints);
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
 

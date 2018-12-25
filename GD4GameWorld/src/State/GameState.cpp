@@ -23,16 +23,16 @@ bool GameState::update(sf::Time dt)
 {
 	mWorld.update(dt);
 
-	if (!mWorld.hasAlivePlayer())
-	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionFailure);
-		requestStackPush(StateIDs::GameOver);
-	}
-	else if (mWorld.hasPlayerReachedEnd())
-	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		requestStackPush(StateIDs::GameOver);
-	}
+	//if (!mWorld.hasAlivePlayer())
+	//{
+	//	mPlayer.setMissionStatus(Player::MissionStatus::MissionFailure);
+	//	requestStackPush(StateIDs::GameOver);
+	//}
+	//else if (mWorld.hasPlayerReachedEnd())
+	//{
+	//	mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
+	//	requestStackPush(StateIDs::GameOver);
+	//}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
 	mPlayer.handleRealtimeInput(commands);
