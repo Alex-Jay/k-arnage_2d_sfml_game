@@ -220,8 +220,8 @@ void World::handleCollisions()
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 	//TODO Replace this stuff wit a switch statement and make it more readable/efficient
-	//Have one check for collison e.g
-	// of colidee is obsticle then handle that by checking if the collider is player, bullet etc..
+	//Have one check for collisons e.g
+	// if collidee is an obstacle then handle that by checking if the collider is a player, bullet, etc..
 	for (SceneNode::Pair pair : collisionPairs)
 	{
 		if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter))
@@ -233,7 +233,6 @@ void World::handleCollisions()
 			player.damage(enemy.getHitpoints());
 			enemy.destroy();
 		}
-
 		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Pickup))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
@@ -246,8 +245,6 @@ void World::handleCollisions()
 			//TODO Change that annoying ass pickup sound
 			player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
 		}
-
-
 		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
@@ -256,9 +253,9 @@ void World::handleCollisions()
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
 			//pickup.destroy();
-			player.setVelocity(-player.getVelocity());
+			//TODO handle collisions better
+			//player.setVelocity(-player.getVelocity());
 		}
-
 		else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
 			|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
 		{
@@ -268,17 +265,17 @@ void World::handleCollisions()
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
  			projectile.destroy();
-			std::cout << "Obstacle HP: " << obstacle.getHitpoints() << std::endl;
-			obstacle.damage(10);
-			std::cout << "Obstacle HP: " << obstacle.getHitpoints() << std::endl;
-			//TODO Fixed bug, Entity is removed automatically if its hitpoints drops below 0
-			//obstacle.setVelocity(100, -200);
+			//DONE Fixed bug, Entity is removed automatically if its hitpoints drops below 0
 			if (!obstacle.isDestroyed())
+			{
+				obstacle.damage(10);
+				//obstacle.setVelocity(100, -200);
+			}
+			else
 			{
 				obstacle.checkPickupDrop(mCommandQueue);
 			}
 		}
-
 		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
 			|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
 		{
@@ -289,10 +286,14 @@ void World::handleCollisions()
 			character.damage(projectile.getDamage());
 			projectile.destroy();
 		}
-
 		else if (matchesCategories(pair, Category::Character, Category::Explosion))
 		{
 			auto& character = static_cast<Character&>(*pair.first);
+			//auto& explosion = static_cast<Explosion&>(*pair.second);
+
+			//std::cout << "charPos [X, Y]: " << charPos.x << ", " << charPos.y << std::endl;
+			//std::cout << "expPos [X, Y]: " << expPos.x << ", " << expPos.y << std::endl;
+			
 			character.damage(10);
 		}
 	}
@@ -320,7 +321,7 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	//// Prepare the tiled background
+	// Prepare the tiled background
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);

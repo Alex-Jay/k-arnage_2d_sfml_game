@@ -14,7 +14,7 @@ namespace
 }
 
 Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
-	: Entity(1),
+	: Entity(2),
 	mType(type),
 	mPlayedExplosionSound(false),
 	explosionTimerStarted(false)

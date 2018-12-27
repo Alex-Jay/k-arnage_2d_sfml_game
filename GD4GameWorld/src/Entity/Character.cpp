@@ -401,11 +401,11 @@ void Character::updateTexts()
 	{
 		mHealthDisplay->setFillColor(sf::Color(RED));
 	}
-	else if (getHitpoints() <= 20)
+	else if (getHitpoints() > 20 && getHitpoints() <= 70)
 	{
 		mHealthDisplay->setFillColor(sf::Color(ORANGE));
 	}
-	else
+	else if (getHitpoints() > 70)
 	{
 		mHealthDisplay->setFillColor(sf::Color(GREEN));
 	}

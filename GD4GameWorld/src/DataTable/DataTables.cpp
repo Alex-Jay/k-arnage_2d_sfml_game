@@ -41,15 +41,18 @@ std::vector<CharacterData> initializeCharacterData()
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(-45.f, 160.f));
 	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
+
 	data[static_cast<int>(Character::Type::Zombie)].moveAnimation = TextureIDs::ZombieMove;
 	data[static_cast<int>(Character::Type::Zombie)].moveRect = sf::IntRect(
 		0, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
+
 	data[static_cast<int>(Character::Type::Zombie)].deathAnimation = TextureIDs::ZombieDeath;
 	data[static_cast<int>(Character::Type::Zombie)].deathRect = sf::IntRect(
 		0, 0, ZOMBIE_DEATH_ANIMATION_WIDTH, ZOMBIE_DEATH_ANIMATION_HEIGHT);
+
 	data[static_cast<int>(Character::Type::Zombie)].moveScale = 2.f;
 	data[static_cast<int>(Character::Type::Zombie)].deathScale = 2.f;
-	data[static_cast<int>(Character::Type::Zombie)].moveFrames = 28;
+	data[static_cast<int>(Character::Type::Zombie)].moveFrames = 27;
 	data[static_cast<int>(Character::Type::Zombie)].deathFrames = 17;
 
 	return data;
