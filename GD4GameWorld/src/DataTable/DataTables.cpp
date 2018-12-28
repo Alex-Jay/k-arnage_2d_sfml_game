@@ -88,10 +88,10 @@ std::vector<ExplosionData> initializeExplosionData()
 	std::vector<ExplosionData> data(static_cast<int>(Explosion::ExplosionIDs::TypeCount));
 
 	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].damage = GRENADEDAMAGE;
-	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].radious = 10;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].radius = 80;
 	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].lifeTimeSeconds = 1;
 	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].texture = TextureIDs::Entities;
-	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].textureRect = sf::IntRect(0, 64, 40, 40);
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].textureRect = sf::IntRect(0, 0, 150, 150);
 
 	return data;
 }

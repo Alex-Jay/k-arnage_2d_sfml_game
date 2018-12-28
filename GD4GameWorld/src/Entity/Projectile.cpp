@@ -9,6 +9,7 @@
 #include "SFML/Graphics/RenderStates.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace
 {
@@ -132,6 +133,12 @@ void Projectile::createExplosion(SceneNode& node, const TextureHolder& textures)
 
 void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	// Alex - Debug grenade bounding rect
+	if (Projectile::isGrenade())
+	{
+		drawBoundingRect(target, states);
+	}
+
 	target.draw(mSprite, states);
 }
 

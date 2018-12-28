@@ -14,7 +14,6 @@
 #include <cmath>
 #include <iostream>
 
-
 namespace
 {
 	const std::vector<CharacterData> Table = initializeCharacterData();
@@ -41,6 +40,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	  , mTravelledDistance(0.f)
 	  , mDirectionIndex(0)
 {
+	// Alex - Optimize texture rect size for collision detection
+	mSprite.setTextureRect(sf::IntRect(0, 0, 100, 60));
+
 	mCharacterMoveAnimation.setFrameSize(Table[static_cast<int>(type)].moveRect);
 	mCharacterMoveAnimation.setNumFrames(Table[static_cast<int>(type)].moveFrames);
 	mCharacterMoveAnimation.setScale(Table[static_cast<int>(type)].moveScale, Table[static_cast<int>(type)].moveScale);
@@ -71,7 +73,6 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mGrenadeVelocity = 0.f;
 	};
 
-
 	//mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
 	//mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	//{
@@ -100,6 +101,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	// Alex - Debug Bounding Rectangle	
+	drawBoundingRect(target, states);
+
 	if (isDestroyed() && mShowDeath)
 	{
 		target.draw(mCharacterDeathAnimation, states);
@@ -344,8 +348,7 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 	}
 }
 
-void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
-                                 const TextureHolder& textures) const
+void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
@@ -364,7 +367,6 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 
 	node.attachChild(std::move(projectile));
 }
-
 
 void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
 {
@@ -410,7 +412,6 @@ void Character::updateTexts()
 		mHealthDisplay->setFillColor(sf::Color(GREEN));
 	}
 }
-
 
 void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 {

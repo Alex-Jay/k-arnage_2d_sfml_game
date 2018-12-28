@@ -61,7 +61,7 @@ struct ProjectileData
 struct ExplosionData
 {
 	int damage;
-	float radious;
+	float radius;
 	int lifeTimeSeconds;
 	TextureIDs texture;
 	sf::IntRect textureRect;

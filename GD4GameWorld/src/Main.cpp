@@ -1,7 +1,8 @@
 #include "Application.hpp"
+
 #include <iostream>
 
-#include "MapTiler.hpp"
+//#include "MapTiler.hpp"
 
 int main()
 {

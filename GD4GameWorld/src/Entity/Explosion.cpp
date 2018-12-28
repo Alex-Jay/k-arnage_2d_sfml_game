@@ -7,6 +7,7 @@
 #include "CommandQueue.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <iostream>
 
 namespace
 {
@@ -14,11 +15,14 @@ namespace
 }
 
 Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
-	: Entity(2),
+	: Entity(1),
 	mType(type),
+	mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect),
 	mPlayedExplosionSound(false),
 	explosionTimerStarted(false)
 {
+	// Alex - Center explosion sprite
+	centreOrigin(mSprite);
 	mAnimation.setTexture(textures.get(TextureIDs::Explosion));
 	mAnimation.setFrameSize(sf::Vector2i(256, 256));
 	mAnimation.setNumFrames(16);
@@ -39,8 +43,9 @@ int Explosion::getDamage() const
 
 sf::FloatRect Explosion::getBoundingRect() const
 {
-	float radius = Table[static_cast<int>(mType)].radious; //TODO Change to circle collision size of animation texture
-	return getWorldTransform().transformRect(sf::FloatRect(0, 0, radius, radius));
+	float radius = Table[static_cast<int>(mType)].radius; //TODO Change to circle collision size of animation texture
+	//return getWorldTransform().transformRect(sf::FloatRect(0, 0, radius, radius));
+	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
 bool Explosion::isMarkedForRemoval() const
@@ -67,6 +72,7 @@ void Explosion::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 void Explosion::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	drawBoundingRect(target, states);
 	target.draw(mAnimation, states);
 }
 

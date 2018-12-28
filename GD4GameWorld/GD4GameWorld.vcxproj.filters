@@ -201,6 +201,9 @@
     <ClCompile Include="src\Entity\Obstacle.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="src\Structural\Debugger.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
@@ -334,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="include\Entity\Obstacle.hpp">
       <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Structural\Debugger.hpp">
+      <Filter>Header Files\Structural</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -41,6 +41,8 @@ public:
 	virtual bool isMarkedForRemoval() const;
 	virtual bool isDestroyed() const;
 	void drawCurrent(sf::RenderTarget & target, sf::RenderStates states, const Ptr & child) const;
+	void drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
+
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	void updateChildren(sf::Time dt, CommandQueue& commands);
@@ -49,7 +51,6 @@ private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	
 	void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
-	void drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
 	std::vector<Ptr> mChildren;

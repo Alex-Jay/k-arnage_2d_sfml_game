@@ -171,6 +171,7 @@
     <ClCompile Include="src\Structural\MapTiler.cpp" />
     <ClCompile Include="src\Structural\Player.cpp" />
     <ClCompile Include="src\Structural\Utility.cpp" />
+    <ClCompile Include="src\Structural\Debugger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Entity\Character.hpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="include\Entity\Explosion.hpp" />
     <ClInclude Include="include\Entity\Obstacle.hpp" />
     <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
+    <ClInclude Include="include\Structural\Debugger.hpp" />
     <ClInclude Include="include\Structural\MapTiler.hpp" />
   </ItemGroup>
   <ItemGroup>

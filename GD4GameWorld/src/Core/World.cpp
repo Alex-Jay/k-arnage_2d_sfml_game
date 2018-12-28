@@ -7,6 +7,8 @@
 #include "Constants.hpp"
 #include "MapTiler.hpp"
 #include "Obstacle.hpp"
+#include "Debugger.hpp"
+#include "Utility.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
@@ -84,6 +86,10 @@ void World::update(sf::Time dt)
 	updateSounds();
 
 	spawnEnemies();
+
+	//Debugger::GetInstance().LogVector("Player Position", mPlayerCharacter->getPosition(), 0);
+	//Debugger::GetInstance().LogVector("Player Velocity", mPlayerCharacter->getVelocity(), 1);
+	//Debugger::GetInstance().LogInt("Player Hitpoints: ", mPlayerCharacter->getHitpoints(), 2);
 }
 
 void World::draw()
@@ -229,9 +235,10 @@ void World::handleCollisions()
 			auto& player = static_cast<Character&>(*pair.first);
 			auto& enemy = static_cast<Character&>(*pair.second);
 
+			// Alex - Disabled player to enemy damage
 			// Collision: Player damage = enemy's remaining HP
-			player.damage(enemy.getHitpoints());
-			enemy.destroy();
+			//player.damage(enemy.getHitpoints());
+			//enemy.destroy();
 		}
 		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Pickup))
 		{
@@ -248,7 +255,12 @@ void World::handleCollisions()
 		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
-			auto& pickup = static_cast<Obstacle&>(*pair.second);
+			auto& obstacle = static_cast<Obstacle&>(*pair.second);
+			//auto& pickup = static_cast<Obstacle&>(*pair.second);
+
+
+			//Debugger::GetInstance().LogVector("Player Collision", player.getPosition(), 0);
+			//Debugger::GetInstance().LogVector("Obstacle", obstacle.getPosition(), 1);
 
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
@@ -264,7 +276,7 @@ void World::handleCollisions()
 
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
- 			projectile.destroy();
+			projectile.destroy();
 			//DONE Fixed bug, Entity is removed automatically if its hitpoints drops below 0
 			if (!obstacle.isDestroyed())
 			{
@@ -282,19 +294,32 @@ void World::handleCollisions()
 			auto& character = static_cast<Character&>(*pair.first);
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 
-			// Apply projectile damage to Character, destroy projectile
-			character.damage(projectile.getDamage());
-			projectile.destroy();
+			// If is projectile
+			if (!projectile.isGrenade())
+			{
+				// Apply projectile damage to Character, destroy projectile
+				character.damage(projectile.getDamage());
+				projectile.destroy();
+			}
+
+			if (projectile.isGrenade())
+			{
+				// Stop grenade on impact
+				projectile.setVelocity(0, 0);
+			}
 		}
-		else if (matchesCategories(pair, Category::Character, Category::Explosion))
+		else if (matchesCategories(pair, Category::EnemyCharacter, Category::Explosion)
+			|| matchesCategories(pair, Category::PlayerCharacter, Category::Explosion))
 		{
 			auto& character = static_cast<Character&>(*pair.first);
-			//auto& explosion = static_cast<Explosion&>(*pair.second);
+			auto& explosion = static_cast<Explosion&>(*pair.second);
 
-			//std::cout << "charPos [X, Y]: " << charPos.x << ", " << charPos.y << std::endl;
-			//std::cout << "expPos [X, Y]: " << expPos.x << ", " << expPos.y << std::endl;
-			
-			character.damage(10);
+			// Distance between characters and explosions center-points
+			float dV = vectorDistance(character.getWorldPosition(), explosion.getWorldPosition());
+
+			// Can't simply use character.damage() here upon explosion
+			// This is a for-loop, meaning that .damage() will be called as many times as the player or zombie is inside the collision rectangle
+			// Eventually, resulting in Access Violation error since the object is deleted but is still trying to damage it
 		}
 	}
 }
@@ -350,12 +375,14 @@ void World::buildScene()
 	//obstacle->setPosition(sf::Vector2f(1000, 500));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
 	
+	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
+	//obstacle->setPosition(sf::Vector2f(200, 50));
+	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(50, 50), 50);
 
 	// Add enemy Character
 	addEnemies();
 }
-
 
 void World::addEnemies()
 {
@@ -479,7 +506,6 @@ sf::FloatRect World::getBattlefieldBounds() const
 
 	return bounds;
 }
-
 
 void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position, int obstacleHitpoints) const
 {

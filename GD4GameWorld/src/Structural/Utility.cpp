@@ -5,10 +5,13 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
+#include <SFML/System/Clock.hpp>
 
 #include <cmath>
 #include <random>
 #include <cassert>
+#include <iostream>
+#include <Windows.h>
 
 std::default_random_engine createRandomEngine()
 {
@@ -17,7 +20,6 @@ std::default_random_engine createRandomEngine()
 }
 
 auto RandomEngine = createRandomEngine();
-
 
 void centreOrigin(sf::Sprite& sprite)
 {
@@ -78,6 +80,30 @@ float length(sf::Vector2f vector)
 	return std::sqrt(vector.x * vector.x + vector.y * vector.y);
 }
 
+float vectorDistance(sf::Vector2f v1, sf::Vector2f v2)
+{
+	sf::Vector2f dV = v1 - v2;
+	return length(dV);
+}
+
+// Alex - TODO implement simple lerp
+sf::Vector2f lerp(sf::Vector2f start, sf::Vector2f end, float duration)
+{
+	/*
+		StartX = 5
+		EndX   = 10
+		Duration = 5
+
+		dX = 5
+		dX / duration = 1s per step
+	*/
+
+	sf::Clock clock;
+	clock.restart();
+
+	return sf::Vector2f();
+}
+
 //Mike
 sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDelta)
 {
@@ -90,6 +116,15 @@ sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDel
 		return target;
 	}
 	return current + a / magnitude * maxDelta;
+}
+
+// Alex - Go to specific coordinate in console
+void GotoXY(int x, int y)
+{
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
 //Mike

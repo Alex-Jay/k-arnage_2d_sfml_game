@@ -8,7 +8,6 @@
 #include "SettingsState.hpp"
 #include "GameOverState.hpp"
 
-
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
@@ -30,7 +29,8 @@ Application::Application()
 	registerStates();
 	mStateStack.pushState(StateIDs::Title);
 
-	mMusic.setVolume(25.f);
+	//mMusic.setVolume(25.f);
+	mMusic.setVolume(10.f);
 }
 
 void Application::run()
