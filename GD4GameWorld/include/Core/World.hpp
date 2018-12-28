@@ -16,6 +16,7 @@
 
 #include <array>
 #include <queue>
+#include "MapTiler.hpp"
 
 //Forward declaration
 namespace sf
@@ -78,6 +79,8 @@ private:
 	TextureHolder mTextures;
 	FontHolder&	mFonts;
 	SoundPlayer& mSounds;
+
+	//MapTiler& map;
 
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mSceneLayers;

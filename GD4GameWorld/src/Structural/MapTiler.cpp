@@ -133,6 +133,13 @@ void MapTiler::setMapDimensions(unsigned int width)
 	++mMapHeight;
 }
 
+sf::FloatRect MapTiler::getMapBounds()
+{
+	float pixelWidth = (mMapWidth * mTileSize.x) - (mTileSize.x * 2);
+	float pixelHeight = mMapHeight * mTileSize.y  - (mTileSize.y * 2);
+	return  sf::FloatRect(-mTileSize.x, -mTileSize.y, pixelWidth, pixelHeight);
+}
+
 void MapTiler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// apply the transform

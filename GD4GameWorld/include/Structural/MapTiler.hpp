@@ -23,7 +23,7 @@ public:
 
 	void populateMap();
 	void populateLine();
-
+	sf::FloatRect getMapBounds();
 	void findCharacter(unsigned int & i, std::string line);
 private:
 	void setMapDimensions(unsigned int width);
@@ -36,7 +36,7 @@ private:
 	std::vector<int> tempMap;
 	std::vector<int> intMap;
 
-	sf::Vector2u mTileSize;
+	sf::Vector2i mTileSize;
 	sf::VertexArray m_vertices;
 
 	unsigned int mMapWidth;

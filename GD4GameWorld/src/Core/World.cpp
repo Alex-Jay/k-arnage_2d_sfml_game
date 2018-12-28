@@ -24,7 +24,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSounds(sounds)
 	  , mSceneLayers()
 	  // Alex - Increased map size
-	  , mWorldBounds(-128.f, -128.f, mWorldView.getSize().x * 2, 1000.f)
+	 // , mWorldBounds(-128.f, -128.f, (mWorldView.getSize().x * 2) - 128, (1000.f - 128))
 	  , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
@@ -132,7 +132,7 @@ void World::loadTextures()
 
 	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS
 	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
-	mTextures.load(TextureIDs::Sand, "Media/Textures/Sand.png");
+	mTextures.load(TextureIDs::Sand, "Media/Textures/Water.jpg");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
@@ -214,10 +214,10 @@ void World::handlePlayerCollision()
 		Check if player is out of bounds (bottom side)
 		getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
 	*/
-	if (mPlayerCharacter->getPosition().y >= getBattlefieldBounds().height + mWorldBounds.height)
+	if (mPlayerCharacter->getPosition().y >=  mWorldBounds.height)
 	{
 		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x,
-		                              getBattlefieldBounds().height + mWorldBounds.height);
+		                               mWorldBounds.height);
 	}
 }
 
@@ -346,6 +346,9 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
+	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+	mWorldBounds = map->getMapBounds();
+	//mWorldBounds.height = 1024;
 	// Prepare the tiled background
 	sf::Texture& sandTexture = mTextures.get(TextureIDs::Sand);
 	sandTexture.setRepeated(true);
@@ -362,7 +365,7 @@ void World::buildScene()
 	mSceneLayers[Layer::Background]->attachChild(std::move(sandSprite));
 
 	// Prepare the tiled background
-	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 
