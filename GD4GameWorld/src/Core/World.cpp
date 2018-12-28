@@ -24,7 +24,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSounds(sounds)
 	  , mSceneLayers()
 	  // Alex - Increased map size
-	  , mWorldBounds(0.f, 0.f, mWorldView.getSize().x * 2, 1000.f)
+	  , mWorldBounds(-128.f, -128.f, mWorldView.getSize().x * 2, 1000.f)
 	  , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
@@ -345,6 +345,21 @@ void World::buildScene()
 
 		mSceneGraph.attachChild(std::move(layer));
 	}
+
+	// Prepare the tiled background
+	sf::Texture& sandTexture = mTextures.get(TextureIDs::Sand);
+	sandTexture.setRepeated(true);
+
+	float viewHeight = mWorldView.getSize().y + 512;
+	float viewWidth = mWorldView.getSize().x + 128;
+
+	sf::IntRect textureRect(sf::FloatRect(0,0, mWorldBounds.width * 2, mWorldBounds.height * 2));
+	textureRect.height += static_cast<int>(viewHeight);
+
+	// Add the background sprite to the scene
+	std::unique_ptr<SpriteNode> sandSprite(new SpriteNode(sandTexture, textureRect));
+	sandSprite->setPosition(-viewWidth / 2, -viewHeight/ 2);
+	mSceneLayers[Layer::Background]->attachChild(std::move(sandSprite));
 
 	// Prepare the tiled background
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
