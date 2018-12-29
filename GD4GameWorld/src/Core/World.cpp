@@ -92,19 +92,16 @@ void World::draw()
 	//MapTiler m;
 	if (PostEffect::isSupported())
 	{
-		//TODO use Color Constant
-		mSceneTexture.clear(sf::Color(114, 168, 255, 255));
+		mSceneTexture.clear(sf::Color(BLUE));
 		mSceneTexture.setView(mWorldView);
 		mSceneTexture.draw(mSceneGraph);
 		mSceneTexture.display();
 		mBloomEffect.apply(mSceneTexture, mTarget);
-		//mTarget.draw(m);
 	}
 	else
 	{
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
-		//mTarget.draw(m);
 	}
 }
 
@@ -130,7 +127,6 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::Water, "Media/Textures/Water.jpg");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
-	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
 
 	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
 	mTextures.load(TextureIDs::PlayerDeath, "Media/Textures/Blood.png");
@@ -276,10 +272,10 @@ void World::handlePickupCollisions(SceneNode::Pair& pair)
 	auto& pickup = static_cast<Pickup&>(*pair.second);
 
 	// Apply pickup effect to player, destroy projectile
+	//TODO APPLY PICKUP EFFECTS
 	//pickup.apply(player);
 	pickup.destroy();
 
-	//TODO Change that annoying ass pickup sound
 	player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
 }
 
@@ -397,7 +393,7 @@ void World::buildScene()
 	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
 	//obstacle->setPosition(sf::Vector2f(200, 50));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(50, 50));
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
 
 	// Add enemy Character
 	addEnemies();
@@ -517,12 +513,7 @@ sf::FloatRect World::getViewBounds() const
 
 sf::FloatRect World::getBattlefieldBounds() const
 {
-	// Return view bounds + some area at top, where enemies spawn
 	sf::FloatRect bounds = getViewBounds();
-	// Alex - Disable extra bounding area
-	//bounds.top -= 100.f;
-	//bounds.height += 100.f;
-
 	return bounds;
 }
 

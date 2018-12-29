@@ -17,7 +17,6 @@ enum class TextureIDs
 	Explosion,
 	Grenade,
 	Particle,
-	FinishLine,
 	PlayerMove,
 	PlayerDeath,
 	ZombieMove,
