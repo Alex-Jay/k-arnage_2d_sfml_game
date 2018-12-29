@@ -16,7 +16,6 @@
 #include <cmath>
 #include <limits>
 
-
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds)
 	: mTarget(outputTarget)
 	  , mWorldView(outputTarget.getDefaultView())
@@ -35,6 +34,47 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	loadTextures();
 	buildScene();
 }
+
+void World::loadTextures()
+{
+	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS, REMOVE unused ASSETS
+	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
+	mTextures.load(TextureIDs::Water, "Media/Textures/Water.jpg");
+	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
+	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
+
+	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
+	mTextures.load(TextureIDs::PlayerDeath, "Media/Textures/Blood.png");
+
+	mTextures.load(TextureIDs::ZombieMove, "Media/Textures/ZombieWalk.png");
+	mTextures.load(TextureIDs::ZombieDeath, "Media/Textures/ZombieDeath.png");
+
+	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
+	mTextures.load(TextureIDs::MapTiles, "Media/Textures/Tiles.png");
+
+	mTextures.load(TextureIDs::Crate, "Media/Textures/Crate.png");
+}
+
+#pragma region Getters
+
+CommandQueue& World::getCommandQueue()
+{
+	return mCommandQueue;
+}
+
+sf::FloatRect World::getViewBounds() const
+{
+	return sf::FloatRect(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
+}
+
+sf::FloatRect World::getBattlefieldBounds() const
+{
+	sf::FloatRect bounds = getViewBounds();
+	return bounds;
+}
+#pragma endregion
+
+#pragma region Update
 
 void World::update(sf::Time dt)
 {
@@ -105,41 +145,6 @@ void World::draw()
 	}
 }
 
-CommandQueue& World::getCommandQueue()
-{
-	return mCommandQueue;
-}
-
-bool World::hasAlivePlayer() const
-{
-	return !mPlayerCharacter->isMarkedForRemoval();
-}
-
-bool World::hasPlayerReachedEnd() const
-{
-	return !mWorldBounds.contains(mPlayerCharacter->getPosition());
-}
-
-void World::loadTextures()
-{
-	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS, REMOVE unused ASSETS
-	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
-	mTextures.load(TextureIDs::Water, "Media/Textures/Water.jpg");
-	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
-	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
-
-	mTextures.load(TextureIDs::PlayerMove, "Media/Textures/PlayerMove.png");
-	mTextures.load(TextureIDs::PlayerDeath, "Media/Textures/Blood.png");
-
-	mTextures.load(TextureIDs::ZombieMove, "Media/Textures/ZombieWalk.png");
-	mTextures.load(TextureIDs::ZombieDeath, "Media/Textures/ZombieDeath.png");
-
-	mTextures.load(TextureIDs::Grenade, "Media/Textures/Grenade.png");
-	mTextures.load(TextureIDs::MapTiles, "Media/Textures/Tiles.png");
-
-	mTextures.load(TextureIDs::Crate, "Media/Textures/Crate.png");
-}
-
 void World::adaptPlayerPosition()
 {
 	// Keep player's position inside the screen bounds, at least borderDistance units from the border
@@ -166,6 +171,213 @@ void World::adaptPlayerVelocity()
 	mPlayerCharacter->accelerate(0.f, mScrollSpeed);
 }
 
+bool World::hasAlivePlayer() const
+{
+	return !mPlayerCharacter->isMarkedForRemoval();
+}
+
+bool World::hasPlayerReachedEnd() const
+{
+	return !mWorldBounds.contains(mPlayerCharacter->getPosition());
+}
+
+void World::updateSounds()
+{
+	// Set listener's position to player position
+	mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
+
+	// Remove unused sounds
+	mSounds.removeStoppedSounds();
+}
+
+void World::spawnEnemies()
+{
+	// Spawn all enemies entering the view area (including distance) this frame
+	while (!mEnemySpawnPoints.empty()
+		&& mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	{
+		SpawnPoint spawn = mEnemySpawnPoints.back();
+
+		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
+		enemy->setPosition(spawn.x, spawn.y);
+		enemy->setRotation(180.f);
+
+		mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+
+		// Enemy is spawned, remove from the list to spawn
+		mEnemySpawnPoints.pop_back();
+	}
+}
+
+void World::destroyEntitiesOutsideView()
+{
+	Command command;
+	command.category = static_cast<int>(Category::Projectile) | static_cast<int>(Category::EnemyCharacter);
+	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
+	{
+		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
+			e.destroy();
+	});
+
+	mCommandQueue.push(command);
+}
+
+void World::guideZombies()
+{
+	// Setup command that stores all players in mActiveEnemies
+	Command enemyCollector;
+	enemyCollector.category = static_cast<int>(Category::PlayerCharacter);
+	enemyCollector.action = derivedAction<Character>([this](Character& player, sf::Time)
+	{
+		if (!player.isDestroyed())
+			mActiveEnemies.push_back(&player);
+	});
+
+	// Setup command that guides all grenades to the enemy which is currently closest to the player
+	Command zombieGuider;
+	zombieGuider.category = static_cast<int>(Category::EnemyCharacter);
+	zombieGuider.action = derivedAction<Character>([this](Character& zombie, sf::Time)
+	{
+		// Ignore unguided bullets
+		if (zombie.isPlayer())
+			return;
+
+		float minDistance = std::numeric_limits<float>::max();
+		Character* closestEnemy = nullptr;
+
+		// Find closest enemy
+		for (Character* enemy : mActiveEnemies)
+		{
+			float enemyDistance = distance(zombie, *enemy);
+
+			if (enemyDistance < minDistance)
+			{
+				closestEnemy = enemy;
+				minDistance = enemyDistance;
+			}
+		}
+
+		if (closestEnemy)
+			zombie.guideTowards(closestEnemy->getWorldPosition());
+	});
+
+	// Push commands, reset active enemies
+	mCommandQueue.push(enemyCollector);
+	mCommandQueue.push(zombieGuider);
+	mActiveEnemies.clear();
+}
+
+#pragma endregion
+
+#pragma region Creation
+
+void World::buildScene()
+{
+	// Initialize the different layers
+	for (std::size_t i = 0; i < LayerCount; ++i)
+	{
+		Category category = i == LowerLayer ? Category::SceneLayer : Category::None;
+
+		SceneNode::Ptr layer(new SceneNode(category));
+		mSceneLayers[i] = layer.get();
+
+		mSceneGraph.attachChild(std::move(layer));
+	}
+
+	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+	mWorldBounds = map->getMapBounds();
+	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
+	waterTexture.setRepeated(true);
+
+	float viewHeight = mWorldBounds.height;
+	float viewWidth = mWorldBounds.width;
+
+	sf::IntRect textureRect(sf::FloatRect(128, 128, mWorldBounds.width * 2, mWorldBounds.height * 2));
+	textureRect.height += static_cast<int>(viewHeight);
+
+	// Add the background sprite to the scene
+	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(waterTexture, textureRect));
+	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
+	mSceneLayers[Layer::Background]->attachChild(std::move(waterSprite));
+
+	// Prepare the tiled background
+	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+
+	map->setPosition(mWorldBounds.left, mWorldBounds.top);
+
+	mSceneLayers[Background]->attachChild(std::move(map));
+
+	// Add particle node to the scene
+	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
+	mSceneLayers[LowerLayer]->attachChild(std::move(smokeNode));
+
+	// Add exhaust particle node to the scene
+	std::unique_ptr<ParticleNode> exhaustNode(new ParticleNode(Particle::Type::Exhaust, mTextures));
+	mSceneLayers[LowerLayer]->attachChild(std::move(exhaustNode));
+
+	//Add sound effect node
+	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
+	mSceneGraph.attachChild(std::move(soundNode));
+
+	// Add player's Character
+	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	mPlayerCharacter = player.get();
+	mPlayerCharacter->setPosition(mSpawnPosition);
+	mSceneLayers[UpperLayer]->attachChild(std::move(player));
+
+	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+	//obstacle->setPosition(sf::Vector2f(1000, 500));
+	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+
+	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
+	//obstacle->setPosition(sf::Vector2f(200, 50));
+	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
+
+	// Add enemy Character
+	addEnemies();
+}
+
+void World::addEnemies()
+{
+	// Add enemies to the spawn point container
+
+	addEnemy(Character::Type::Zombie, -1000.f, -1000.f);
+	addEnemy(Character::Type::Zombie, 1000.f, 500.f);
+	addEnemy(Character::Type::Zombie, 4000.f, 1150.f);
+	addEnemy(Character::Type::Zombie, 8000.f, -1220.f);
+	addEnemy(Character::Type::Zombie, -3000.f, -1220.f);
+	addEnemy(Character::Type::Zombie, 1100.f, 20.f);
+	addEnemy(Character::Type::Zombie, 2000.f, -500.f);
+	addEnemy(Character::Type::Zombie, 6000.f, -300.f);
+	addEnemy(Character::Type::Zombie, -250.f, -3020.f);
+	addEnemy(Character::Type::Zombie, -250.f, 3250.f);
+	addEnemy(Character::Type::Zombie, 600.f, 800.f);
+	addEnemy(Character::Type::Zombie, 800.f, 400.f);
+	addEnemy(Character::Type::Zombie, 450.f, 200.f);
+	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
+	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
+	{
+		return lhs.y < rhs.y;
+	});
+}
+
+void World::addEnemy(Character::Type type, float relX, float relY)
+{
+	SpawnPoint spawn(type, mSpawnPosition.x + relX, mSpawnPosition.y - relY);
+	mEnemySpawnPoints.push_back(spawn);
+}
+
+void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
+{
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
+	obstacle->setPosition(position);
+	node.attachChild(std::move(obstacle));
+}
+
+#pragma endregion
+
+#pragma region Collisions
 bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type2)
 {
 	unsigned int category1 = colliders.first->getCategory();
@@ -231,7 +443,7 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	auto& character2 = static_cast<Character&>(*pair.second);
 
 	if ((character1.isZombie() && character2.isZombie())
-		|| (character1.isAllied() && character2.isAllied()))
+		|| (character1.isPlayer() && character2.isPlayer()))
 	{
 		//TODO FIX COLLISION
 		character1.setPosition(character1.getLastPosition());
@@ -322,204 +534,4 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	}
 	else { return Default; }
 }
-
-void World::updateSounds()
-{
-	// Set listener's position to player position
-	mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
-
-	// Remove unused sounds
-	mSounds.removeStoppedSounds();
-}
-
-void World::buildScene()
-{
-	// Initialize the different layers
-	for (std::size_t i = 0; i < LayerCount; ++i)
-	{
-		Category category = i == LowerAir ? Category::SceneAirLayer : Category::None;
-
-		SceneNode::Ptr layer(new SceneNode(category));
-		mSceneLayers[i] = layer.get();
-
-		mSceneGraph.attachChild(std::move(layer));
-	}
-
-	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
-	mWorldBounds = map->getMapBounds();
-	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
-	waterTexture.setRepeated(true);
-
-	float viewHeight = mWorldBounds.height;
-	float viewWidth = mWorldBounds.width;
-
-	sf::IntRect textureRect(sf::FloatRect(128, 128, mWorldBounds.width * 2, mWorldBounds.height * 2));
-	textureRect.height += static_cast<int>(viewHeight);
-
-	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(waterTexture, textureRect));
-	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
-	mSceneLayers[Layer::Background]->attachChild(std::move(waterSprite));
-
-	// Prepare the tiled background
-	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
-
-	map->setPosition(mWorldBounds.left, mWorldBounds.top);
-
-	mSceneLayers[Background]->attachChild(std::move(map));
-
-	// Add particle node to the scene
-	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
-	mSceneLayers[LowerAir]->attachChild(std::move(smokeNode));
-
-	// Add exhaust particle node to the scene
-	std::unique_ptr<ParticleNode> exhaustNode(new ParticleNode(Particle::Type::Exhaust, mTextures));
-	mSceneLayers[LowerAir]->attachChild(std::move(exhaustNode));
-
-	//Add sound effect node
-	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
-	mSceneGraph.attachChild(std::move(soundNode));
-
-	// Add player's Character
-	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	mPlayerCharacter = player.get();
-	mPlayerCharacter->setPosition(mSpawnPosition);
-	mSceneLayers[UpperAir]->attachChild(std::move(player));
-
-	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
-	//obstacle->setPosition(sf::Vector2f(1000, 500));
-	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-
-	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
-	//obstacle->setPosition(sf::Vector2f(200, 50));
-	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
-
-	// Add enemy Character
-	addEnemies();
-}
-
-void World::addEnemies()
-{
-	// Add enemies to the spawn point container
-
-	addEnemy(Character::Type::Zombie, -1000.f, -1000.f);
-	addEnemy(Character::Type::Zombie, 1000.f, 500.f);
-	addEnemy(Character::Type::Zombie, 4000.f, 1150.f);
-	addEnemy(Character::Type::Zombie, 8000.f, -1220.f);
-	addEnemy(Character::Type::Zombie, -3000.f, -1220.f);
-	addEnemy(Character::Type::Zombie, 1100.f, 20.f);
-	addEnemy(Character::Type::Zombie, 2000.f, -500.f);
-	addEnemy(Character::Type::Zombie, 6000.f, -300.f);
-	addEnemy(Character::Type::Zombie, -250.f, -3020.f);
-	addEnemy(Character::Type::Zombie, -250.f, 3250.f);
-	addEnemy(Character::Type::Zombie, 600.f, 800.f);
-	addEnemy(Character::Type::Zombie, 800.f, 400.f);
-	addEnemy(Character::Type::Zombie, 450.f, 200.f);
-	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
-	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
-	{
-		return lhs.y < rhs.y;
-	});
-}
-
-void World::addEnemy(Character::Type type, float relX, float relY)
-{
-	SpawnPoint spawn(type, mSpawnPosition.x + relX, mSpawnPosition.y - relY);
-	mEnemySpawnPoints.push_back(spawn);
-}
-
-void World::spawnEnemies()
-{
-	// Spawn all enemies entering the view area (including distance) this frame
-	while (!mEnemySpawnPoints.empty()
-		&& mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
-	{
-		SpawnPoint spawn = mEnemySpawnPoints.back();
-
-		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
-		enemy->setPosition(spawn.x, spawn.y);
-		enemy->setRotation(180.f);
-
-		mSceneLayers[UpperAir]->attachChild(std::move(enemy));
-
-		// Enemy is spawned, remove from the list to spawn
-		mEnemySpawnPoints.pop_back();
-	}
-}
-
-void World::destroyEntitiesOutsideView()
-{
-	Command command;
-	command.category = static_cast<int>(Category::Projectile) | static_cast<int>(Category::EnemyCharacter);
-	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
-	{
-		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
-			e.destroy();
-	});
-
-	mCommandQueue.push(command);
-}
-
-void World::guideZombies()
-{
-	// Setup command that stores all players in mActiveEnemies
-	Command enemyCollector;
-	enemyCollector.category = static_cast<int>(Category::PlayerCharacter);
-	enemyCollector.action = derivedAction<Character>([this](Character& player, sf::Time)
-	{
-		if (!player.isDestroyed())
-			mActiveEnemies.push_back(&player);
-	});
-
-	// Setup command that guides all grenades to the enemy which is currently closest to the player
-	Command zombieGuider;
-	zombieGuider.category = static_cast<int>(Category::EnemyCharacter);
-	zombieGuider.action = derivedAction<Character>([this](Character& zombie, sf::Time)
-	{
-		// Ignore unguided bullets
-		if (zombie.isAllied())
-			return;
-
-		float minDistance = std::numeric_limits<float>::max();
-		Character* closestEnemy = nullptr;
-
-		// Find closest enemy
-		for (Character* enemy : mActiveEnemies)
-		{
-			float enemyDistance = distance(zombie, *enemy);
-
-			if (enemyDistance < minDistance)
-			{
-				closestEnemy = enemy;
-				minDistance = enemyDistance;
-			}
-		}
-
-		if (closestEnemy)
-			zombie.guideTowards(closestEnemy->getWorldPosition());
-	});
-
-	// Push commands, reset active enemies
-	mCommandQueue.push(enemyCollector);
-	mCommandQueue.push(zombieGuider);
-	mActiveEnemies.clear();
-}
-
-sf::FloatRect World::getViewBounds() const
-{
-	return sf::FloatRect(mWorldView.getCenter() - mWorldView.getSize() / 2.f, mWorldView.getSize());
-}
-
-sf::FloatRect World::getBattlefieldBounds() const
-{
-	sf::FloatRect bounds = getViewBounds();
-	return bounds;
-}
-
-void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
-{
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
-	obstacle->setPosition(position);
-	node.attachChild(std::move(obstacle));
-}
+#pragma endregion

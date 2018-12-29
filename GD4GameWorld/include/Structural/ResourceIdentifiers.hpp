@@ -31,7 +31,7 @@ enum class FontIDs { Main };
 
 enum class MusicIDs { MenuTheme, MissionTheme };
 
-enum class SoundEffectIDs { AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchGrenade, CollectPickup, Button };
+enum class SoundEffectIDs { AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchGrenade, CollectPickup, Button, Scream};
 
 
 //Forward declaration and typedef

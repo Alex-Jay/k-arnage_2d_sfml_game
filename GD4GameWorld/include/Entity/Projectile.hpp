@@ -51,7 +51,7 @@ private:
 
 	bool mGrenadeTimerStarted;
 	bool mShowExplosion;
-	bool mPlayedExplosionSound;
+	bool mPlayedScreamSound;
 
 	float mInitialVelocity;
 };

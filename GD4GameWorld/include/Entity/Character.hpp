@@ -22,7 +22,7 @@ public:
 	virtual sf::FloatRect getBoundingRect() const;
 	virtual void remove();
 	virtual bool isMarkedForRemoval() const;
-	bool isAllied() const;
+	bool isPlayer() const;
 	bool isZombie() const;
 	float getMaxSpeed() const;
 
@@ -45,16 +45,14 @@ private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 
 	void updateVelocity(sf::Time dt);
-	void updateAnimations(sf::Time dt);
+	void updateAnimations(sf::Time dt, CommandQueue& commands);
 	void updateMovementPattern(sf::Time dt);
-	void checkPickupDrop(CommandQueue& commands);
 	void checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
 	                      const TextureHolder& textures) const;
 
-	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
 
 private:
@@ -82,7 +80,7 @@ private:
 	bool mIsLaunchingGrenade;
 	bool mGrenadeStarted{};
 	bool mShowDeath;
-	bool mPlayedExplosionSound;
+	bool mPlayedScreamSound;
 	bool mSpawnedPickup;
 
 	float mGrenadeVelocity;

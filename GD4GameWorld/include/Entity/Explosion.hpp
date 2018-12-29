@@ -35,7 +35,7 @@ private:
 	sf::Sprite mSprite;
 
 	bool mShowExplosion;
-	bool mPlayedExplosionSound;
+	bool mPlayedScreamSound;
 	bool explosionTimerStarted;
 
 	sf::Time mExplosionTimer;

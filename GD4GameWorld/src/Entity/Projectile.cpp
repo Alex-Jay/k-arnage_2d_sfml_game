@@ -23,7 +23,7 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 {
 	centreOrigin(mSprite);
 
-	mExplosionCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mExplosionCommand.category = static_cast<int>(Category::SceneLayer);
 	mExplosionCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
 		createExplosion(node, textures);

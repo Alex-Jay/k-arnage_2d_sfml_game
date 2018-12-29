@@ -22,7 +22,7 @@ Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
 {
 	centreOrigin(mSprite);
 
-	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mDropPickupCommand.category = static_cast<int>(Category::SceneLayer);
 	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
 		createPickup(node, textures);

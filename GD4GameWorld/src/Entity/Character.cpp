@@ -32,7 +32,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	  , mIsFiring(false)
 	  , mIsLaunchingGrenade(false)
 	  , mShowDeath(true)
-	  , mPlayedExplosionSound(false)
+	  , mPlayedScreamSound(false)
 	  , mSpawnedPickup(false)
 	  , mFireRateLevel(1)
 	  , mSpreadLevel(1)
@@ -60,13 +60,13 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	centreOrigin(mCharacterMoveAnimation);
 	centreOrigin(mCharacterDeathAnimation);
 
-	mFireCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mFireCommand.category = static_cast<int>(Category::SceneLayer);
 	mFireCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
 		createBullets(node, textures);
 	};
 
-	mGrenadeCommand.category = static_cast<int>(Category::SceneAirLayer);
+	mGrenadeCommand.category = static_cast<int>(Category::SceneLayer);
 	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
 		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures);
@@ -124,7 +124,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	mLastPosition = getPosition();
 	//Update Player Animations
-	updateAnimations(dt);
+	updateAnimations(dt, commands);
 
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
@@ -157,20 +157,20 @@ void Character::updateVelocity(sf::Time dt) //TO DELETE//TODO
 	setVelocity(cos(getRotation() * M_PI / 180) * -getVelocity().y, sin(getRotation() * M_PI / 180) * -getVelocity().y);
 }
 
-void Character::updateAnimations(sf::Time dt)
+void Character::updateAnimations(sf::Time dt, CommandQueue& commands)
 {
 	if (isDestroyed())
 	{
 		mCharacterDeathAnimation.update(dt);
 
 		// Play Death sound TODO
-		//if (!mPlayedExplosionSound)
-		//{
-		//	SoundEffectIDs soundEffect = (randomInt(2) == 0) ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
-		//	playLocalSound(commands, soundEffect);
+		if (!mPlayedScreamSound && isPlayer())
+		{
+			SoundEffectIDs soundEffect = SoundEffectIDs::Scream;
+			playLocalSound(commands, soundEffect);
 
-		//	mPlayedExplosionSound = true;
-		//}
+			mPlayedScreamSound = true;
+		}
 		return;
 	}
 	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
@@ -181,7 +181,7 @@ void Character::updateAnimations(sf::Time dt)
 
 unsigned int Character::getCategory() const
 {
-	if (isAllied())
+	if (isPlayer())
 		return static_cast<int>(Category::PlayerCharacter);
 	return static_cast<int>(Category::EnemyCharacter);
 }
@@ -202,7 +202,7 @@ void Character::remove()
 	mShowDeath = false;
 }
 
-bool Character::isAllied() const
+bool Character::isPlayer() const
 {
 	return mType == Type::Player;
 }
@@ -285,7 +285,7 @@ void Character::updateMovementPattern(sf::Time dt)
 
 //void Character::checkPickupDrop(CommandQueue& commands)
 //{
-//	if (!isAllied() && randomInt(3) == 0 && !mSpawnedPickup)
+//	if (!isPlayer() && randomInt(3) == 0 && !mSpawnedPickup)
 //		commands.push(mDropPickupCommand);
 //
 //	mSpawnedPickup = true;
@@ -299,7 +299,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	}
 
 	// Enemies try to fire all the time
-	if (!isAllied())
+	if (!isPlayer())
 		fire();
 
 	// Check for automatic gunfire, allow only in intervals
@@ -307,7 +307,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		// Interval expired: We can fire a new bullet
 		commands.push(mFireCommand);
-		playLocalSound(commands, isAllied() ? SoundEffectIDs::AlliedGunfire : SoundEffectIDs::EnemyGunfire);
+		playLocalSound(commands, isPlayer() ? SoundEffectIDs::AlliedGunfire : SoundEffectIDs::EnemyGunfire);
 		mFireCountdown += Table[static_cast<int>(mType)].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 	}
@@ -330,7 +330,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
-	Projectile::ProjectileIDs type = isAllied()
+	Projectile::ProjectileIDs type = isPlayer()
 		                                 ? Projectile::ProjectileIDs::AlliedBullet
 		                                 : Projectile::ProjectileIDs::EnemyBullet;
 

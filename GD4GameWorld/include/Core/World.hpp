@@ -74,8 +74,7 @@ private:
 	void createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const;
 
 private:
-	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...
-	enum Layer { Background, LowerAir, UpperAir, LayerCount };
+	enum Layer { Background, LowerLayer, UpperLayer, LayerCount };
 
 	struct SpawnPoint
 	{

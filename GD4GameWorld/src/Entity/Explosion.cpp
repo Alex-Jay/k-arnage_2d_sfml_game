@@ -18,7 +18,7 @@ Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
 	: Entity(1),
 	  mType(type),
 	  mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect),
-	  mPlayedExplosionSound(false),
+	  mPlayedScreamSound(false),
 	  explosionTimerStarted(false)
 {
 	// Alex - Center explosion sprite
@@ -57,11 +57,11 @@ void Explosion::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	mAnimation.update(dt);
 
-	if (!mPlayedExplosionSound)
+	if (!mPlayedScreamSound)
 	{
 		SoundEffectIDs soundEffect = randomInt(2) == 0 ? SoundEffectIDs::Explosion1 : SoundEffectIDs::Explosion2;
 		playLocalSound(commands, soundEffect);
-		mPlayedExplosionSound = true;
+		mPlayedScreamSound = true;
 	}
 
 	if (mAnimation.isFinished())

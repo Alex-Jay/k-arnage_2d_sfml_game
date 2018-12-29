@@ -4,7 +4,7 @@
 enum class Category
 {
 	None = 0,
-	SceneAirLayer = 1 << 0,
+	SceneLayer = 1 << 0,
 	PlayerCharacter = 1 << 1,
 	AlliedCharacter = 1 << 2,
 	EnemyCharacter = 1 << 3,

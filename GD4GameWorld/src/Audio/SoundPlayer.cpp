@@ -25,6 +25,7 @@ SoundPlayer::SoundPlayer()
 	mSoundBuffers.load(SoundEffectIDs::CollectPickup, "Media/Sound/CollectPickup.wav");
 	mSoundBuffers.load(SoundEffectIDs::Button, "Media/Sound/Button.wav");
 
+	mSoundBuffers.load(SoundEffectIDs::Scream, "Media/Sound/WilhelmScream.wav");
 	//Listener points towards the screen (default in SFML)
 	sf::Listener::setDirection(0.f, 0.f, -1.f);
 }
