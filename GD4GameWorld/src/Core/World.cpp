@@ -23,8 +23,6 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mFonts(fonts)
 	  , mSounds(sounds)
 	  , mSceneLayers()
-	  // Alex - Increased map size
-	 // , mWorldBounds(-128.f, -128.f, (mWorldView.getSize().x * 2) - 128, (1000.f - 128))
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
@@ -36,9 +34,6 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 
 	loadTextures();
 	buildScene();
-
-	// Prepare the view
-	//mWorldView.setCenter(mSpawnPosition);
 }
 
 void World::update(sf::Time dt)
@@ -225,95 +220,119 @@ void World::handleCollisions()
 {
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
-	//TODO Replace this stuff wit a switch statement and make it more readable/efficient
-	//Have one check for collisons e.g
-	// if collidee is an obstacle then handle that by checking if the collider is a player, bullet, etc..
+
 	for (SceneNode::Pair pair : collisionPairs)
 	{
-		if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter))
+		Category category1 = static_cast<Category>(pair.first->getCategory());
+
+		switch (category1)
 		{
-			auto& player = static_cast<Character&>(*pair.first);
-			auto& enemy = static_cast<Character&>(*pair.second);
-
-			// Alex - Disabled player to enemy damage
-			// Collision: Player damage = enemy's remaining HP
-			//player.damage(enemy.getHitpoints());
-			//enemy.destroy();
-		}
-		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Pickup))
-		{
-			auto& player = static_cast<Character&>(*pair.first);
-			auto& pickup = static_cast<Pickup&>(*pair.second);
-
-			// Apply pickup effect to player, destroy projectile
-			//pickup.apply(player);
-			pickup.destroy();
-
-			//TODO Change that annoying ass pickup sound
-			player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
-		}
-		else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
-		{
-			auto& player = static_cast<Character&>(*pair.first);
-			auto& obstacle = static_cast<Obstacle&>(*pair.second);
-			//auto& pickup = static_cast<Obstacle&>(*pair.second);
-
-
-			//Debugger::GetInstance().LogVector("Player Collision", player.getPosition(), 0);
-			//Debugger::GetInstance().LogVector("Obstacle", obstacle.getPosition(), 1);
-
-			// Apply pickup effect to player, destroy projectile
-			//pickup.apply(player);
-			//pickup.destroy();
-			//TODO handle collisions better
-			//player.setVelocity(-player.getVelocity());
-		}
-		else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
-			|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
-		{
-			auto& projectile = static_cast<Projectile&>(*pair.second);
-			auto& obstacle = static_cast<Obstacle&>(*pair.first);
-
-			// Apply pickup effect to player, destroy projectile
-			//pickup.apply(player);
-			projectile.destroy();
-			obstacle.damage(1);
-
-		}
-		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
-			|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
-		{
-			auto& character = static_cast<Character&>(*pair.first);
-			auto& projectile = static_cast<Projectile&>(*pair.second);
-
-			// If is projectile
-			if (!projectile.isGrenade())
-			{
-				// Apply projectile damage to Character, destroy projectile
-				character.damage(projectile.getDamage());
-				projectile.destroy();
-			}
-
-			if (projectile.isGrenade())
-			{
-				// Stop grenade on impact
-				projectile.setVelocity(0, 0);
-			}
-		}
-		else if (matchesCategories(pair, Category::EnemyCharacter, Category::Explosion)
-			|| matchesCategories(pair, Category::PlayerCharacter, Category::Explosion))
-		{
-			auto& character = static_cast<Character&>(*pair.first);
-			auto& explosion = static_cast<Explosion&>(*pair.second);
-
-			// Distance between characters and explosions center-points
-			float dV = vectorDistance(character.getWorldPosition(), explosion.getWorldPosition());
-
-			// Can't simply use character.damage() here upon explosion
-			// This is a for-loop, meaning that .damage() will be called as many times as the player or zombie is inside the collision rectangle
-			// Eventually, resulting in Access Violation error since the object is deleted but is still trying to damage it
+		case Category::PlayerCharacter: //Character
+			handleCharacterCollisions(pair);
+			break;
+		case Category::EnemyCharacter:
+			handleCharacterCollisions(pair);
+			break;
+		case Category::Obstacle:
+			handleObstacleCollisions(pair);
+			break;
+		case Category::AlliedProjectile: //Projectile
+			handleProjectileCollisions(pair);
+			break;
+		case Category::Pickup:
+			handlePickupCollisions(pair);
+			break;
+		default:
+			break;
 		}
 	}
+}
+
+void World::handleCharacterCollisions(SceneNode::Pair& colliders)
+{
+	Category collidee = static_cast<Category>(colliders.second->getCategory());
+	
+	switch (collidee)
+	{
+	case Category::EnemyCharacter:
+		{
+			auto& player = static_cast<Character&>(*colliders.first);
+			auto& enemy = static_cast<Character&>(*colliders.second);
+			player.damage(1);
+			enemy.damage(10);
+			break;
+		}
+
+	case Category::PlayerCharacter:
+	{
+		auto& enemy = static_cast<Character&>(*colliders.first);
+		auto& player = static_cast<Character&>(*colliders.second);
+		player.damage(100);
+		enemy.damage(100);
+		break;
+	}
+	}
+}
+
+void World::handleObstacleCollisions(SceneNode::Pair& colliders)
+{
+	Category collidee = static_cast<Category>(colliders.second->getCategory());
+	auto& obstacle = static_cast<Obstacle&>(*colliders.first);
+	switch (collidee)
+	{
+	case Category::Projectile:
+	{
+		auto& projectile = static_cast<Projectile&>(*colliders.second);
+		projectile.remove();
+		obstacle.damage(10);
+		break;
+	}
+	}
+}
+
+void World::handleProjectileCollisions(SceneNode::Pair& colliders)
+{
+	Category collidee = static_cast<Category>(colliders.second->getCategory());
+	auto& projectile = static_cast<Projectile&>(*colliders.first);
+	switch (collidee)
+	{
+	case Category::Obstacle:
+	{
+		auto& obstacle = static_cast<Obstacle&>(*colliders.second);
+		projectile.remove();
+		obstacle.damage(10);
+		break;
+	}
+	}
+}
+
+void World::handlePickupCollisions(SceneNode::Pair& colliders)
+{
+	Category collidee = static_cast<Category>(colliders.second->getCategory());
+	auto& pickup = static_cast<Pickup&>(*colliders.first);
+	switch (collidee)
+	{
+	case Category::PlayerCharacter:
+	{
+			auto& player = static_cast<Character&>(*colliders.second);
+			pickup.apply(player);
+			pickup.destroy();
+		break;
+	}
+	}
+}
+
+World::CollisionType World::GetCollisionType(unsigned int collider)
+{
+	if (collider == static_cast<int>(Category::Obstacle))
+	{
+		return World::CollisionType::cObstacle;
+	}
+	else if (collider == static_cast<int>(Category::PlayerCharacter))
+	{
+		return World::CollisionType::cCharacter;
+	}
+	else { return  World::CollisionType::cCollisionTypeCount; }
 }
 
 void World::updateSounds()

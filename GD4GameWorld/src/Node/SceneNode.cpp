@@ -123,6 +123,11 @@ unsigned int SceneNode::getCategory() const
 	return static_cast<int>(mDefaultCategory);
 }
 
+Category SceneNode::getDefaultCategory() const
+{
+	return mDefaultCategory;
+}
+
 void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& collisionPairs)
 {
 	checkNodeCollision(sceneGraph, collisionPairs);

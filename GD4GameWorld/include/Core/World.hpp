@@ -3,7 +3,6 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-//#include "Character.hpp"
 #include "Character.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
@@ -43,6 +42,10 @@ private:
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
 	void handleCollisions();
+	void handleCharacterCollisions(SceneNode::Pair & colliders);
+	void handleObstacleCollisions(SceneNode::Pair & colliders);
+	void handleProjectileCollisions(SceneNode::Pair & colliders);
+	void handlePickupCollisions(SceneNode::Pair & colliders);
 	void updateSounds();
 
 	void addEnemies();
@@ -58,6 +61,7 @@ private:
 private:
 	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...
 	enum Layer { Background, LowerAir, UpperAir, LayerCount };
+	enum CollisionType { cObstacle, cCharacter, cProjectile, cCollisionTypeCount };
 	struct SpawnPoint
 	{
 		SpawnPoint(Character::Type type, float x, float y)
@@ -72,6 +76,7 @@ private:
 		float y;
 	};
 
+	CollisionType GetCollisionType(unsigned int collider);
 private:
 	sf::RenderTarget& mTarget;
 	sf::RenderTexture mSceneTexture;
