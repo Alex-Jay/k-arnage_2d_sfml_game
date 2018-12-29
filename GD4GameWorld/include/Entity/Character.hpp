@@ -9,13 +9,12 @@
 #include "Animation.hpp"
 
 
-
 #include "SFML/Graphics/Sprite.hpp"
 
 class Character : public Entity
 {
 public:
-	enum class Type{Player, Zombie, TypeCount};
+	enum class Type { Player, Zombie, TypeCount };
 
 public:
 	Character(Type type, const TextureHolder& texture, const FontHolder& fonts);
@@ -52,7 +51,8 @@ private:
 	void checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
-	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const;
+	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
+	                      const TextureHolder& textures) const;
 
 	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 	void updateTexts();
@@ -90,9 +90,8 @@ private:
 	int mFireRateLevel;
 	int mSpreadLevel;
 	int mGrenadeAmmo;
-	
+
 	float mTravelledDistance;
 
 	std::size_t mDirectionIndex;
-
 };

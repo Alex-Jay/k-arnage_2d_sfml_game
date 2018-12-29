@@ -92,6 +92,7 @@ void World::draw()
 	//MapTiler m;
 	if (PostEffect::isSupported())
 	{
+		//TODO use Color Constant
 		mSceneTexture.clear(sf::Color(114, 168, 255, 255));
 		mSceneTexture.setView(mWorldView);
 		mSceneTexture.draw(mSceneGraph);
@@ -124,8 +125,7 @@ bool World::hasPlayerReachedEnd() const
 
 void World::loadTextures()
 {
-
-	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS
+	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS, REMOVE unused ASSETS
 	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
 	mTextures.load(TextureIDs::Water, "Media/Textures/Water.jpg");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
@@ -217,10 +217,8 @@ void World::handleCollisions()
 			handleObstacleCollisions(pair);
 			break;
 		case Projectile_Obstacle:
+		case Projectile_Character:
 			handleProjectileCollisions(pair);
-			break;
-		case Character_Projectile:
-			handleExplosionCollisions(pair);
 			break;
 		case Character_Explosion:
 			handleExplosionCollisions(pair);
@@ -237,8 +235,8 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	auto& character2 = static_cast<Character&>(*pair.second);
 
 	if ((character1.isZombie() && character2.isZombie())
-		||(character1.isAllied() && character2.isAllied()))
-	{		
+		|| (character1.isAllied() && character2.isAllied()))
+	{
 		//TODO FIX COLLISION
 		character1.setPosition(character1.getLastPosition());
 		character2.setPosition(character2.getLastPosition());
@@ -258,19 +256,18 @@ void World::handleObstacleCollisions(SceneNode::Pair& pair)
 
 void World::handleProjectileCollisions(SceneNode::Pair& pair)
 {
-	auto& character = static_cast<Character&>(*pair.first);
+	auto& entity = static_cast<Entity&>(*pair.first);
 	auto& projectile = static_cast<Projectile&>(*pair.second);
 
 	if (projectile.isGrenade())
 	{
-		projectile.setVelocity(-projectile.getVelocity());
+		projectile.setVelocity(-projectile.getVelocity() / 2.f);
 	}
 	else
 	{
-		character.damage(projectile.getDamage());
+		entity.damage(projectile.getDamage());
 		projectile.destroy();
 	}
-
 }
 
 void World::handlePickupCollisions(SceneNode::Pair& pair)
@@ -288,15 +285,13 @@ void World::handlePickupCollisions(SceneNode::Pair& pair)
 
 void World::handleExplosionCollisions(SceneNode::Pair& pair)
 {
-	auto& character = static_cast<Character&>(*pair.first);
+	auto& entity = static_cast<Entity&>(*pair.first);
 	auto& explosion = static_cast<Explosion&>(*pair.second);
 
 	// Distance between characters and explosions center-points
-	float dV = vectorDistance(character.getWorldPosition(), explosion.getWorldPosition());
+	//float dV = vectorDistance(entity.getWorldPosition(), explosion.getWorldPosition());
 
-	// Can't simply use character.damage() here upon explosion
-	// This is a for-loop, meaning that .damage() will be called as many times as the player or zombie is inside the collision rectangle
-	// Eventually, resulting in Access Violation error since the object is deleted but is still trying to damage it
+	entity.damage(1);
 }
 
 World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
@@ -319,13 +314,17 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	{
 		return Projectile_Obstacle;
 	}
+	else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
+		|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
+	{
+		return Projectile_Character;
+	}
 	else if (matchesCategories(pair, Category::EnemyCharacter, Category::Explosion)
 		|| matchesCategories(pair, Category::PlayerCharacter, Category::Explosion))
 	{
-		return  Character_Explosion;
+		return Character_Explosion;
 	}
 	else { return Default; }
-
 }
 
 void World::updateSounds()
@@ -394,7 +393,7 @@ void World::buildScene()
 	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
 	//obstacle->setPosition(sf::Vector2f(1000, 500));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-	
+
 	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
 	//obstacle->setPosition(sf::Vector2f(200, 50));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));

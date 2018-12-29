@@ -13,7 +13,7 @@
 class Projectile : public Entity
 {
 public:
-	enum class ProjectileIDs{AlliedBullet, EnemyBullet, Grenade, TypeCount};
+	enum class ProjectileIDs { AlliedBullet, EnemyBullet, Grenade, TypeCount };
 
 public:
 	Projectile(ProjectileIDs type, const TextureHolder& textures);
@@ -25,7 +25,7 @@ public:
 	float getMaxSpeed(float initialSpeed) const;
 
 	int getDamage() const;
-	
+
 	bool isGrenade() const;
 	bool isMarkedForRemoval() const;
 
@@ -38,7 +38,7 @@ private:
 
 	void handleGrenade(sf::Time dt, CommandQueue& commands);
 	void StartTimer(sf::Time dt);
-	void createExplosion(SceneNode & node, const TextureHolder & textures) const;
+	void createExplosion(SceneNode& node, const TextureHolder& textures) const;
 
 private:
 	ProjectileIDs mType;

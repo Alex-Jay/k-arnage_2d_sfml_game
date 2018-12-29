@@ -24,11 +24,11 @@ public:
 	virtual bool isMarkedForRemoval() const;
 
 	bool isDestructible();
-	void checkPickupDrop(CommandQueue & commands);
-	void createPickup(SceneNode & node, const TextureHolder & textures) const;
+	void checkPickupDrop(CommandQueue& commands);
+	void createPickup(SceneNode& node, const TextureHolder& textures) const;
 protected:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
-	void updateCurrent(sf::Time dt, CommandQueue & commands);
+	void updateCurrent(sf::Time dt, CommandQueue& commands);
 
 private:
 	ObstacleID mType;

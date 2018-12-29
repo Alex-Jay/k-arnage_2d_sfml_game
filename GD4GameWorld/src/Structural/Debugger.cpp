@@ -16,7 +16,7 @@ void Debugger::LogVector(const char* text, sf::Vector2f vector, int row)
 	std::cout << text << " [X, Y]: " << vector.x << ", " << vector.y;
 }
 
-void Debugger::LogInt(const char * text, int integer, int row)
+void Debugger::LogInt(const char* text, int integer, int row)
 {
 	GotoXY(0, row);
 	std::cout << "                                               ";
@@ -33,4 +33,5 @@ void Debugger::LogText(const char* text, int row)
 }
 
 Debugger::Debugger()
-{}
+{
+}

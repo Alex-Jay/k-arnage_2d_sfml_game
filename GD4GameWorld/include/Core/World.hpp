@@ -23,11 +23,22 @@ namespace sf
 	class RenderTarget;
 }
 
-class World : private sf::NonCopyable {
+class World : private sf::NonCopyable
+{
 private:
-	enum CollisionType { Character_Character, Player_Pickup, Player_Obstacle, Projectile_Obstacle, Character_Projectile, Character_Explosion, Default };
+	enum CollisionType
+	{
+		Character_Character,
+		Player_Pickup,
+		Player_Obstacle,
+		Projectile_Obstacle,
+		Projectile_Character,
+		Character_Explosion,
+		Default
+	};
+
 public:
-	
+
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
 	void update(sf::Time dt);
 	void draw();
@@ -44,12 +55,12 @@ private:
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
 	void handleCollisions();
-	void handleCharacterCollisions(SceneNode::Pair & colliders);
-	void handleObstacleCollisions(SceneNode::Pair & colliders);
-	void handleProjectileCollisions(SceneNode::Pair & colliders);
-	void handlePickupCollisions(SceneNode::Pair & colliders);
-	void handleExplosionCollisions(SceneNode::Pair & pair);
-	CollisionType GetCollisionType(SceneNode::Pair & pair);
+	void handleCharacterCollisions(SceneNode::Pair& pair);
+	void handleObstacleCollisions(SceneNode::Pair& pair);
+	void handleProjectileCollisions(SceneNode::Pair& pair);
+	void handlePickupCollisions(SceneNode::Pair& pair);
+	void handleExplosionCollisions(SceneNode::Pair& pair);
+	CollisionType GetCollisionType(SceneNode::Pair& pair);
 	void updateSounds();
 
 	void addEnemies();
@@ -60,18 +71,18 @@ private:
 	sf::FloatRect getViewBounds() const;
 	sf::FloatRect getBattlefieldBounds() const;
 
-	void createObstacle(SceneNode & node, const TextureHolder & textures, sf::Vector2f position) const;
+	void createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const;
 
 private:
 	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...
 	enum Layer { Background, LowerAir, UpperAir, LayerCount };
-	
+
 	struct SpawnPoint
 	{
 		SpawnPoint(Character::Type type, float x, float y)
 			: type(type)
-			, x(x)
-			, y(y)
+			  , x(x)
+			  , y(y)
 		{
 		}
 
@@ -86,7 +97,7 @@ private:
 	sf::RenderTexture mSceneTexture;
 	sf::View mWorldView;
 	TextureHolder mTextures;
-	FontHolder&	mFonts;
+	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 
 	//MapTiler& map;
@@ -100,8 +111,8 @@ private:
 	float mScrollSpeed;
 	Character* mPlayerCharacter;
 
-	std::vector<SpawnPoint>	mEnemySpawnPoints;
+	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
 
-	BloomEffect	mBloomEffect;
+	BloomEffect mBloomEffect;
 };

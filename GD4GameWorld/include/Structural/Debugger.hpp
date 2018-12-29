@@ -21,7 +21,7 @@ public:
 
 	void LogVector(const char* text, sf::Vector2f vector, int row);
 	void LogInt(const char* text, int integer, int row);
-	void LogText(const char * text, int row);
+	void LogText(const char* text, int row);
 
 private:
 	// Private constructor to prevent instancing

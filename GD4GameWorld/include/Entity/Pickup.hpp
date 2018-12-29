@@ -24,17 +24,17 @@ public:
 public:
 	Pickup(PickupID type, const TextureHolder& textures);
 
-	virtual unsigned int	getCategory() const;
-	virtual sf::FloatRect	getBoundingRect() const;
+	virtual unsigned int getCategory() const;
+	virtual sf::FloatRect getBoundingRect() const;
 
-	void 					apply(Character& player) const;
+	void apply(Character& player) const;
 
 
 protected:
-	virtual void			drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 
 private:
-	PickupID 					mType;
-	sf::Sprite				mSprite;
+	PickupID mType;
+	sf::Sprite mSprite;
 };

@@ -14,7 +14,7 @@ struct Command
 	unsigned int category;
 };
 
-template<typename GameObject, typename Function>
+template <typename GameObject, typename Function>
 Command::Action derivedAction(Function fn)
 {
 	// []  - No capture list

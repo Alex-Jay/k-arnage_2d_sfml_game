@@ -4,7 +4,6 @@
 #include "SoundPlayer.hpp"
 
 
-
 class SoundNode : public SceneNode
 {
 public:

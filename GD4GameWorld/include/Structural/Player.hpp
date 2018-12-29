@@ -9,8 +9,21 @@ class Player
 {
 public:
 
-	enum class Action{MoveLeft, MoveRight, MoveUp, MoveDown, RotateLeft, RotateRight, Fire, StartGrenade, ActionCount, LaunchGrenade};
-	enum class MissionStatus{MissionRunning, MissionSuccess, MissionFailure};
+	enum class Action
+	{
+		MoveLeft,
+		MoveRight,
+		MoveUp,
+		MoveDown,
+		RotateLeft,
+		RotateRight,
+		Fire,
+		StartGrenade,
+		ActionCount,
+		LaunchGrenade
+	};
+
+	enum class MissionStatus { MissionRunning, MissionSuccess, MissionFailure };
 
 public:
 	Player();
@@ -32,5 +45,4 @@ private:
 	std::map<sf::Keyboard::Key, Action> mKeyBindingReleased;
 	std::map<Action, Command> mActionBinding;
 	MissionStatus mCurrentMissionStatus;
-
 };

@@ -211,6 +211,7 @@ bool Character::isZombie() const
 {
 	return mType == Type::Zombie;
 }
+
 float Character::getMaxSpeed() const
 {
 	return Table[static_cast<int>(mType)].speed;
@@ -353,7 +354,8 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 	}
 }
 
-void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const
+void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
+                                 const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
@@ -373,15 +375,15 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	node.attachChild(std::move(projectile));
 }
 
-void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
-{
-	auto type = static_cast<Pickup::PickupID>(randomInt(static_cast<int>(Pickup::PickupID::TypeCount)));
-
-	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
-	pickup->setPosition(getWorldPosition());
-	pickup->setVelocity(0.f, 1.f);
-	node.attachChild(std::move(pickup));
-}
+//void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
+//{
+//	auto type = static_cast<Pickup::PickupID>(randomInt(static_cast<int>(Pickup::PickupID::TypeCount)));
+//
+//	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+//	pickup->setPosition(getWorldPosition());
+//	pickup->setVelocity(0.f, 1.f);
+//	node.attachChild(std::move(pickup));
+//}
 
 void Character::updateTexts()
 {

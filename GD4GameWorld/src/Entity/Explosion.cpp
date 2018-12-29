@@ -16,10 +16,10 @@ namespace
 
 Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
 	: Entity(1),
-	mType(type),
-	mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect),
-	mPlayedExplosionSound(false),
-	explosionTimerStarted(false)
+	  mType(type),
+	  mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect),
+	  mPlayedExplosionSound(false),
+	  explosionTimerStarted(false)
 {
 	// Alex - Center explosion sprite
 	centreOrigin(mSprite);

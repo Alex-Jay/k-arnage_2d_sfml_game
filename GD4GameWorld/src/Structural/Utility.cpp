@@ -136,7 +136,7 @@ void clamp(float& value, float min, float max)
 //Mike
 sf::FloatRect shrink(int amount, sf::FloatRect rect)
 {
-	return sf::FloatRect(rect.left + amount, rect.top + amount, rect.width -amount, rect.height - amount);
+	return sf::FloatRect(rect.left + amount, rect.top + amount, rect.width - amount, rect.height - amount);
 }
 
 std::string toString(sf::Keyboard::Key key)
@@ -247,7 +247,7 @@ std::string toString(sf::Keyboard::Key key)
 	BOOK_KEYTOSTRING_CASE(F14)
 	BOOK_KEYTOSTRING_CASE(F15)
 	BOOK_KEYTOSTRING_CASE(Pause)
-default: ;
+	default: ;
 	}
 
 	return "";

@@ -60,7 +60,3 @@ const sf::Uint32 GREEN = 0X008432ff;
 const sf::Uint32 BLUE = 0X0056adff;
 const sf::Uint32 ORANGE = 0Xffa100ff;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-

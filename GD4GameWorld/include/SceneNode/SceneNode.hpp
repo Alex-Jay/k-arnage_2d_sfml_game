@@ -42,7 +42,7 @@ public:
 	virtual sf::FloatRect getBoundingRect() const;
 	virtual bool isMarkedForRemoval() const;
 	virtual bool isDestroyed() const;
-	void drawCurrent(sf::RenderTarget & target, sf::RenderStates states, const Ptr & child) const;
+	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states, const Ptr& child) const;
 	void drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
@@ -51,7 +51,7 @@ private:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
-	
+
 	void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
@@ -62,4 +62,3 @@ private:
 
 bool collision(const SceneNode& lhs, const SceneNode& rhs);
 float distance(const SceneNode& lhs, const SceneNode& rhs);
-

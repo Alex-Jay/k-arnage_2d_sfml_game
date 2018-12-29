@@ -76,7 +76,6 @@ struct PickupData
 
 struct ObstacleData
 {
-	
 };
 
 struct ParticleData

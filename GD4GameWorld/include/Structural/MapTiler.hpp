@@ -12,11 +12,11 @@
 
 //Mike
 
-class MapTiler : public SceneNode 
+class MapTiler : public SceneNode
 {
 public:
 	//Add more Maps at later stage
-	enum class MapID { Dessert, City, Forrest, TypeCount};
+	enum class MapID { Dessert, City, Forrest, TypeCount };
 
 public:
 	MapTiler(MapID type, TextureHolder& textures);
@@ -24,7 +24,7 @@ public:
 	void populateMap();
 	void populateLine();
 	sf::FloatRect getMapBounds();
-	void findCharacter(unsigned int & i, std::string line);
+	void findCharacter(unsigned int& i, std::string line);
 private:
 	void setMapDimensions(unsigned int width);
 	bool loadMap();
@@ -41,7 +41,4 @@ private:
 
 	unsigned int mMapWidth;
 	unsigned int mMapHeight;
-
 };
-
-

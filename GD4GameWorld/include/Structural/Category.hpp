@@ -1,7 +1,8 @@
 #pragma once
 //Entity/Scene node category, used to dispatch messages
 
-enum class Category {
+enum class Category
+{
 	None = 0,
 	SceneAirLayer = 1 << 0,
 	PlayerCharacter = 1 << 1,

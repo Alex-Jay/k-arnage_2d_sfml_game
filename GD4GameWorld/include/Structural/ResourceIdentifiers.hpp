@@ -8,20 +8,31 @@ namespace sf
 	class SoundBuffer;
 }
 
-enum class TextureIDs{
-	Entities, Water,
-	TitleScreen, Buttons,
-	Explosion, Grenade,
-	Particle, FinishLine,
-	PlayerMove, PlayerDeath,
-	ZombieMove, ZombieDeath,
-	MapTiles, Crate
+enum class TextureIDs
+{
+	Entities,
+	Water,
+	TitleScreen,
+	Buttons,
+	Explosion,
+	Grenade,
+	Particle,
+	FinishLine,
+	PlayerMove,
+	PlayerDeath,
+	ZombieMove,
+	ZombieDeath,
+	MapTiles,
+	Crate
 };
 
-enum class Shaders{BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass};
-enum class FontIDs{Main};
-enum class MusicIDs{MenuTheme, MissionTheme};
-enum class SoundEffectIDs{AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchGrenade, CollectPickup, Button};
+enum class Shaders { BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass };
+
+enum class FontIDs { Main };
+
+enum class MusicIDs { MenuTheme, MissionTheme };
+
+enum class SoundEffectIDs { AlliedGunfire, EnemyGunfire, Explosion1, Explosion2, LaunchGrenade, CollectPickup, Button };
 
 
 //Forward declaration and typedef

@@ -12,7 +12,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
-class Application 
+class Application
 {
 public:
 	Application();
@@ -37,7 +37,7 @@ private:
 
 	MusicPlayer mMusic;
 	SoundPlayer mSounds;
-	
+
 	sf::Text mStatisticsText;
 	sf::Time mStatisticsUpdateTime;
 	std::size_t mStatisticsNumFrames;

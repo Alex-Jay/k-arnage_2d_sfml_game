@@ -16,9 +16,9 @@ namespace
 
 Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
 	: Entity(1)
-	, mType(type)
-	, mSprite(textures.get(TextureIDs::Crate))
-	, mDroppedPickup(false)
+	  , mType(type)
+	  , mSprite(textures.get(TextureIDs::Crate))
+	  , mDroppedPickup(false)
 {
 	centreOrigin(mSprite);
 
@@ -38,17 +38,17 @@ bool Obstacle::isDestructible()
 {
 	switch (mType)
 	{
-		case ObstacleID::Crate:
-			return true;
-		default:
-			return false;
+	case ObstacleID::Crate:
+		return true;
+	default:
+		return false;
 	}
 }
 
 void Obstacle::checkPickupDrop(CommandQueue& commands)
 {
 	//if (randomInt(3) == 0)
-		commands.push(mDropPickupCommand);
+	commands.push(mDropPickupCommand);
 }
 
 void Obstacle::createPickup(SceneNode& node, const TextureHolder& textures) const
@@ -88,5 +88,5 @@ void Obstacle::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 bool Obstacle::isMarkedForRemoval() const
 {
-	return (isDestroyed() &&  mDroppedPickup);
+	return (isDestroyed() && mDroppedPickup);
 }

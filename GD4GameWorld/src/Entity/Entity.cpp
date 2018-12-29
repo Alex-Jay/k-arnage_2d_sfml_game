@@ -4,7 +4,7 @@
 #include <cassert>
 
 
-Entity::Entity(int hitpoints) : 
+Entity::Entity(int hitpoints) :
 	mAngle(0),
 	mHitpoints(hitpoints)
 {

@@ -20,14 +20,14 @@ public:
 	bool isMarkedForRemoval() const;
 
 	int getDamage() const;
-	
+
 
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void StartTimer(sf::Time dt);
-	void playLocalSound(CommandQueue & commands, SoundEffectIDs effect);
+	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
 private:
 	ExplosionIDs mType;

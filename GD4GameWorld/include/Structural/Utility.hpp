@@ -5,7 +5,7 @@
 #include <sstream>
 #include <SFML/Graphics/Rect.hpp>
 
-namespace sf 
+namespace sf
 {
 	class Sprite;
 	class Text;
@@ -16,7 +16,7 @@ namespace sf
 class Animation;
 
 void centreOrigin(sf::Sprite& sprite);
-void centreOrigin(sf::RectangleShape & shape);
+void centreOrigin(sf::RectangleShape& shape);
 void centreOrigin(sf::Text& text);
 void centreOrigin(Animation& animation);
 float toRadians(float degrees);
