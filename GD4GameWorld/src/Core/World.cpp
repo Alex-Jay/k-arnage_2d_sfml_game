@@ -25,7 +25,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSceneLayers()
 	  // Alex - Increased map size
 	 // , mWorldBounds(-128.f, -128.f, (mWorldView.getSize().x * 2) - 128, (1000.f - 128))
-	  , mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
+	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
 {
@@ -132,7 +132,7 @@ void World::loadTextures()
 
 	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS
 	mTextures.load(TextureIDs::Entities, "Media/Textures/Entities.png");
-	mTextures.load(TextureIDs::Sand, "Media/Textures/Water.jpg");
+	mTextures.load(TextureIDs::Water, "Media/Textures/Water.jpg");
 	mTextures.load(TextureIDs::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(TextureIDs::Particle, "Media/Textures/Particle.png");
 	mTextures.load(TextureIDs::FinishLine, "Media/Textures/FinishLine.png");
@@ -277,16 +277,8 @@ void World::handleCollisions()
 			// Apply pickup effect to player, destroy projectile
 			//pickup.apply(player);
 			projectile.destroy();
-			//DONE Fixed bug, Entity is removed automatically if its hitpoints drops below 0
-			if (!obstacle.isDestroyed())
-			{
-				obstacle.damage(10);
-				//obstacle.setVelocity(100, -200);
-			}
-			else
-			{
-				obstacle.checkPickupDrop(mCommandQueue);
-			}
+			obstacle.damage(1);
+
 		}
 		else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
 			|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
@@ -348,21 +340,20 @@ void World::buildScene()
 
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 	mWorldBounds = map->getMapBounds();
-	//mWorldBounds.height = 1024;
-	// Prepare the tiled background
-	sf::Texture& sandTexture = mTextures.get(TextureIDs::Sand);
-	sandTexture.setRepeated(true);
 
-	float viewHeight = mWorldView.getSize().y + 512;
-	float viewWidth = mWorldView.getSize().x + 128;
+	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
+	waterTexture.setRepeated(true);
+
+	float viewHeight = mWorldBounds.height;
+	float viewWidth = mWorldBounds.width;
 
 	sf::IntRect textureRect(sf::FloatRect(0,0, mWorldBounds.width * 2, mWorldBounds.height * 2));
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> sandSprite(new SpriteNode(sandTexture, textureRect));
-	sandSprite->setPosition(-viewWidth / 2, -viewHeight/ 2);
-	mSceneLayers[Layer::Background]->attachChild(std::move(sandSprite));
+	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(waterTexture, textureRect));
+	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
+	mSceneLayers[Layer::Background]->attachChild(std::move(waterSprite));
 
 	// Prepare the tiled background
 	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
@@ -396,7 +387,7 @@ void World::buildScene()
 	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
 	//obstacle->setPosition(sf::Vector2f(200, 50));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(50, 50), 50);
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(50, 50));
 
 	// Add enemy Character
 	addEnemies();
@@ -525,9 +516,9 @@ sf::FloatRect World::getBattlefieldBounds() const
 	return bounds;
 }
 
-void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position, int obstacleHitpoints) const
+void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
 {
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures, obstacleHitpoints));
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
 	obstacle->setPosition(position);
 	node.attachChild(std::move(obstacle));
 }

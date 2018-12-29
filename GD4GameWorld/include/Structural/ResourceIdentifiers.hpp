@@ -9,7 +9,7 @@ namespace sf
 }
 
 enum class TextureIDs{
-	Entities, Sand,
+	Entities, Water,
 	TitleScreen, Buttons,
 	Explosion, Grenade,
 	Particle, FinishLine,

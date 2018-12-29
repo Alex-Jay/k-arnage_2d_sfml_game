@@ -14,12 +14,12 @@ namespace
 	const std::vector<ObstacleData> Table = initializeObstacleData();
 }
 
-Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures, int obstacleHitpoints)
-	: Entity(obstacleHitpoints)
+Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
+	: Entity(1)
 	, mType(type)
 	, mSprite(textures.get(TextureIDs::Crate))
+	, mDroppedPickup(false)
 {
-	//mSprite.scale(sf::Vector2f(0.25f, 0.25f));
 	centreOrigin(mSprite);
 
 	mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
@@ -49,7 +49,6 @@ void Obstacle::checkPickupDrop(CommandQueue& commands)
 {
 	//if (randomInt(3) == 0)
 		commands.push(mDropPickupCommand);
-
 }
 
 void Obstacle::createPickup(SceneNode& node, const TextureHolder& textures) const
@@ -69,27 +68,25 @@ void Obstacle::remove()
 
 sf::FloatRect Obstacle::getBoundingRect() const
 {
-	//TODO Fix Scaleing
-	//sf::FloatRect f = mSprite.getGlobalBounds();
-	//f.height *= 0.25f;
-	//f.width *= 0.25f;
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
 void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	//sf::FloatRect rect = getBoundingRect();
-
-	//sf::RectangleShape shape;
-	//shape.setPosition(sf::Vector2f(rect.left, rect.top));
-	//shape.setSize(sf::Vector2f(rect.width, rect.height));
-	//shape.setFillColor(sf::Color::Transparent);
-	//shape.setOutlineColor(sf::Color::Green);
-	//shape.setOutlineThickness(1.f);
-
-	//target.draw(shape);
-
 	target.draw(mSprite, states);
 }
 
 
+void Obstacle::updateCurrent(sf::Time dt, CommandQueue& commands)
+{
+	if (isDestroyed())
+	{
+		checkPickupDrop(commands);
+		mDroppedPickup = true;
+	}
+}
+
+bool Obstacle::isMarkedForRemoval() const
+{
+	return (isDestroyed() &&  mDroppedPickup);
+}
