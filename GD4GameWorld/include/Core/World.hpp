@@ -24,6 +24,8 @@ namespace sf
 }
 
 class World : private sf::NonCopyable {
+private:
+	enum CollisionType { Character_Character, Player_Pickup, Player_Obstacle, Projectile_Obstacle, Character_Projectile, Character_Explosion, Default };
 public:
 	
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
@@ -46,6 +48,8 @@ private:
 	void handleObstacleCollisions(SceneNode::Pair & colliders);
 	void handleProjectileCollisions(SceneNode::Pair & colliders);
 	void handlePickupCollisions(SceneNode::Pair & colliders);
+	void handleExplosionCollisions(SceneNode::Pair & pair);
+	CollisionType GetCollisionType(SceneNode::Pair & pair);
 	void updateSounds();
 
 	void addEnemies();
@@ -61,7 +65,7 @@ private:
 private:
 	//TODO REMOVE ALL TRACES OF AIR AND AIRCRAFT ETC...
 	enum Layer { Background, LowerAir, UpperAir, LayerCount };
-	enum CollisionType { cObstacle, cCharacter, cProjectile, cCollisionTypeCount };
+	
 	struct SpawnPoint
 	{
 		SpawnPoint(Character::Type type, float x, float y)

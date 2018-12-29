@@ -122,6 +122,7 @@ void Character::guideTowards(sf::Vector2f position)
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	mLastPosition = getPosition();
 	//Update Player Animations
 	updateAnimations(dt);
 
@@ -206,6 +207,10 @@ bool Character::isAllied() const
 	return mType == Type::Player;
 }
 
+bool Character::isZombie() const
+{
+	return mType == Type::Zombie;
+}
 float Character::getMaxSpeed() const
 {
 	return Table[static_cast<int>(mType)].speed;
@@ -430,4 +435,9 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffectIDs effect)
 float Character::getMaxRotationSpeed() const
 {
 	return Table[static_cast<int>(mType)].rotationSpeed;
+}
+
+sf::Vector2f Character::getLastPosition()
+{
+	return mLastPosition;
 }

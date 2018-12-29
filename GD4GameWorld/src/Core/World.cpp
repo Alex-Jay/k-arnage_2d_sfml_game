@@ -190,29 +190,10 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 
 void World::handlePlayerCollision()
 {
-	// Check if player is out of bounds (Left side)
-	if (mPlayerCharacter->getPosition().x <= 0.0f)
+	//TODO make map member variable and change 128 to gettileSize()
+	if (!shrink(128, mWorldBounds).contains(mPlayerCharacter->getPosition()))
 	{
-		mPlayerCharacter->setPosition(0.0f, mPlayerCharacter->getPosition().y);
-	}
-	// Check if player is out of bounds (right side)
-	if (mPlayerCharacter->getPosition().x >= mWorldBounds.width)
-	{
-		mPlayerCharacter->setPosition(mWorldBounds.width, mPlayerCharacter->getPosition().y);
-	}
-	// Check if player is out of bounds (top side)
-	if (mPlayerCharacter->getPosition().y <= 0.0f)
-	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x, 0.0f);
-	}
-	/*
-		Check if player is out of bounds (bottom side)
-		getBattlefieldBounds().height + mWorldBounds.height = Height of battlefield added on with World bound height
-	*/
-	if (mPlayerCharacter->getPosition().y >=  mWorldBounds.height)
-	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getPosition().x,
-		                               mWorldBounds.height);
+		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
 	}
 }
 
@@ -223,24 +204,26 @@ void World::handleCollisions()
 
 	for (SceneNode::Pair pair : collisionPairs)
 	{
-		Category category1 = static_cast<Category>(pair.first->getCategory());
-
-		switch (category1)
+		CollisionType collisionType = GetCollisionType(pair);
+		switch (collisionType)
 		{
-		case Category::PlayerCharacter: //Character
+		case Character_Character:
 			handleCharacterCollisions(pair);
 			break;
-		case Category::EnemyCharacter:
-			handleCharacterCollisions(pair);
+		case Player_Pickup:
+			handlePickupCollisions(pair);
 			break;
-		case Category::Obstacle:
+		case Player_Obstacle:
 			handleObstacleCollisions(pair);
 			break;
-		case Category::AlliedProjectile: //Projectile
+		case Projectile_Obstacle:
 			handleProjectileCollisions(pair);
 			break;
-		case Category::Pickup:
-			handlePickupCollisions(pair);
+		case Character_Projectile:
+			handleExplosionCollisions(pair);
+			break;
+		case Character_Explosion:
+			handleExplosionCollisions(pair);
 			break;
 		default:
 			break;
@@ -248,91 +231,101 @@ void World::handleCollisions()
 	}
 }
 
-void World::handleCharacterCollisions(SceneNode::Pair& colliders)
+void World::handleCharacterCollisions(SceneNode::Pair& pair)
 {
-	Category collidee = static_cast<Category>(colliders.second->getCategory());
-	
-	switch (collidee)
-	{
-	case Category::EnemyCharacter:
-		{
-			auto& player = static_cast<Character&>(*colliders.first);
-			auto& enemy = static_cast<Character&>(*colliders.second);
-			player.damage(1);
-			enemy.damage(10);
-			break;
-		}
+	auto& character1 = static_cast<Character&>(*pair.first);
+	auto& character2 = static_cast<Character&>(*pair.second);
 
-	case Category::PlayerCharacter:
-	{
-		auto& enemy = static_cast<Character&>(*colliders.first);
-		auto& player = static_cast<Character&>(*colliders.second);
-		player.damage(100);
-		enemy.damage(100);
-		break;
+	if ((character1.isZombie() && character2.isZombie())
+		||(character1.isAllied() && character2.isAllied()))
+	{		
+		//TODO FIX COLLISION
+		character1.setPosition(character1.getLastPosition());
+		character2.setPosition(character2.getLastPosition());
 	}
+	else
+	{
+		//character1.damage(1);
 	}
 }
 
-void World::handleObstacleCollisions(SceneNode::Pair& colliders)
+void World::handleObstacleCollisions(SceneNode::Pair& pair)
 {
-	Category collidee = static_cast<Category>(colliders.second->getCategory());
-	auto& obstacle = static_cast<Obstacle&>(*colliders.first);
-	switch (collidee)
-	{
-	case Category::Projectile:
-	{
-		auto& projectile = static_cast<Projectile&>(*colliders.second);
-		projectile.remove();
-		obstacle.damage(10);
-		break;
-	}
-	}
+	auto& character = static_cast<Character&>(*pair.first);
+	auto& obstacle = static_cast<Obstacle&>(*pair.second);
+	character.setPosition(character.getLastPosition());
 }
 
-void World::handleProjectileCollisions(SceneNode::Pair& colliders)
+void World::handleProjectileCollisions(SceneNode::Pair& pair)
 {
-	Category collidee = static_cast<Category>(colliders.second->getCategory());
-	auto& projectile = static_cast<Projectile&>(*colliders.first);
-	switch (collidee)
+	auto& character = static_cast<Character&>(*pair.first);
+	auto& projectile = static_cast<Projectile&>(*pair.second);
+
+	if (projectile.isGrenade())
 	{
-	case Category::Obstacle:
+		projectile.setVelocity(-projectile.getVelocity());
+	}
+	else
 	{
-		auto& obstacle = static_cast<Obstacle&>(*colliders.second);
-		projectile.remove();
-		obstacle.damage(10);
-		break;
+		character.damage(projectile.getDamage());
+		projectile.destroy();
 	}
-	}
+
 }
 
-void World::handlePickupCollisions(SceneNode::Pair& colliders)
+void World::handlePickupCollisions(SceneNode::Pair& pair)
 {
-	Category collidee = static_cast<Category>(colliders.second->getCategory());
-	auto& pickup = static_cast<Pickup&>(*colliders.first);
-	switch (collidee)
-	{
-	case Category::PlayerCharacter:
-	{
-			auto& player = static_cast<Character&>(*colliders.second);
-			pickup.apply(player);
-			pickup.destroy();
-		break;
-	}
-	}
+	auto& player = static_cast<Character&>(*pair.first);
+	auto& pickup = static_cast<Pickup&>(*pair.second);
+
+	// Apply pickup effect to player, destroy projectile
+	//pickup.apply(player);
+	pickup.destroy();
+
+	//TODO Change that annoying ass pickup sound
+	player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
 }
 
-World::CollisionType World::GetCollisionType(unsigned int collider)
+void World::handleExplosionCollisions(SceneNode::Pair& pair)
 {
-	if (collider == static_cast<int>(Category::Obstacle))
+	auto& character = static_cast<Character&>(*pair.first);
+	auto& explosion = static_cast<Explosion&>(*pair.second);
+
+	// Distance between characters and explosions center-points
+	float dV = vectorDistance(character.getWorldPosition(), explosion.getWorldPosition());
+
+	// Can't simply use character.damage() here upon explosion
+	// This is a for-loop, meaning that .damage() will be called as many times as the player or zombie is inside the collision rectangle
+	// Eventually, resulting in Access Violation error since the object is deleted but is still trying to damage it
+}
+
+World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
+{
+	if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter)
+		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter))
 	{
-		return World::CollisionType::cObstacle;
+		return Character_Character;
 	}
-	else if (collider == static_cast<int>(Category::PlayerCharacter))
+	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Pickup))
 	{
-		return World::CollisionType::cCharacter;
+		return Player_Pickup;
 	}
-	else { return  World::CollisionType::cCollisionTypeCount; }
+	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
+	{
+		return Player_Obstacle;
+	}
+	else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
+		|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
+	{
+		return Projectile_Obstacle;
+	}
+	else if (matchesCategories(pair, Category::EnemyCharacter, Category::Explosion)
+		|| matchesCategories(pair, Category::PlayerCharacter, Category::Explosion))
+	{
+		return  Character_Explosion;
+	}
+	else { return Default; }
+
 }
 
 void World::updateSounds()
@@ -359,14 +352,13 @@ void World::buildScene()
 
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 	mWorldBounds = map->getMapBounds();
-
 	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
 	waterTexture.setRepeated(true);
 
 	float viewHeight = mWorldBounds.height;
 	float viewWidth = mWorldBounds.width;
 
-	sf::IntRect textureRect(sf::FloatRect(0,0, mWorldBounds.width * 2, mWorldBounds.height * 2));
+	sf::IntRect textureRect(sf::FloatRect(128, 128, mWorldBounds.width * 2, mWorldBounds.height * 2));
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene

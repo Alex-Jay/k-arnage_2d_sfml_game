@@ -133,6 +133,12 @@ void clamp(float& value, float min, float max)
 	value = std::max(min, std::min(value, max));
 }
 
+//Mike
+sf::FloatRect shrink(int amount, sf::FloatRect rect)
+{
+	return sf::FloatRect(rect.left + amount, rect.top + amount, rect.width -amount, rect.height - amount);
+}
+
 std::string toString(sf::Keyboard::Key key)
 {
 #define BOOK_KEYTOSTRING_CASE(KEY) case sf::Keyboard::KEY: return #KEY;

@@ -24,6 +24,7 @@ public:
 	virtual void remove();
 	virtual bool isMarkedForRemoval() const;
 	bool isAllied() const;
+	bool isZombie() const;
 	float getMaxSpeed() const;
 
 	void increaseFireRate();
@@ -38,6 +39,7 @@ public:
 
 	float getMaxRotationSpeed() const;
 
+	sf::Vector2f getLastPosition();
 
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -74,6 +76,7 @@ private:
 	sf::Sprite mSprite;
 	sf::Time mFireCountdown;
 	sf::Vector2f mTargetDirection;
+	sf::Vector2f mLastPosition;
 
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
