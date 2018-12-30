@@ -114,17 +114,12 @@ void World::update(sf::Time dt)
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
 
-
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
+
 	adaptPlayerPosition();
 	updateSounds();
-
-	spawnEnemies();
-
-	//Debugger::GetInstance().LogVector("Player Position", mPlayerCharacter->getPosition(), 0);
-	//Debugger::GetInstance().LogVector("Player Velocity", mPlayerCharacter->getVelocity(), 1);
-	//Debugger::GetInstance().LogInt("Player Hitpoints: ", mPlayerCharacter->getHitpoints(), 2);
+	spawnZombies(dt);
 }
 
 void World::draw()
@@ -189,38 +184,74 @@ void World::updateSounds()
 	mSounds.removeStoppedSounds();
 }
 
-void World::spawnEnemies()
+//Mike
+void World::spawnZombies(sf::Time dt)
 {
-	// Spawn all enemies entering the view area (including distance) this frame
-	while (!mEnemySpawnPoints.empty()
-		&& mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	int timer = 5;//Spawn Every 5 seconds
+
+	if (!mZombieSpawnTimerStarted)
 	{
-		SpawnPoint spawn = mEnemySpawnPoints.back();
+		StartZombieSpawnTimer(dt);
+	}
+	else
+	{
+		mZombieSpawnTimer += dt;
+	}
 
-		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
-		enemy->setPosition(spawn.x, spawn.y);
-		enemy->setRotation(180.f);
+	if (mZombieSpawnTimer.asSeconds() >= timer)
+	{
+		int rand = randomInt(5); // Number of zombies to spawn
 
-		mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+		for (int i = 0; i < rand; ++i)
+		{
+			//Picks A random position outside the view but within world bounds
+			int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+			int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
 
-		// Enemy is spawned, remove from the list to spawn
-		mEnemySpawnPoints.pop_back();
+			std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
+			enemy->setPosition(xPos, yPos);
+			enemy->setRotation(180.f);
+
+			mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+		}
+
+		mZombieSpawnTimerStarted = false;
 	}
 }
 
+//Mike
+void World::StartZombieSpawnTimer(sf::Time dt)
+{
+	mZombieSpawnTimerStarted = true;
+	mZombieSpawnTimer = dt;
+}
+
+//Mike
 void World::destroyEntitiesOutsideView()
 {
-	Command command;
-	command.category = static_cast<int>(Category::Projectile) | static_cast<int>(Category::EnemyCharacter);
-	command.action = derivedAction<Entity>([this](Entity& e, sf::Time)
+	// Destroy Projectiles outside of view
+	Command destroyProjectiles;
+	destroyProjectiles.category = static_cast<int>(Category::Projectile);
+	destroyProjectiles.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
 			e.destroy();
 	});
 
-	mCommandQueue.push(command);
+	//Destroy Zombies Outside of world Bounds
+	Command destroyZombies;
+	destroyZombies.category = static_cast<int>(Category::EnemyCharacter);
+	destroyZombies.action = derivedAction<Entity>([this](Entity& e, sf::Time)
+	{
+		if (!mWorldBounds.intersects(e.getBoundingRect()))
+			e.destroy();
+	});
+
+	mCommandQueue.push(destroyProjectiles);
+	mCommandQueue.push(destroyZombies);
 }
 
+//Mike
 void World::guideZombies()
 {
 	// Setup command that stores all players in mActiveEnemies
@@ -272,8 +303,6 @@ void World::guideZombies()
 
 void World::buildScene()
 {
-
-
 	// Initialize the different layers
 	for (std::size_t i = 0; i < LayerCount; ++i)
 	{
@@ -323,14 +352,6 @@ void World::buildScene()
 	mPlayerCharacter->setPosition(mSpawnPosition);
 	mSceneLayers[UpperLayer]->attachChild(std::move(player));
 
-	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
-	//obstacle->setPosition(sf::Vector2f(1000, 500));
-	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-
-	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
-	//obstacle->setPosition(sf::Vector2f(200, 50));
-	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
-
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
 
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(450, 250));
@@ -338,39 +359,6 @@ void World::buildScene()
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(650, 250));
 
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(850, 250));
-
-	// Add enemy Character
-	addEnemies();
-}
-
-void World::addEnemies()
-{
-	// Add enemies to the spawn point container
-
-	addEnemy(Character::Type::Zombie, -1000.f, -1000.f);
-	addEnemy(Character::Type::Zombie, 1000.f, 500.f);
-	addEnemy(Character::Type::Zombie, 4000.f, 1150.f);
-	addEnemy(Character::Type::Zombie, 8000.f, -1220.f);
-	addEnemy(Character::Type::Zombie, -3000.f, -1220.f);
-	addEnemy(Character::Type::Zombie, 1100.f, 20.f);
-	addEnemy(Character::Type::Zombie, 2000.f, -500.f);
-	addEnemy(Character::Type::Zombie, 6000.f, -300.f);
-	addEnemy(Character::Type::Zombie, -250.f, -3020.f);
-	addEnemy(Character::Type::Zombie, -250.f, 3250.f);
-	addEnemy(Character::Type::Zombie, 600.f, 800.f);
-	addEnemy(Character::Type::Zombie, 800.f, 400.f);
-	addEnemy(Character::Type::Zombie, 450.f, 200.f);
-	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
-	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
-	{
-		return lhs.y < rhs.y;
-	});
-}
-
-void World::addEnemy(Character::Type type, float relX, float relY)
-{
-	SpawnPoint spawn(type, mSpawnPosition.x + relX, mSpawnPosition.y - relY);
-	mEnemySpawnPoints.push_back(spawn);
 }
 
 void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
@@ -383,6 +371,7 @@ void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::V
 #pragma endregion
 
 #pragma region Collisions
+
 bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type2)
 {
 	unsigned int category1 = colliders.first->getCategory();
@@ -401,6 +390,7 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 	return false;
 }
 
+//Mike
 void World::handlePlayerCollision()
 {
 	//TODO make map member variable and change 128 to gettileSize()
@@ -410,6 +400,7 @@ void World::handlePlayerCollision()
 	}
 }
 
+//Mike
 void World::handleCollisions()
 {
 	std::set<SceneNode::Pair> collisionPairs;
@@ -442,6 +433,7 @@ void World::handleCollisions()
 	}
 }
 
+//Mike
 void World::handleCharacterCollisions(SceneNode::Pair& pair)
 {
 	auto& character1 = static_cast<Character&>(*pair.first);
@@ -460,6 +452,7 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	}
 }
 
+//Mike
 void World::handleObstacleCollisions(SceneNode::Pair& pair)
 {
 	auto& character = static_cast<Character&>(*pair.first);
@@ -467,6 +460,7 @@ void World::handleObstacleCollisions(SceneNode::Pair& pair)
 	character.setPosition(character.getLastPosition());
 }
 
+//Mike
 void World::handleProjectileCollisions(SceneNode::Pair& pair)
 {
 	auto& entity = static_cast<Entity&>(*pair.first);
@@ -483,6 +477,7 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 	}
 }
 
+//Mike
 void World::handlePickupCollisions(SceneNode::Pair& pair)
 {
 	auto& player = static_cast<Character&>(*pair.first);
@@ -496,6 +491,7 @@ void World::handlePickupCollisions(SceneNode::Pair& pair)
 	player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);
 }
 
+//Mike
 void World::handleExplosionCollisions(SceneNode::Pair& pair)
 {
 	auto& entity = static_cast<Entity&>(*pair.first);
@@ -507,6 +503,7 @@ void World::handleExplosionCollisions(SceneNode::Pair& pair)
 	entity.damage(1);
 }
 
+//Mike
 World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 {
 	if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter)

@@ -22,6 +22,7 @@ void centreOrigin(Animation& animation);
 float toRadians(float degrees);
 float toDegrees(float radians);
 int randomInt(int range);
+int randomIntExcluding(int lower, int upper);
 sf::Vector2f unitVector(sf::Vector2f vector);
 sf::Vector2f normalize(const sf::Vector2f& source);
 sf::Vector2f lerp(sf::Vector2f start, sf::Vector2f end, float duration, sf::Time dt);

@@ -14,15 +14,15 @@ GameState::GameState(StateStack& stack, Context context)
 	//Play the mission theme
 	context.music->play(MusicIDs::MissionTheme);
 
+	//Not adding scoring in this iteration due to time constraints
+	//sf::Font& font = context.fonts->get(FontIDs::Main);
+	//sf::Vector2f windowSize(context.window->getSize());
 
-	sf::Font& font = context.fonts->get(FontIDs::Main);
-	sf::Vector2f windowSize(context.window->getSize());
-
-	mScoreText.setFont(font);
-	mScoreText.setString("Score: 10");
-	mScoreText.setCharacterSize(20);
-	centreOrigin(mScoreText);
-	mScoreText.setPosition(150.f , 20.f);
+	//mScoreText.setFont(font);
+	//mScoreText.setString("Score: 10");
+	//mScoreText.setCharacterSize(20);
+	//centreOrigin(mScoreText);
+	//mScoreText.setPosition(150.f , 20.f);
 }
 
 void GameState::draw()
@@ -32,7 +32,7 @@ void GameState::draw()
 	
 	mWorld.draw();
 
-	window.draw(mScoreText);
+	//window.draw(mScoreText);
 }
 
 bool GameState::update(sf::Time dt)

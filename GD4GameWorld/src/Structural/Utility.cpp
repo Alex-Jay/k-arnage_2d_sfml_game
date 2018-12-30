@@ -61,6 +61,19 @@ int randomInt(int exclusiveMax)
 	return distr(RandomEngine);
 }
 
+//Mike
+int randomIntExcluding(int lower, int upper)
+{
+	//Random number between 0 and total range
+	int rand = randomInt(lower + upper);
+
+	// if the random number is greater than the lowest and the range to push outside.
+	if (rand >= lower)
+		rand += upper;
+
+	return rand;
+}
+
 sf::Vector2f unitVector(sf::Vector2f vector)
 {
 	assert(vector != sf::Vector2f(0.f, 0.f));

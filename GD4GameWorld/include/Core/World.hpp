@@ -63,6 +63,10 @@ private:
 	CollisionType GetCollisionType(SceneNode::Pair& pair);
 	void updateSounds();
 
+	void spawnZombies(sf::Time dt);
+
+	void StartZombieSpawnTimer(sf::Time dt);
+
 	void addEnemies();
 	void addEnemy(Character::Type type, float relX, float relY);
 	void spawnEnemies();
@@ -114,4 +118,9 @@ private:
 	std::vector<Character*> mActiveEnemies;
 
 	BloomEffect mBloomEffect;
+
+	bool mZombieSpawnTimerStarted{};
+
+	sf::Time mZombieSpawnTimer;
+
 };
