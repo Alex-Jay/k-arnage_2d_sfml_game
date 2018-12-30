@@ -16,4 +16,6 @@ private:
 private:
 	World mWorld;
 	Player& mPlayer;
+
+	sf::Text mScoreText;
 };

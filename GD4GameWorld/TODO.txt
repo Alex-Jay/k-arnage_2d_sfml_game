@@ -1,0 +1,10 @@
+1 Finish Collison handleing
+2 Add Random Zombie Spawning
+3 Add 1 Extra GameState/Menu
+4 Add In Some Shaders
+5 Add Second Player
+6 Add Scoring for Two Players
+7 Fix Known bugs
+8 Refactor and Tidy Code
+
+idea that could cover both gamestate and second player, Have single player mode and 2 player mode.

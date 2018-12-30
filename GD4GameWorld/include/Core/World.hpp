@@ -99,7 +99,7 @@ private:
 	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 
-	//MapTiler& map;
+	TextNode* mScoreText;
 
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mSceneLayers;

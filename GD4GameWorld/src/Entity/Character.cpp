@@ -33,10 +33,9 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	  , mIsLaunchingGrenade(false)
 	  , mShowDeath(true)
 	  , mPlayedScreamSound(false)
-	  , mSpawnedPickup(false)
 	  , mFireRateLevel(1)
 	  , mSpreadLevel(1)
-	  , mGrenadeAmmo(100)
+	  , mGrenadeAmmo(2)
 	  , mTravelledDistance(0.f)
 	  , mDirectionIndex(0)
 {
@@ -73,11 +72,6 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 		mGrenadeVelocity = 0.f;
 	};
 
-	//mDropPickupCommand.category = static_cast<int>(Category::SceneAirLayer);
-	//mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)
-	//{
-	//	createPickup(node, textures);
-	//};
 
 	std::unique_ptr<ShapeNode> healthDisplay(new ShapeNode(sf::Color::Green));
 	mHealthDisplay = healthDisplay.get();
@@ -128,9 +122,6 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
-
-	// Update enemy movement pattern; apply velocity
-	//updateMovementPattern(dt);
 
 	if (mType == Type::Zombie)
 	{
@@ -223,12 +214,6 @@ void Character::increaseFireRate()
 		++mFireRateLevel;
 }
 
-void Character::increaseSpread()
-{
-	if (mSpreadLevel < 3)
-		++mSpreadLevel;
-}
-
 void Character::collectGrenades(unsigned int count)
 {
 	mGrenadeAmmo += count;
@@ -283,14 +268,6 @@ void Character::updateMovementPattern(sf::Time dt)
 	}
 }
 
-//void Character::checkPickupDrop(CommandQueue& commands)
-//{
-//	if (!isPlayer() && randomInt(3) == 0 && !mSpawnedPickup)
-//		commands.push(mDropPickupCommand);
-//
-//	mSpawnedPickup = true;
-//}
-
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
 	if (mGrenadeStarted)
@@ -333,24 +310,24 @@ void Character::createBullets(SceneNode& node, const TextureHolder& textures) co
 	Projectile::ProjectileIDs type = isPlayer()
 		                                 ? Projectile::ProjectileIDs::AlliedBullet
 		                                 : Projectile::ProjectileIDs::EnemyBullet;
-
 	switch (mSpreadLevel)
 	{
-	case 1:
-		createProjectile(node, type, -0.09f, 0.5f, textures);
-		break;
+		case 1:
+			createProjectile(node, type, -0.09f, 0.5f, textures);
+			break;
 
-	case 2:
-		createProjectile(node, type, +0.33f, 0.33f, textures);
-		createProjectile(node, type, +0.33f, 0.33f, textures);
-		break;
+		case 2:
+			createProjectile(node, type, +0.33f, 0.33f, textures);
+			createProjectile(node, type, +0.33f, 0.33f, textures);
+			break;
 
-	case 3:
-		createProjectile(node, type, -0.5f, 0.33f, textures);
-		createProjectile(node, type, 0.0f, 0.5f, textures);
-		createProjectile(node, type, +0.5f, 0.33f, textures);
-		break;
-	default: ;
+		case 3:
+			createProjectile(node, type, -0.5f, 0.33f, textures);
+			createProjectile(node, type, 0.0f, 0.5f, textures);
+			createProjectile(node, type, +0.5f, 0.33f, textures);
+			break;
+		default: 
+			break;
 	}
 }
 
@@ -375,22 +352,14 @@ void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type
 	node.attachChild(std::move(projectile));
 }
 
-//void Character::createPickup(SceneNode& node, const TextureHolder& textures) const
-//{
-//	auto type = static_cast<Pickup::PickupID>(randomInt(static_cast<int>(Pickup::PickupID::TypeCount)));
-//
-//	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
-//	pickup->setPosition(getWorldPosition());
-//	pickup->setVelocity(0.f, 1.f);
-//	node.attachChild(std::move(pickup));
-//}
-
 void Character::updateTexts()
 {
 	mHealthDisplay->setPosition(0.f, 0.f);
 	mHealthDisplay->setRotation(-getRotation());
 	mHealthDisplay->setOrigin(30.0f, -90.f);
-	mHealthDisplay->setSize(getHitpoints(), 5);
+
+	//Sets dimensions of health display to 0x 0y if health is depleted
+	mHealthDisplay->setSize(getHitpoints() != 0 ? getHitpoints()  : 0, getHitpoints() != 0 ? 5.f : 0);
 
 	if (mGrenadeDisplay)
 	{

@@ -124,10 +124,6 @@ std::vector<PickupData> initializePickupData()
 	data[static_cast<int>(Pickup::PickupID::GrenadeRefill)].action = std::bind(
 		&Character::collectGrenades, _1, GRENADEPICKUPAMMOVALUE);
 
-	data[static_cast<int>(Pickup::PickupID::FireSpread)].texture = TextureIDs::Entities;
-	data[static_cast<int>(Pickup::PickupID::FireSpread)].textureRect = sf::IntRect(80, 64, 40, 40);
-	data[static_cast<int>(Pickup::PickupID::FireSpread)].action = std::bind(&Character::increaseSpread, _1);
-
 	data[static_cast<int>(Pickup::PickupID::FireRate)].texture = TextureIDs::Entities;
 	data[static_cast<int>(Pickup::PickupID::FireRate)].textureRect = sf::IntRect(120, 64, 40, 40);
 	data[static_cast<int>(Pickup::PickupID::FireRate)].action = std::bind(&Character::increaseFireRate, _1);

@@ -129,7 +129,6 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
-	//MapTiler m;
 	if (PostEffect::isSupported())
 	{
 		mSceneTexture.clear(sf::Color(BLUE));
@@ -238,7 +237,7 @@ void World::guideZombies()
 	zombieGuider.category = static_cast<int>(Category::EnemyCharacter);
 	zombieGuider.action = derivedAction<Character>([this](Character& zombie, sf::Time)
 	{
-		// Ignore unguided bullets
+		// Ignore unguided players
 		if (zombie.isPlayer())
 			return;
 
@@ -273,6 +272,8 @@ void World::guideZombies()
 
 void World::buildScene()
 {
+
+
 	// Initialize the different layers
 	for (std::size_t i = 0; i < LayerCount; ++i)
 	{
@@ -299,9 +300,6 @@ void World::buildScene()
 	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(waterTexture, textureRect));
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 	mSceneLayers[Layer::Background]->attachChild(std::move(waterSprite));
-
-	// Prepare the tiled background
-	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 
@@ -332,7 +330,14 @@ void World::buildScene()
 	//std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures, 50));
 	//obstacle->setPosition(sf::Vector2f(200, 50));
 	//mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+
 	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
+
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(450, 250));
+
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(650, 250));
+
+	createObstacle(mSceneGraph, mTextures, sf::Vector2f(850, 250));
 
 	// Add enemy Character
 	addEnemies();
@@ -451,7 +456,7 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	}
 	else
 	{
-		//character1.damage(1);
+		character1.damage(1);
 	}
 }
 
@@ -485,7 +490,7 @@ void World::handlePickupCollisions(SceneNode::Pair& pair)
 
 	// Apply pickup effect to player, destroy projectile
 	//TODO APPLY PICKUP EFFECTS
-	//pickup.apply(player);
+	pickup.apply(player);
 	pickup.destroy();
 
 	player.playLocalSound(mCommandQueue, SoundEffectIDs::CollectPickup);

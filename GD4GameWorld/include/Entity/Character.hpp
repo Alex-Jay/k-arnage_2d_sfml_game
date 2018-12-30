@@ -2,12 +2,10 @@
 #include "Entity.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Command.hpp"
-
 #include "Projectile.hpp"
 #include "TextNode.hpp"
 #include "ShapeNode.hpp"
 #include "Animation.hpp"
-
 
 #include "SFML/Graphics/Sprite.hpp"
 
@@ -16,27 +14,27 @@ class Character : public Entity
 public:
 	enum class Type { Player, Zombie, TypeCount };
 
-public:
 	Character(Type type, const TextureHolder& texture, const FontHolder& fonts);
+
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
 	virtual void remove();
 	virtual bool isMarkedForRemoval() const;
+
 	bool isPlayer() const;
 	bool isZombie() const;
+
 	float getMaxSpeed() const;
+	float getMaxRotationSpeed() const;
 
 	void increaseFireRate();
 	void increaseSpread();
 	void collectGrenades(unsigned int count);
 	void guideTowards(sf::Vector2f position);
-
 	void fire();
 	void startGrenade();
 	void launchGrenade();
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
-
-	float getMaxRotationSpeed() const;
 
 	sf::Vector2f getLastPosition();
 
@@ -64,9 +62,6 @@ private:
 	Command mFireCommand;
 	Command mGrenadeCommand;
 
-	////TODO Remove Pickups from character class
-	//Command mDropPickupCommand;
-
 	ShapeNode* mHealthDisplay;
 	TextNode* mGrenadeDisplay;
 	ShapeNode* mGrenadePower;
@@ -78,18 +73,16 @@ private:
 
 	bool mIsFiring;
 	bool mIsLaunchingGrenade;
-	bool mGrenadeStarted{};
+	bool mGrenadeStarted;
 	bool mShowDeath;
 	bool mPlayedScreamSound;
-	bool mSpawnedPickup;
 
 	float mGrenadeVelocity;
+	float mTravelledDistance;
 
 	int mFireRateLevel;
 	int mSpreadLevel;
 	int mGrenadeAmmo;
-
-	float mTravelledDistance;
 
 	std::size_t mDirectionIndex;
 };
