@@ -25,6 +25,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
+	  , mZombieSpawnTime(-1)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
@@ -120,6 +121,7 @@ void World::update(sf::Time dt)
 	adaptPlayerPosition();
 	updateSounds();
 	spawnZombies(dt);
+
 }
 
 void World::draw()
@@ -187,7 +189,6 @@ void World::updateSounds()
 //Mike
 void World::spawnZombies(sf::Time dt)
 {
-	int timer = 5;//Spawn Every 5 seconds
 
 	if (!mZombieSpawnTimerStarted)
 	{
@@ -198,9 +199,9 @@ void World::spawnZombies(sf::Time dt)
 		mZombieSpawnTimer += dt;
 	}
 
-	if (mZombieSpawnTimer.asSeconds() >= timer)
+	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
 	{
-		int rand = randomInt(5); // Number of zombies to spawn
+		int rand = randomInt(10); // Number of zombies to spawn
 
 		for (int i = 0; i < rand; ++i)
 		{
@@ -212,11 +213,15 @@ void World::spawnZombies(sf::Time dt)
 			enemy->setPosition(xPos, yPos);
 			enemy->setRotation(180.f);
 
-			mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+			if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+			{
+				mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+			}
 		}
 
 		mZombieSpawnTimerStarted = false;
 	}
+	
 }
 
 //Mike
@@ -316,13 +321,14 @@ void World::buildScene()
 
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 	mWorldBounds = map->getMapBounds();
+	mWorldBoundsBuffer = map->getTileSize().x;
 	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
 	waterTexture.setRepeated(true);
 
 	float viewHeight = mWorldBounds.height;
 	float viewWidth = mWorldBounds.width;
 
-	sf::IntRect textureRect(sf::FloatRect(128, 128, mWorldBounds.width * 2, mWorldBounds.height * 2));
+	sf::IntRect textureRect(sf::FloatRect(mWorldBoundsBuffer, mWorldBoundsBuffer, mWorldBounds.width * 2, mWorldBounds.height * 2));
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene
@@ -349,23 +355,52 @@ void World::buildScene()
 	// Add player's Character
 	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
 	mPlayerCharacter = player.get();
-	mPlayerCharacter->setPosition(mSpawnPosition);
+
+
+	mPlayerCharacter->setPosition(getCenter(mWorldBounds));
 	mSceneLayers[UpperLayer]->attachChild(std::move(player));
 
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(250, 250));
+	SpawnObstacles();
 
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(450, 250));
+	spawnZombies(sf::Time::Zero);
+	mZombieSpawnTime = 10;//Spawn Every 10 seconds
+}
 
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(650, 250));
+//Mike
+void World::SpawnObstacles()
+{
+	//Random Number of Obstacles to spawn
+	int rand = randomInt(10);
 
-	createObstacle(mSceneGraph, mTextures, sf::Vector2f(850, 250));
+	//List for all Spawned Bounding rects
+	std::list<sf::FloatRect> objectRects;
+
+	for (int i = 0; i < rand; i++)
+	{
+		//Random Position in the world
+		int xPos = randomInt(std::ceil(mWorldBounds.width));
+		int yPos = randomInt(std::ceil(mWorldBounds.height));
+
+		std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+		obstacle->setPosition(sf::Vector2f(xPos, yPos));
+		sf::FloatRect boundingRectangle = obstacle->getBoundingRect();
+
+		//If the list does not contain that rectangle spawn a new object
+		if (!containsIntersection(objectRects, boundingRectangle)
+			&& shrink((mWorldBoundsBuffer * 2), mWorldBounds).contains(sf::Vector2f(xPos, yPos)))
+		{
+			objectRects.push_back(boundingRectangle);
+			mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
+		}
+	}	
 }
 
 void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
 {
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, textures));
+	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
 	obstacle->setPosition(position);
-	node.attachChild(std::move(obstacle));
+	obstacle->getBoundingRect();
+	mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
 }
 
 #pragma endregion
@@ -393,8 +428,7 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 //Mike
 void World::handlePlayerCollision()
 {
-	//TODO make map member variable and change 128 to gettileSize()
-	if (!shrink(128, mWorldBounds).contains(mPlayerCharacter->getPosition()))
+	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerCharacter->getPosition()))
 	{
 		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
 	}

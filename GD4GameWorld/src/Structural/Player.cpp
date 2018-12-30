@@ -19,8 +19,6 @@ struct CharacterMover
 	{
 		Character.accelerate(velocity * Character.getMaxSpeed());
 		Character.applyRotation(angle * Character.getMaxRotationSpeed());
-		//std::cout << "Velocity [X,Y]: " << velocity.x << ", " << velocity.y << std::endl;
-		//std::cout << "Angle: " << angle << std::endl;
 	}
 };
 
@@ -65,6 +63,7 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 		}
 	}
 
+	//Mike
 	if (event.type == sf::Event::KeyReleased)
 	{
 		auto found = mKeyBindingReleased.find(event.key.code);
@@ -105,6 +104,7 @@ void Player::assignKey(Action action, sf::Keyboard::Key key)
 	}
 }
 
+//Mike
 void Player::assignReleaseKey(Action action, sf::Keyboard::Key key) //Mike
 {
 	//Remove all keys that are already mapped to an action

@@ -10,6 +10,7 @@
 
 using namespace std::placeholders;
 
+//Mike
 std::vector<CharacterData> initializeCharacterData()
 {
 	std::vector<CharacterData> data(static_cast<int>(Character::Type::TypeCount));
@@ -83,6 +84,7 @@ std::vector<ProjectileData> initializeProjectileData()
 	return data;
 }
 
+//Mike
 std::vector<ExplosionData> initializeExplosionData()
 {
 	std::vector<ExplosionData> data(static_cast<int>(Explosion::ExplosionIDs::TypeCount));
@@ -96,6 +98,7 @@ std::vector<ExplosionData> initializeExplosionData()
 	return data;
 }
 
+//Mike
 std::vector<MapTileData> initializeMapTileData()
 {
 	std::vector<MapTileData> data(static_cast<int>(MapTiler::MapID::TypeCount));
@@ -131,6 +134,7 @@ std::vector<PickupData> initializePickupData()
 	return data;
 }
 
+//Mike
 std::vector<ObstacleData> initializeObstacleData()
 {
 	return std::vector<ObstacleData>();

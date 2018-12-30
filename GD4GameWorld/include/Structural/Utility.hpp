@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <SFML/Graphics/Rect.hpp>
+#include <list>
 
 namespace sf
 {
@@ -31,6 +32,8 @@ float vectorDistance(sf::Vector2f v1, sf::Vector2f v2);
 void clamp(float& value, float min, float max);
 sf::Vector2f MoveTowards(sf::Vector2f current, sf::Vector2f target, float maxDelta);
 void GotoXY(int x, int y);
-sf::FloatRect shrink(int amount, sf::FloatRect rect);
+sf::FloatRect shrink(int amount, sf::FloatRect& rect);
+sf::Vector2f getCenter(sf::FloatRect& rect);
 // Convert enumerators to strings
 std::string toString(sf::Keyboard::Key key);
+bool containsIntersection(std::list<sf::FloatRect>& rectList, sf::FloatRect& rect);

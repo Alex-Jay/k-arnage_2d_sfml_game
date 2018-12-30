@@ -51,6 +51,7 @@ public:
 private:
 	void loadTextures();
 	void buildScene();
+	void SpawnObstacles();
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
@@ -123,4 +124,6 @@ private:
 
 	sf::Time mZombieSpawnTimer;
 
+	int mWorldBoundsBuffer;
+	int mZombieSpawnTime;
 };

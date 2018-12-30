@@ -14,6 +14,7 @@ namespace
 	const std::vector<ExplosionData> Table = initializeExplosionData();
 }
 
+//Mike Explosion Class
 Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
 	: Entity(1),
 	  mType(type),
@@ -43,8 +44,9 @@ int Explosion::getDamage() const
 
 sf::FloatRect Explosion::getBoundingRect() const
 {
-	float radius = Table[static_cast<int>(mType)].radius; //TODO Change to circle collision size of animation texture
-	//return getWorldTransform().transformRect(sf::FloatRect(0, 0, radius, radius));
+	//TODO Change to circle collision size of animation texture
+	float radius = Table[static_cast<int>(mType)].radius;
+
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 

@@ -3,6 +3,7 @@
 
 #include "SFML/Graphics/RenderTarget.hpp"
 
+//Mike ShapeNode Class
 ShapeNode::ShapeNode(sf::Color fillColor)
 {
 	mShape.setFillColor(fillColor);
@@ -20,7 +21,7 @@ void ShapeNode::setFillColor(sf::Color color)
 void ShapeNode::setSize(int x, int y)
 {
 	mShape.setSize(sf::Vector2f(x, y));
-	//Dont center origin as bar will fill from both sides
+	//Don't center origin as bar will fill from both sides
 	//centreOrigin(mShape);
 }
 

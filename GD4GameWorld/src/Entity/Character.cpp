@@ -19,6 +19,7 @@ namespace
 	const std::vector<CharacterData> Table = initializeCharacterData();
 }
 
+//Mike Character Class, Modified From Aircraft
 Character::Character(Type type, const TextureHolder& textures, const FontHolder& fonts)
 	: Entity(Table[static_cast<int>(type)].hitpoints)
 	  , mType(type)
@@ -154,7 +155,6 @@ void Character::updateAnimations(sf::Time dt, CommandQueue& commands)
 	{
 		mCharacterDeathAnimation.update(dt);
 
-		// Play Death sound TODO
 		if (!mPlayedScreamSound && isPlayer())
 		{
 			SoundEffectIDs soundEffect = SoundEffectIDs::Scream;
@@ -306,29 +306,9 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 }
 
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
-{
-	Projectile::ProjectileIDs type = isPlayer()
-		                                 ? Projectile::ProjectileIDs::AlliedBullet
-		                                 : Projectile::ProjectileIDs::EnemyBullet;
-	switch (mSpreadLevel)
-	{
-		case 1:
-			createProjectile(node, type, -0.09f, 0.5f, textures);
-			break;
-
-		case 2:
-			createProjectile(node, type, +0.33f, 0.33f, textures);
-			createProjectile(node, type, +0.33f, 0.33f, textures);
-			break;
-
-		case 3:
-			createProjectile(node, type, -0.5f, 0.33f, textures);
-			createProjectile(node, type, 0.0f, 0.5f, textures);
-			createProjectile(node, type, +0.5f, 0.33f, textures);
-			break;
-		default: 
-			break;
-	}
+{ 
+	//TODO ALL Bullets Damage Everybody, NO Enemy or Allied Bullets
+	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.09f, 0.5f, textures);
 }
 
 void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,

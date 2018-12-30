@@ -8,7 +8,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
-
+//Mike - Obstacle Class
 namespace
 {
 	const std::vector<ObstacleData> Table = initializeObstacleData();

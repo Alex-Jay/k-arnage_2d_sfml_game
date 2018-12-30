@@ -13,6 +13,7 @@
 #include <iostream>
 #include <Windows.h>
 
+
 std::default_random_engine createRandomEngine()
 {
 	auto seed = static_cast<unsigned long>(std::time(nullptr));
@@ -147,9 +148,30 @@ void clamp(float& value, float min, float max)
 }
 
 //Mike
-sf::FloatRect shrink(int amount, sf::FloatRect rect)
+sf::FloatRect shrink(int amount, sf::FloatRect& rect)
 {
 	return sf::FloatRect(rect.left + amount, rect.top + amount, rect.width - amount, rect.height - amount);
+}
+//Mike
+//Returns if a list of rects intersects with one
+bool containsIntersection(std::list<sf::FloatRect>& rectList, sf::FloatRect& rect)
+{
+	for (auto r : rectList)
+	{
+		if (r.intersects(rect))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+sf::Vector2f getCenter(sf::FloatRect& rect)
+{
+	float x = rect.left + (rect.width / 2);
+	float y = rect.top + (rect.height / 2);
+
+	return  sf::Vector2f(x,y);
 }
 
 std::string toString(sf::Keyboard::Key key)

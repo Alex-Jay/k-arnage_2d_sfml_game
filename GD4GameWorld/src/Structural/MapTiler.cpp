@@ -2,12 +2,19 @@
 #include "ResourceHolder.hpp"
 #include "DataTables.hpp"
 
+//Mike Map Tiler Class, following tutorials from below
+
+//SFML VERTEX ARRAYS
+//https://www.sfml-dev.org/tutorials/2.2/graphics-vertex-array.php
+
+//Loading Map From Txt FIle
+//https://www.youtube.com/watch?v=NdOY8kuk4Ds&index=30&list=PLHJE4y54mpC5j_x90UkuoMZOdmmL9-_rg
+
 namespace
 {
 	const std::vector<MapTileData> Table = initializeMapTileData();
 }
 
-//Mike
 MapTiler::MapTiler(MapID type, TextureHolder& textures)
 	: mMapFile(Table[static_cast<int>(type)].mapFile)
 	  , mTexture(textures.get(Table[static_cast<int>(type)].texture))
@@ -139,6 +146,11 @@ sf::FloatRect MapTiler::getMapBounds()
 	float pixelHeight = mMapHeight * mTileSize.y - mTileSize.y;
 
 	return sf::FloatRect(0, 0, pixelWidth, pixelHeight);
+}
+
+sf::Vector2i MapTiler::getTileSize()
+{
+	return mTileSize;
 }
 
 void MapTiler::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -16,7 +16,7 @@ const int PLAYER_DEATH_ANIMATION_WIDTH = 550;
 const int ZOMBIE_MOVE_ANIMATION_HEIGHT = 40;
 const int ZOMBIE_MOVE_ANIMATION_WIDTH = 77;
 
-const int ZOMBIE_DEATH_ANIMATION_HEIGHT = 88; //TODO Fix Sprite sheet as pixels are not even number
+const int ZOMBIE_DEATH_ANIMATION_HEIGHT = 88;
 const int ZOMBIE_DEATH_ANIMATION_WIDTH = 150;
 //++++++++++++++++++++++++++++++++++++++++++++++++
 

@@ -23,6 +23,7 @@ Projectile::Projectile(ProjectileIDs type, const TextureHolder& textures)
 {
 	centreOrigin(mSprite);
 
+	//Mike
 	mExplosionCommand.category = static_cast<int>(Category::SceneLayer);
 	mExplosionCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
@@ -97,6 +98,7 @@ void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 	Entity::updateCurrent(dt, commands);
 }
 
+//Mike
 void Projectile::handleGrenade(sf::Time dt, CommandQueue& commands)
 {
 	if (!mGrenadeTimerStarted)
@@ -122,6 +124,7 @@ void Projectile::handleGrenade(sf::Time dt, CommandQueue& commands)
 	}
 }
 
+//Mike
 void Projectile::createExplosion(SceneNode& node, const TextureHolder& textures) const
 {
 	auto type = static_cast<Explosion::ExplosionIDs>(static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion));
@@ -142,6 +145,7 @@ void Projectile::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 	target.draw(mSprite, states);
 }
 
+//Mike
 void Projectile::StartTimer(sf::Time dt)
 {
 	mGrenadeTimerStarted = true;

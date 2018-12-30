@@ -24,6 +24,7 @@ public:
 	void populateMap();
 	void populateLine();
 	sf::FloatRect getMapBounds();
+	sf::Vector2i getTileSize();
 	void findCharacter(unsigned int& i, std::string line);
 private:
 	void setMapDimensions(unsigned int width);
