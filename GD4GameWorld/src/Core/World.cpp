@@ -26,7 +26,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
-	  , mNumZombiesSpawn(0)
+	  , mNumZombiesSpawn(0),
+	mBloomEffect()
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 

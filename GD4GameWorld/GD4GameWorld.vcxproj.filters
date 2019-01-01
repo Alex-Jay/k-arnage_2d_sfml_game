@@ -204,6 +204,9 @@
     <ClCompile Include="src\Structural\Debugger.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
+    <ClCompile Include="DistortionEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include/Animation/Animation.hpp">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="include\Structural\Debugger.hpp">
       <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="DistortionEffect.hpp">
+      <Filter>Header Files\PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

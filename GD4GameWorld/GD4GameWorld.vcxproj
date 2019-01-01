@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DistortionEffect.cpp" />
     <ClCompile Include="src\Animation\Animation.cpp" />
     <ClCompile Include="src/Main.cpp" />
     <ClCompile Include="src\Audio\MusicPlayer.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\Structural\Debugger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DistortionEffect.hpp" />
     <ClInclude Include="include\Entity\Character.hpp" />
     <ClInclude Include="include/Animation/Animation.hpp" />
     <ClInclude Include="include/Core/Application.hpp" />

@@ -16,6 +16,7 @@
 #include <array>
 #include <queue>
 #include "MapTiler.hpp"
+#include "../../DistortionEffect.hpp"
 
 //Forward declaration
 namespace sf
@@ -118,7 +119,7 @@ private:
 	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
 
-	BloomEffect mBloomEffect;
+	DistortionEffect mBloomEffect;
 
 	bool mZombieSpawnTimerStarted{};
 
