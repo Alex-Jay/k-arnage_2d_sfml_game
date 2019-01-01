@@ -347,5 +347,24 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="waterHeightmapShader.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\example_001.frag">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\distortion_map.png">
+      <Filter>Source Files</Filter>
+    </Image>
+    <Image Include="src\sfml-icon-small.png">
+      <Filter>Source Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="src\example_font.ttf">
+      <Filter>Source Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

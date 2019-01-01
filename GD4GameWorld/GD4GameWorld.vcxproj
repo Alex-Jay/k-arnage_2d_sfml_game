@@ -223,6 +223,15 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="src/ResourceHolder.inl" />
+    <None Include="src\example_001.frag" />
+    <None Include="waterHeightmapShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\distortion_map.png" />
+    <Image Include="src\sfml-icon-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="src\example_font.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
