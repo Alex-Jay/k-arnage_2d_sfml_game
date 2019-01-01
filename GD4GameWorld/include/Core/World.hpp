@@ -126,4 +126,5 @@ private:
 
 	int mWorldBoundsBuffer;
 	int mZombieSpawnTime;
+	int mNumZombiesSpawn;
 };

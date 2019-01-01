@@ -124,6 +124,16 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
 
+	if(!isDestroyed())
+	{
+		move(dt, commands);
+	}
+	
+	updateTexts();
+}
+
+void Character::move(sf::Time dt, CommandQueue& commands)
+{ 
 	if (mType == Type::Zombie)
 	{
 		sf::Vector2f newVelocity = mTargetDirection * dt.asSeconds();
@@ -139,8 +149,6 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 		updateVelocity(dt);
 	}
 	Entity::updateCurrent(dt, commands);
-
-	updateTexts();
 }
 
 void Character::updateVelocity(sf::Time dt) //TO DELETE//TODO

@@ -42,6 +42,8 @@ private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 
+	void move(sf::Time dt, CommandQueue & commands);
+
 	void updateVelocity(sf::Time dt);
 	void updateAnimations(sf::Time dt, CommandQueue& commands);
 	void updateMovementPattern(sf::Time dt);

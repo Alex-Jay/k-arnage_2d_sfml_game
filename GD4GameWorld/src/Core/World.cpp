@@ -26,6 +26,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
+	  , mNumZombiesSpawn(0)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
@@ -201,9 +202,10 @@ void World::spawnZombies(sf::Time dt)
 
 	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
 	{
-		int rand = randomInt(10); // Number of zombies to spawn
+		if (mNumZombiesSpawn < 20)
+		mNumZombiesSpawn += 2; // Number of zombies to spawn
 
-		for (int i = 0; i < rand; ++i)
+		for (int i = 0; i < mNumZombiesSpawn; ++i)
 		{
 			//Picks A random position outside the view but within world bounds
 			int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
