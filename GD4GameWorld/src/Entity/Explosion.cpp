@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <iostream>
+#include "EmitterNode.hpp"
 
 namespace
 {
@@ -30,6 +31,13 @@ Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
 	mAnimation.setDuration(sf::seconds(1));
 	centreOrigin(mAnimation);
 	mShowExplosion = true;
+
+	std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Type::Smoke));
+	smoke->setPosition(0.f, getBoundingRect().height / 2.f);
+	attachChild(std::move(smoke));
+
+
+
 }
 
 unsigned int Explosion::getCategory() const

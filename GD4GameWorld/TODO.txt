@@ -1,5 +1,4 @@
 1 Finish Collison handleing
-2 Add Random Zombie Spawning
 3 Add 1 Extra GameState/Menu
 4 Add In Some Shaders
 5 Add Second Player

@@ -364,7 +364,7 @@ void World::buildScene()
 
 	SpawnObstacles();
 
-	spawnZombies(sf::Time::Zero);
+	//spawnZombies(sf::Time::Zero);
 	mZombieSpawnTime = 10;//Spawn Every 10 seconds
 }
 
