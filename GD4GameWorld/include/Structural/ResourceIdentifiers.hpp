@@ -22,10 +22,11 @@ enum class TextureIDs
 	ZombieMove,
 	ZombieDeath,
 	MapTiles,
-	Crate
+	Crate,
+	DistortionMap
 };
 
-enum class Shaders { BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass };
+enum class Shaders { BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass, Distortion };
 
 enum class FontIDs { Main };
 

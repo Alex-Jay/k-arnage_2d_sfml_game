@@ -37,9 +37,6 @@
     <Filter Include="Header Files\Entity">
       <UniqueIdentifier>{d219510c-4c1a-4297-b39d-4fd95529cb62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\PostEffect">
-      <UniqueIdentifier>{5c8a5a9e-ce43-43c7-9441-8f023f016338}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\SceneNode">
       <UniqueIdentifier>{ac83fba3-2f18-4fc0-8503-b5f13924851e}</UniqueIdentifier>
     </Filter>
@@ -81,6 +78,9 @@
     </Filter>
     <Filter Include="Source Files\Structural">
       <UniqueIdentifier>{ee895e11-dc2d-4535-9cc9-336f3ce688a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Effect">
+      <UniqueIdentifier>{5c8a5a9e-ce43-43c7-9441-8f023f016338}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -204,8 +204,8 @@
     <ClCompile Include="src\Structural\Debugger.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="DistortionEffect.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Effect\DistortionEffect.cpp">
+      <Filter>Source Files\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -258,10 +258,10 @@
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
     <ClInclude Include="include/PostEffect/BloomEffect.hpp">
-      <Filter>Header Files\PostEffect</Filter>
+      <Filter>Header Files\Effect</Filter>
     </ClInclude>
     <ClInclude Include="include/PostEffect/PostEffect.hpp">
-      <Filter>Header Files\PostEffect</Filter>
+      <Filter>Header Files\Effect</Filter>
     </ClInclude>
     <ClInclude Include="include/SceneNode/EmitterNode.hpp">
       <Filter>Header Files\SceneNode</Filter>
@@ -344,33 +344,13 @@
     <ClInclude Include="include\Structural\Debugger.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
-    <ClInclude Include="DistortionEffect.hpp">
-      <Filter>Header Files\PostEffect</Filter>
+    <ClInclude Include="include\PostEffect\DistortionEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src/ResourceHolder.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
-    <None Include="waterHeightmapShader.glsl">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="src\example_001.frag">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="src\distortion_map.png">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="src\sfml-icon-small.png">
-      <Filter>Source Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="src\example_font.ttf">
-      <Filter>Source Files</Filter>
-    </Font>
   </ItemGroup>
 </Project>

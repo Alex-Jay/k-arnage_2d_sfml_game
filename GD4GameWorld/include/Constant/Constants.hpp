@@ -1,7 +1,7 @@
 #pragma once
 #include<string>
 //++++++++++++ MAP DATA ++++++++++++++
-const std::string DESSERTMAP = "map.txt";
+const std::string DESSERTMAP = "Media/map.txt";
 const int DESSERT_TILE_WIDTH = 128;
 const int DESSERT_TILE_HEIGHT = 128;
 //++++++++++++++++++++++++++++++++++++++++++++++++

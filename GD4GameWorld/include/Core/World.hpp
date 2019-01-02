@@ -16,7 +16,7 @@
 #include <array>
 #include <queue>
 #include "MapTiler.hpp"
-#include "../../DistortionEffect.hpp"
+#include "DistortionEffect.hpp"
 
 //Forward declaration
 namespace sf
@@ -100,6 +100,7 @@ private:
 private:
 	sf::RenderTarget& mTarget;
 	sf::RenderTexture mSceneTexture;
+	sf::RenderTexture mWaterSceneTexture;
 	sf::View mWorldView;
 	TextureHolder mTextures;
 	FontHolder& mFonts;
@@ -108,10 +109,10 @@ private:
 	TextNode* mScoreText;
 
 	SceneNode mSceneGraph;
-	SceneNode mWaterNode;
+	//SceneNode mWaterGraph;
 
 	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mSceneLayers;
-	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mWaterLayers;
+	//std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mWaterLayers;
 	CommandQueue mCommandQueue;
 
 	sf::FloatRect mWorldBounds;
@@ -123,12 +124,14 @@ private:
 	std::vector<Character*> mActiveEnemies;
 
 	DistortionEffect mDistortionEffect;
+	BloomEffect mBloomEffect;
 
 	bool mZombieSpawnTimerStarted{};
 
 	sf::Time mZombieSpawnTimer;
 
 	sf::Texture mWaterTexture;
+	SpriteNode mWaterSprite;
 
 	int mWorldBoundsBuffer;
 	int mZombieSpawnTime;

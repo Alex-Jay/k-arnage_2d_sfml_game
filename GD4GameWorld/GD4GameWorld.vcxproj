@@ -132,7 +132,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DistortionEffect.cpp" />
     <ClCompile Include="src\Animation\Animation.cpp" />
     <ClCompile Include="src/Main.cpp" />
     <ClCompile Include="src\Audio\MusicPlayer.cpp" />
@@ -147,6 +146,7 @@
     <ClCompile Include="src\Core\World.cpp" />
     <ClCompile Include="src\DataTable\DataTables.cpp" />
     <ClCompile Include="src\Effect\BloomEffect.cpp" />
+    <ClCompile Include="src\Effect\DistortionEffect.cpp" />
     <ClCompile Include="src\Effect\PostEffect.cpp" />
     <ClCompile Include="src\Entity\Character.cpp" />
     <ClCompile Include="src\Entity\Entity.cpp" />
@@ -175,7 +175,6 @@
     <ClCompile Include="src\Structural\Debugger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DistortionEffect.hpp" />
     <ClInclude Include="include\Entity\Character.hpp" />
     <ClInclude Include="include/Animation/Animation.hpp" />
     <ClInclude Include="include/Core/Application.hpp" />
@@ -218,22 +217,13 @@
     <ClInclude Include="include/Core/World.hpp" />
     <ClInclude Include="include\Entity\Explosion.hpp" />
     <ClInclude Include="include\Entity\Obstacle.hpp" />
+    <ClInclude Include="include\PostEffect\DistortionEffect.hpp" />
     <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
     <ClInclude Include="include\Structural\Debugger.hpp" />
     <ClInclude Include="include\Structural\MapTiler.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="src/ResourceHolder.inl" />
-    <None Include="src\example_001.frag" />
-    <None Include="waterHeightmapShader.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="src\distortion_map.png" />
-    <Image Include="src\sfml-icon-small.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="src\example_font.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

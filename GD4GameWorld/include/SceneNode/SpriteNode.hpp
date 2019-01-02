@@ -5,6 +5,7 @@
 class SpriteNode : public SceneNode
 {
 public:
+	SpriteNode();
 	explicit SpriteNode(const sf::Texture& texture);
 	SpriteNode(const sf::Texture& texture, const sf::IntRect& textureRect);
 	void setTextureRect(const sf::IntRect& textureRect);

@@ -22,7 +22,6 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mFonts(fonts)
 	  , mSounds(sounds)
 	  , mSceneLayers()
-	  , mWaterLayers()
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
@@ -30,12 +29,15 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mNumZombiesSpawn(0)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
 	// Alex - Apply zoom factor
 	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
+	
 	buildScene();
+	mDistortionEffect.setTextureMap(mTextures);
 }
 
 void World::loadTextures()
@@ -56,6 +58,8 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::MapTiles, "Media/Textures/Tiles.png");
 
 	mTextures.load(TextureIDs::Crate, "Media/Textures/Crate.png");
+
+	mTextures.load(TextureIDs::DistortionMap, "Media/Textures/distortion_map.png");
 }
 
 #pragma region Getters
@@ -130,15 +134,21 @@ void World::draw()
 {
 	if (PostEffect::isSupported())
 	{
-		mSceneTexture.clear(sf::Color(BLUE));
-		mSceneTexture.setView(mWorldView);
-		mSceneTexture.draw(mWaterNode);
-		mSceneTexture.display();
-		mDistortionEffect.apply(mSceneTexture, mTarget);
+		mWaterSceneTexture.clear();
+		//mSceneTexture.clear();
+
+		mWaterSceneTexture.setView(mWorldView);
+		mWaterSceneTexture.draw(mWaterSprite);
+		mWaterSceneTexture.display();
+		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
+
+		//mSceneTexture.setView(mWorldView);
+		//mSceneTexture.draw(mSceneGraph);
+		//mSceneTexture.display();
+		//mBloomEffect.apply(mSceneTexture, mTarget);
 
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
-
 	}
 	else
 	{
@@ -326,16 +336,6 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	// Initialize the different layers
-	for (std::size_t i = 0; i < LayerCount; ++i)
-	{
-		Category category = i == LowerLayer ? Category::SceneLayer : Category::None;
-
-		SceneNode::Ptr layer(new SceneNode(category));
-		mWaterLayers[i] = layer.get();
-
-		mWaterNode.attachChild(std::move(layer));
-	}
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 	mWorldBounds = map->getMapBounds();
 	mWorldBoundsBuffer = map->getTileSize().x;
@@ -352,7 +352,15 @@ void World::buildScene()
 	// Add the background sprite to the scene
 	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(mWaterTexture, textureRect));
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
-	mWaterLayers[Layer::Background]->attachChild(std::move(waterSprite));
+
+	if (PostEffect::isSupported())
+	{
+		mWaterSprite.attachChild(std::move(waterSprite));
+	}
+	else
+	{
+		mSceneLayers[Background]->attachChild(std::move(waterSprite));
+	}
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 
@@ -411,14 +419,6 @@ void World::SpawnObstacles()
 			mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
 		}
 	}	
-}
-
-void World::createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const
-{
-	std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
-	obstacle->setPosition(position);
-	obstacle->getBoundingRect();
-	mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
 }
 
 #pragma endregion
