@@ -22,12 +22,12 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mFonts(fonts)
 	  , mSounds(sounds)
 	  , mSceneLayers()
+	  , mWaterLayers()
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
-	  , mNumZombiesSpawn(0),
-	mBloomEffect()
+	  , mNumZombiesSpawn(0)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 
@@ -132,9 +132,13 @@ void World::draw()
 	{
 		mSceneTexture.clear(sf::Color(BLUE));
 		mSceneTexture.setView(mWorldView);
-		mSceneTexture.draw(mSceneGraph);
+		mSceneTexture.draw(mWaterNode);
 		mSceneTexture.display();
-		mBloomEffect.apply(mSceneTexture, mTarget);
+		mDistortionEffect.apply(mSceneTexture, mTarget);
+
+		mTarget.setView(mWorldView);
+		mTarget.draw(mSceneGraph);
+
 	}
 	else
 	{
@@ -322,11 +326,22 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
+	// Initialize the different layers
+	for (std::size_t i = 0; i < LayerCount; ++i)
+	{
+		Category category = i == LowerLayer ? Category::SceneLayer : Category::None;
+
+		SceneNode::Ptr layer(new SceneNode(category));
+		mWaterLayers[i] = layer.get();
+
+		mWaterNode.attachChild(std::move(layer));
+	}
 	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
 	mWorldBounds = map->getMapBounds();
 	mWorldBoundsBuffer = map->getTileSize().x;
-	sf::Texture& waterTexture = mTextures.get(TextureIDs::Water);
-	waterTexture.setRepeated(true);
+
+	mWaterTexture = mTextures.get(TextureIDs::Water);
+	mWaterTexture.setRepeated(true);
 
 	float viewHeight = mWorldBounds.height;
 	float viewWidth = mWorldBounds.width;
@@ -335,9 +350,9 @@ void World::buildScene()
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(waterTexture, textureRect));
+	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(mWaterTexture, textureRect));
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
-	mSceneLayers[Layer::Background]->attachChild(std::move(waterSprite));
+	mWaterLayers[Layer::Background]->attachChild(std::move(waterSprite));
 
 	map->setPosition(mWorldBounds.left, mWorldBounds.top);
 

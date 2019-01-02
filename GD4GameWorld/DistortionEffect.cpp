@@ -34,8 +34,8 @@ void DistortionEffect::apply(const sf::RenderTexture& input, sf::RenderTarget& o
 	// Set origin in the middle of the sprite
 	sprite.setOrigin(spriteSize.width / 2., spriteSize.height / 2.);
 	shader.setUniform("time", timer.getElapsedTime().asSeconds());
-	shader.setUniform("distortionFactor", 0.2f);
-	shader.setUniform("riseFactor", 0.5f);
+	shader.setUniform("distortionFactor", 0.05f);
+	shader.setUniform("riseFactor", 0.1f);
 
 	// Clear the window and apply grey background
 	output.clear(sf::Color(127, 127, 127));

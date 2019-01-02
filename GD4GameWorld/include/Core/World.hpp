@@ -108,7 +108,10 @@ private:
 	TextNode* mScoreText;
 
 	SceneNode mSceneGraph;
+	SceneNode mWaterNode;
+
 	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mSceneLayers;
+	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mWaterLayers;
 	CommandQueue mCommandQueue;
 
 	sf::FloatRect mWorldBounds;
@@ -119,11 +122,13 @@ private:
 	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
 
-	DistortionEffect mBloomEffect;
+	DistortionEffect mDistortionEffect;
 
 	bool mZombieSpawnTimerStarted{};
 
 	sf::Time mZombieSpawnTimer;
+
+	sf::Texture mWaterTexture;
 
 	int mWorldBoundsBuffer;
 	int mZombieSpawnTime;

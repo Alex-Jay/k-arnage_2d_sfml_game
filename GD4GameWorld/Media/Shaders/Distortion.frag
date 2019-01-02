@@ -40,7 +40,7 @@ void main()
     // We use the t (a.k.a. y) texture coordinate of the original texture
     // to tell us how "high up" we are and damp accordingly
     // Remember, OpenGL 0 is at the bottom
-    distortionPositionOffset *= (1.f - gl_TexCoord[0].t);
+    // distortionPositionOffset *= (1.f - gl_TexCoord[0].t);
 
     vec2 distortedTextureCoordinate = gl_TexCoord[0].st + distortionPositionOffset;
 
