@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <cassert>
 
-template<typename Resource, typename Identifier>
+template <typename Resource, typename Identifier>
 class ResourceHolder
 {
 private:
@@ -16,7 +16,7 @@ private:
 
 public:
 	void load(Identifier id, const std::string& filename);
-	template<typename Parameter>
+	template <typename Parameter>
 	void load(Identifier id, const std::string& filename, const Parameter& secondParameter);
 	Resource& get(Identifier);
 	const Resource& get(Identifier) const;

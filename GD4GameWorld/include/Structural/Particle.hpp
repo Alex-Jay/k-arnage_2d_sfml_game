@@ -5,7 +5,8 @@
 
 struct Particle
 {
-	enum class Type{Exhaust, Smoke, ParticleCount};
+	enum class Type { Exhaust, Smoke, ParticleCount };
+
 	sf::Vector2f position;
 	sf::Color color;
 	sf::Time lifetime;

@@ -13,41 +13,37 @@
 class Projectile : public Entity
 {
 public:
-	enum class ProjectileIDs{AlliedBullet, EnemyBullet, Grenade, TypeCount};
+	enum class ProjectileIDs { AlliedBullet, EnemyBullet, Grenade, TypeCount };
 
 public:
 	Projectile(ProjectileIDs type, const TextureHolder& textures);
 
-	void createPickup(SceneNode & node, const TextureHolder & textures) const;
-
-	void guideTowards(sf::Vector2f position);
-	bool isGrenade() const;
-
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
+
 	float getMaxSpeed() const;
 	float getMaxSpeed(float initialSpeed) const;
-	int getDamage() const;
-	void setInitialVelocity(float vel);
 
+	int getDamage() const;
+
+	bool isGrenade() const;
 	bool isMarkedForRemoval() const;
 
+	void setInitialVelocity(float vel);
 	void remove();
 
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
-	void createExplosion(SceneNode & node) const;
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	void handleGrenade(sf::Time dt, CommandQueue& commands);
 	void StartTimer(sf::Time dt);
-
-	void playLocalSound(CommandQueue & commands, SoundEffectIDs effect);
+	void createExplosion(SceneNode& node, const TextureHolder& textures) const;
 
 private:
 	ProjectileIDs mType;
 	Animation mAnimation;
 	Command mExplosionCommand;
-	Command mDropPickupCommand;
 
 	sf::Sprite mSprite;
 	sf::Vector2f mTargetDirection;
@@ -55,7 +51,7 @@ private:
 
 	bool mGrenadeTimerStarted;
 	bool mShowExplosion;
-	bool mPlayedExplosionSound;
+	bool mPlayedScreamSound;
 
 	float mInitialVelocity;
 };

@@ -1,6 +1,5 @@
 #include "Application.hpp"
 
-#include <stdexcept>
 #include <iostream>
 
 int main()
@@ -15,3 +14,4 @@ int main()
 		std::cout << "\n EXCEPTION: " << e.what() << std::endl;
 	}
 }
+

@@ -8,7 +8,6 @@
 
 namespace GUI
 {
-
 	class Label : public Component
 	{
 	public:
@@ -18,18 +17,17 @@ namespace GUI
 	public:
 		Label(const std::string& text, const FontHolder& fonts);
 
-		virtual bool		isSelectable() const;
-		void				setText(const std::string& text);
+		virtual bool isSelectable() const;
+		void setText(const std::string& text);
 
-		virtual void		handleEvent(const sf::Event& event);
-
-
-	private:
-		void				draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		virtual void handleEvent(const sf::Event& event);
 
 
 	private:
-		sf::Text			mText;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+
+	private:
+		sf::Text mText;
 	};
-
 }

@@ -1,9 +1,10 @@
 #pragma once
 //Entity/Scene node category, used to dispatch messages
 
-enum class Category {
+enum class Category
+{
 	None = 0,
-	SceneAirLayer = 1 << 0,
+	SceneLayer = 1 << 0,
 	PlayerCharacter = 1 << 1,
 	AlliedCharacter = 1 << 2,
 	EnemyCharacter = 1 << 3,
@@ -13,7 +14,7 @@ enum class Category {
 	ParticleSystem = 1 << 7,
 	SoundEffect = 1 << 8,
 	Explosion = 1 << 10,
-
+	Obstacle = 1 << 11,
 
 	Character = PlayerCharacter | AlliedCharacter | EnemyCharacter,
 	Projectile = AlliedProjectile | EnemyProjectile

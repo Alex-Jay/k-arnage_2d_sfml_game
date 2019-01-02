@@ -16,21 +16,21 @@ class SettingsState : public State
 public:
 	SettingsState(StateStack& stack, Context context);
 
-	virtual void					draw();
-	virtual bool					update(sf::Time dt);
-	virtual bool					handleEvent(const sf::Event& event);
+	virtual void draw();
+	virtual bool update(sf::Time dt);
+	virtual bool handleEvent(const sf::Event& event);
 
-	bool							isReservedKey(sf::Event event);
-
-
-private:
-	void							updateLabels();
-	void							addButtonLabel(Player::Action action, float y, const std::string& text, Context context);
+	bool isReservedKey(sf::Event event);
 
 
 private:
-	sf::Sprite											mBackgroundSprite;
-	GUI::Container										mGUIContainer;
-	std::array<GUI::Button::Ptr, static_cast<int>(Player::Action::ActionCount)>	mBindingButtons;
-	std::array<GUI::Label::Ptr, static_cast<int>(Player::Action::ActionCount)> 	mBindingLabels;
+	void updateLabels();
+	void addButtonLabel(Player::Action action, float y, const std::string& text, Context context);
+
+
+private:
+	sf::Sprite mBackgroundSprite;
+	GUI::Container mGUIContainer;
+	std::array<GUI::Button::Ptr, static_cast<int>(Player::Action::ActionCount)> mBindingButtons;
+	std::array<GUI::Label::Ptr, static_cast<int>(Player::Action::ActionCount)> mBindingLabels;
 };

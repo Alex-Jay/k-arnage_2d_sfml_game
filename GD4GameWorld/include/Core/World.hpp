@@ -3,7 +3,6 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-//#include "Character.hpp"
 #include "Character.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
@@ -16,6 +15,8 @@
 
 #include <array>
 #include <queue>
+#include "MapTiler.hpp"
+#include "DistortionEffect.hpp"
 
 //Forward declaration
 namespace sf
@@ -23,8 +24,22 @@ namespace sf
 	class RenderTarget;
 }
 
-class World : private sf::NonCopyable {
+class World : private sf::NonCopyable
+{
+private:
+	enum CollisionType
+	{
+		Character_Character,
+		Player_Pickup,
+		Player_Obstacle,
+		Projectile_Obstacle,
+		Projectile_Character,
+		Character_Explosion,
+		Default
+	};
+
 public:
+
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
 	void update(sf::Time dt);
 	void draw();
@@ -37,29 +52,42 @@ public:
 private:
 	void loadTextures();
 	void buildScene();
+	void SpawnObstacles();
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
 	void handleCollisions();
+	void handleCharacterCollisions(SceneNode::Pair& pair);
+	void handleObstacleCollisions(SceneNode::Pair& pair);
+	void handleProjectileCollisions(SceneNode::Pair& pair);
+	void handlePickupCollisions(SceneNode::Pair& pair);
+	void handleExplosionCollisions(SceneNode::Pair& pair);
+	CollisionType GetCollisionType(SceneNode::Pair& pair);
 	void updateSounds();
+
+	void spawnZombies(sf::Time dt);
+
+	void StartZombieSpawnTimer(sf::Time dt);
 
 	void addEnemies();
 	void addEnemy(Character::Type type, float relX, float relY);
 	void spawnEnemies();
 	void destroyEntitiesOutsideView();
-	void guideGrenades();
+	void guideZombies();
 	sf::FloatRect getViewBounds() const;
 	sf::FloatRect getBattlefieldBounds() const;
 
+	void createObstacle(SceneNode& node, const TextureHolder& textures, sf::Vector2f position) const;
+
 private:
-	enum Layer { Background, LowerAir, UpperAir, LayerCount };
+	enum Layer { Background, LowerLayer, UpperLayer, LayerCount };
 
 	struct SpawnPoint
 	{
 		SpawnPoint(Character::Type type, float x, float y)
 			: type(type)
-			, x(x)
-			, y(y)
+			  , x(x)
+			  , y(y)
 		{
 		}
 
@@ -68,16 +96,23 @@ private:
 		float y;
 	};
 
+	CollisionType GetCollisionType(unsigned int collider);
 private:
 	sf::RenderTarget& mTarget;
 	sf::RenderTexture mSceneTexture;
+	sf::RenderTexture mWaterSceneTexture;
 	sf::View mWorldView;
 	TextureHolder mTextures;
-	FontHolder&	mFonts;
+	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 
+	TextNode* mScoreText;
+
 	SceneNode mSceneGraph;
+	//SceneNode mWaterGraph;
+
 	std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mSceneLayers;
+	//std::array<SceneNode*, static_cast<int>(Layer::LayerCount)> mWaterLayers;
 	CommandQueue mCommandQueue;
 
 	sf::FloatRect mWorldBounds;
@@ -85,8 +120,20 @@ private:
 	float mScrollSpeed;
 	Character* mPlayerCharacter;
 
-	std::vector<SpawnPoint>	mEnemySpawnPoints;
+	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
 
-	BloomEffect	mBloomEffect;
+	DistortionEffect mDistortionEffect;
+	BloomEffect mBloomEffect;
+
+	bool mZombieSpawnTimerStarted{};
+
+	sf::Time mZombieSpawnTimer;
+
+	sf::Texture mWaterTexture;
+	SpriteNode mWaterSprite;
+
+	int mWorldBoundsBuffer;
+	int mZombieSpawnTime;
+	int mNumZombiesSpawn;
 };

@@ -19,12 +19,12 @@ namespace sf
 class StateStack : private sf::NonCopyable
 {
 public:
-	enum class ActionIDs{Push, Pop, Clear};
+	enum class ActionIDs { Push, Pop, Clear };
 
 public:
 	explicit StateStack(State::Context context);
 
-	template<typename T>
+	template <typename T>
 	void registerState(StateIDs stateID);
 
 	void update(sf::Time dt);
@@ -56,7 +56,7 @@ private:
 	std::map<StateIDs, std::function<State::Ptr()>> mFactories;
 };
 
-template<typename T> 
+template <typename T>
 void StateStack::registerState(StateIDs stateID)
 {
 	mFactories[stateID] = [this]()

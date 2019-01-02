@@ -10,7 +10,7 @@ public:
 
 	explicit ShapeNode(sf::Color fillColor);
 	void setFillColor(sf::Color color);
-	void setSize(float x, float y);
+	void setSize(int x, int y);
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 

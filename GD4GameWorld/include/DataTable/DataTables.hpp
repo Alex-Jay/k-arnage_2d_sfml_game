@@ -8,6 +8,8 @@
 #include <vector>
 #include <functional>
 
+#include <string>
+
 class Character;
 class Explosion;
 
@@ -26,13 +28,26 @@ struct CharacterData
 	int hitpoints;
 	float speed;
 	float rotationSpeed;
+	float deathScale;
+	float moveScale;
 	TextureIDs texture;
+	TextureIDs moveAnimation;
+	int moveFrames;
+	TextureIDs deathAnimation;
+	int deathFrames;
 	sf::IntRect textureRect;
+	sf::IntRect deathRect;
+	sf::IntRect moveRect;
 	sf::Time fireInterval;
 	std::vector<Direction> directions;
-	bool hasAnimation;
 };
 
+struct MapTileData
+{
+	std::string mapFile;
+	sf::Vector2u tileSize;
+	TextureIDs texture;
+};
 
 struct ProjectileData
 {
@@ -46,7 +61,7 @@ struct ProjectileData
 struct ExplosionData
 {
 	int damage;
-	float radious;
+	float radius;
 	int lifeTimeSeconds;
 	TextureIDs texture;
 	sf::IntRect textureRect;
@@ -59,14 +74,20 @@ struct PickupData
 	sf::IntRect textureRect;
 };
 
+struct ObstacleData
+{
+};
+
 struct ParticleData
 {
 	sf::Color color;
 	sf::Time lifetime;
 };
 
+std::vector<MapTileData> initializeMapTileData();
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ExplosionData> initializeExplosionData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
+std::vector<ObstacleData> initializeObstacleData();
 std::vector<ParticleData> initializeParticleData();
