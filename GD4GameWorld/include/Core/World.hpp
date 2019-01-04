@@ -43,6 +43,7 @@ public:
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
 	void update(sf::Time dt);
 	void draw();
+	sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
 
 	CommandQueue& getCommandQueue();
 

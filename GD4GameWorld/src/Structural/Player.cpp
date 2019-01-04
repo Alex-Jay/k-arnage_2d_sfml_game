@@ -53,9 +53,16 @@ Player::Player(int localIdentifier)
 	, mJoystick(nullptr)
 	, mLocalIdentifier(localIdentifier)
 {
+	// If joystick not set and there are available controllers
 	if (mJoystick == nullptr && sf::Joystick::Count > 0)
 	{
+		// Setup controller with local ID
 		setJoystick(new Xbox360Controller(localIdentifier));
+	}
+	else
+	{
+		// Else, reset the joystick if disconnected
+		setJoystick(nullptr);
 	}
 
 	//Set initial key bindings

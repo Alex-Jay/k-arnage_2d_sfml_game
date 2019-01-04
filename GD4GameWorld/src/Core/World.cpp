@@ -86,7 +86,6 @@ sf::FloatRect World::getBattlefieldBounds() const
 void World::update(sf::Time dt)
 {
 #pragma region Author: Alex
-
 	// Scroll the world, reset player velocity
 	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
 
@@ -126,7 +125,7 @@ void World::update(sf::Time dt)
 
 	adaptPlayerPosition();
 	updateSounds();
-	spawnZombies(dt);
+	//spawnZombies(dt);
 
 }
 
@@ -155,6 +154,34 @@ void World::draw()
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
+}
+
+// Alex - Get collision mainfold
+sf::Vector3f World::getMainfold(const sf::FloatRect & overlap, const sf::Vector2f & collisionNormal)
+{
+	/*
+		X: Collision X-Axis Normal
+		Y: Collision Y-Axis Normal
+		Z: Penetration Amount
+	*/
+
+	sf::Vector3f mainfold;
+
+	// Determine Axis of collision
+	// X-Axis
+	if (overlap.width < overlap.height)
+	{
+		mainfold.x = (collisionNormal.x > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.width;
+	}
+	// Y-Axis
+	else
+	{
+		mainfold.y = (collisionNormal.y > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.height;
+	}
+
+	return mainfold;
 }
 
 void World::adaptPlayerPosition()
@@ -218,7 +245,9 @@ void World::spawnZombies(sf::Time dt)
 	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
 	{
 		if (mNumZombiesSpawn < 20)
-		mNumZombiesSpawn += 2; // Number of zombies to spawn
+		{
+			mNumZombiesSpawn += 2; // Number of zombies to spawn
+		}
 
 		for (int i = 0; i < mNumZombiesSpawn; ++i)
 		{
@@ -388,7 +417,7 @@ void World::buildScene()
 
 	SpawnObstacles();
 
-	//spawnZombies(sf::Time::Zero);
+	spawnZombies(sf::Time::Zero);
 	mZombieSpawnTime = 10;//Spawn Every 10 seconds
 }
 
@@ -446,6 +475,7 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 //Mike
 void World::handlePlayerCollision()
 {
+	// Map bound collision
 	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerCharacter->getPosition()))
 	{
 		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
@@ -463,24 +493,24 @@ void World::handleCollisions()
 		CollisionType collisionType = GetCollisionType(pair);
 		switch (collisionType)
 		{
-		case Character_Character:
-			handleCharacterCollisions(pair);
-			break;
-		case Player_Pickup:
-			handlePickupCollisions(pair);
-			break;
-		case Player_Obstacle:
-			handleObstacleCollisions(pair);
-			break;
-		case Projectile_Obstacle:
-		case Projectile_Character:
-			handleProjectileCollisions(pair);
-			break;
-		case Character_Explosion:
-			handleExplosionCollisions(pair);
-			break;
-		default:
-			break;
+			case Character_Character:
+				handleCharacterCollisions(pair);
+				break;
+			case Player_Pickup:
+				handlePickupCollisions(pair);
+				break;
+			case Player_Obstacle:
+				handleObstacleCollisions(pair);
+				break;
+			case Projectile_Obstacle:
+			case Projectile_Character:
+				handleProjectileCollisions(pair);
+				break;
+			case Character_Explosion:
+				handleExplosionCollisions(pair);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -494,9 +524,24 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	if ((character1.isZombie() && character2.isZombie())
 		|| (character1.isPlayer() && character2.isPlayer()))
 	{
-		//TODO FIX COLLISION
-		character1.setPosition(character1.getLastPosition());
-		character2.setPosition(character2.getLastPosition());
+		//DONE FIX COLLISION
+		sf::FloatRect r1 = character1.getBoundingRect();
+		sf::FloatRect r2 = character2.getBoundingRect();
+		sf::FloatRect intersection;
+
+		if (r1.intersects(r2, intersection))
+		{
+			sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
+
+			sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+			sf::Vector2f normal(mainfold.x, mainfold.y);
+
+			assert(dynamic_cast<Entity*>(&character1) != nullptr);
+			assert(dynamic_cast<Entity*>(&character2) != nullptr);
+			static_cast<Entity&>(character1).move(normal * mainfold.z);
+			static_cast<Entity&>(character2).move(-normal * mainfold.z);
+		}
 	}
 	else
 	{
@@ -509,7 +554,22 @@ void World::handleObstacleCollisions(SceneNode::Pair& pair)
 {
 	auto& character = static_cast<Character&>(*pair.first);
 	auto& obstacle = static_cast<Obstacle&>(*pair.second);
-	character.setPosition(character.getLastPosition());
+
+	sf::FloatRect r1 = character.getBoundingRect();
+	sf::FloatRect r2 = obstacle.getBoundingRect();
+	sf::FloatRect intersection;
+
+	if (r1.intersects(r2, intersection))
+	{
+		sf::Vector2f diff = character.getWorldPosition() - obstacle.getWorldPosition();
+
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		assert(dynamic_cast<Entity*>(&character) != nullptr);
+		static_cast<Entity&>(character).move(normal * mainfold.z);
+	}
 }
 
 //Mike
@@ -567,7 +627,8 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	{
 		return Player_Pickup;
 	}
-	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
+	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle)
+		|| matchesCategories(pair, Category::EnemyCharacter, Category::Obstacle))
 	{
 		return Player_Obstacle;
 	}
