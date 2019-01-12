@@ -76,7 +76,6 @@ void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) co
 	target.draw(mSprite, states);
 }
 
-
 void Obstacle::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (isDestroyed())

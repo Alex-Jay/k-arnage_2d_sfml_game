@@ -59,15 +59,15 @@ Player::Player(int localIdentifier)
 	}
 
 	//Set initial key bindings
-	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
-	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+	//mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+	//mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
 	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
 	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
 	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
 	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
 	// Alex - Init. rotation keys -------------------------
-	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
-	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+	mKeyBindingPressed[sf::Keyboard::Left] = Action::RotateLeft;
+	mKeyBindingPressed[sf::Keyboard::Right] = Action::RotateRight;
 
 	// Set intial joystick button bindings
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;

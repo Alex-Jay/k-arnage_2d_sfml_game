@@ -494,7 +494,6 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	if ((character1.isZombie() && character2.isZombie())
 		|| (character1.isPlayer() && character2.isPlayer()))
 	{
-		//TODO FIX COLLISION
 		character1.setPosition(character1.getLastPosition());
 		character2.setPosition(character2.getLastPosition());
 	}
