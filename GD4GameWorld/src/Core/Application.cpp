@@ -12,11 +12,12 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
 	: mWindow(sf::VideoMode(1024, 768), "K-ARNAGE", sf::Style::Close)
-	  , mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayer, mMusic, mSounds))
-	  , mStatisticsNumFrames(0)
-	  , mPlayer(0)
-
-{
+	, mPlayerManager(0, 1)
+	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayerManager, mMusic, mSounds))
+	, mStatisticsNumFrames(0)
+	//, mPlayer(0)
+{	
+	mWindow.setVerticalSyncEnabled(true);
 	mWindow.setKeyRepeatEnabled(false);
 
 	mFonts.load(FontIDs::Main, "Media/Sansation.ttf");

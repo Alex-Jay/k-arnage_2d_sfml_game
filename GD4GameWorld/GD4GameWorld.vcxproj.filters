@@ -84,9 +84,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Animation\Animation.cpp">
       <Filter>Source Files\Animation</Filter>
     </ClCompile>
@@ -212,6 +209,12 @@
     </ClCompile>
     <ClCompile Include="src\Structural\KeyBinding.cpp">
       <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Structural\PlayerManager.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Main.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -357,6 +360,9 @@
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
     <ClInclude Include="include\Structural\Xbox360Controller.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Structural\PlayerManager.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,7 +13,8 @@ namespace sf
 	class RenderWindow;
 }
 
-class Player;
+//class Player;
+class PlayerManager;
 class StateStack;
 class SoundPlayer;
 class MusicPlayer;
@@ -23,14 +24,26 @@ class State
 public:
 	typedef std::unique_ptr<State> Ptr;
 
+	//struct Context
+	//{
+	//	Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, Player& player,
+	//	        MusicPlayer& music, SoundPlayer& sounds);
+	//	sf::RenderWindow* window;
+	//	TextureHolder* textures;
+	//	FontHolder* fonts;
+	//	Player* player;
+	//	MusicPlayer* music;
+	//	SoundPlayer* sounds;
+	//};
+
 	struct Context
 	{
-		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, Player& player,
-		        MusicPlayer& music, SoundPlayer& sounds);
+		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, PlayerManager& playerManager,
+			MusicPlayer& music, SoundPlayer& sounds);
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
-		Player* player;
+		PlayerManager* playerManager;
 		MusicPlayer* music;
 		SoundPlayer* sounds;
 	};

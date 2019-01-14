@@ -7,7 +7,7 @@
 GameState::GameState(StateStack& stack, Context context)
 	: State(stack, context)
 	  , mWorld(*context.window, *context.fonts, *context.sounds)
-	  , mPlayer(*context.player)
+	  , mPlayer(0)
 {
 	mPlayer.setMissionStatus(Player::MissionStatus::MissionRunning);
 
@@ -44,11 +44,11 @@ bool GameState::update(sf::Time dt)
 		mPlayer.setMissionStatus(Player::MissionStatus::MissionFailure);
 		requestStackPush(StateIDs::GameOver);
 	}
-	else if (mWorld.hasPlayerReachedEnd())
-	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		requestStackPush(StateIDs::GameOver);
-	}
+	//else if (mWorld.hasPlayerReachedEnd())
+	//{
+	//	mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
+	//	requestStackPush(StateIDs::GameOver);
+	//}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
 	mPlayer.handleRealtimeInput(commands);

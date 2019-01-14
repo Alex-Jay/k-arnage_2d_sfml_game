@@ -28,6 +28,9 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mZombieSpawnTime(-1)
 	  , mNumZombiesSpawn(2)
 	  , mNumZombiesAlive(0)
+	  , mZombieHitDelay(sf::Time::Zero)
+	  , mZombieHitElapsedTime(sf::Time::Zero)
+	  , mPlayerCharacters()
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -39,6 +42,9 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	
 	buildScene();
 	mDistortionEffect.setTextureMap(mTextures);
+
+	// Add team-mate (Local)
+	addCharacter(1);
 }
 
 void World::loadTextures()
@@ -80,6 +86,33 @@ sf::FloatRect World::getBattlefieldBounds() const
 	sf::FloatRect bounds = getViewBounds();
 	return bounds;
 }
+
+// Zombie Hit Delay Mutators
+sf::Time World::getZombieHitDelay()
+{
+	return mZombieHitDelay;
+}
+
+void World::setZombieHitDelay(sf::Time delay)
+{
+	mZombieHitDelay = delay;
+}
+
+sf::Time World::getZombieHitElapsedTime()
+{
+	return mZombieHitElapsedTime;
+}
+
+void World::incrementZombieHitElapsedTime(sf::Time dt)
+{
+	mZombieHitElapsedTime += dt;
+}
+
+void World::resetZombieHitElapsedTime()
+{
+	mZombieHitElapsedTime = sf::Time::Zero;
+}
+
 #pragma endregion
 
 #pragma region Update
@@ -88,6 +121,8 @@ void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
 	mWorldView.setCenter(mPlayerCharacter->getPosition());
+
+	sf::Vector2f midPointBetweenTwoObjects;
 	/*
 	Quick Alternative To:
 	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
@@ -96,7 +131,12 @@ void World::update(sf::Time dt)
 	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
 
-	mPlayerCharacter->setVelocity(0.f, 0.f);
+	for (Character* c : mPlayerCharacters)
+	{
+		c->setVelocity(0.f, 0.f);
+	}
+
+	//mPlayerCharacter->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
@@ -105,10 +145,11 @@ void World::update(sf::Time dt)
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-	adaptPlayerVelocity();
+
+	//adaptPlayerVelocity();
 
 	// Collision detection and response (may destroy entities)
-	handleCollisions();
+	handleCollisions(dt);
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
@@ -187,46 +228,132 @@ void World::setAliveZombieCount(int count)
 	mNumZombiesAlive = count;
 }
 
+Character * World::getCharacter(int localIdentifier) const
+{
+	for (Character* c : mPlayerCharacters)
+	{
+		if (c->getLocalIdentifier() == localIdentifier)
+		{
+			return c;
+		}
+	}
+	return nullptr;
+}
+
+void World::removeCharacter(int localIdentifier)
+{
+	Character* character = getCharacter(localIdentifier);
+	if (character)
+	{
+		character->destroy();
+		mPlayerCharacters.erase(std::find(mPlayerCharacters.begin(), mPlayerCharacters.end(), character));
+	}
+}
+
+Character * World::addCharacter(int localIdentifier)
+{
+	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	player->setPosition(mWorldView.getCenter());
+	player->setLocalIdentifier(localIdentifier);
+
+	mPlayerCharacters.push_back(player.get());
+	mSceneLayers[Layer::UpperLayer]->attachChild(std::move(player));
+	return mPlayerCharacters.back();
+}
+
 void World::adaptPlayerPosition()
 {
+	// Keep player's position inside the screen bounds, at least borderDistance units from the border
+	//sf::FloatRect viewBounds = getViewBounds();
+	//const float borderDistance = 40.f;
+
+	//sf::Vector2f position = mPlayerCharacter->getPosition();
+	//position.x = std::max(position.x, viewBounds.left + borderDistance);
+	//position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+	//position.y = std::max(position.y, viewBounds.top + borderDistance);
+	//position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+	//mPlayerCharacter->setPosition(position);
+
 	// Keep player's position inside the screen bounds, at least borderDistance units from the border
 	sf::FloatRect viewBounds = getViewBounds();
 	const float borderDistance = 40.f;
 
-	sf::Vector2f position = mPlayerCharacter->getPosition();
-	position.x = std::max(position.x, viewBounds.left + borderDistance);
-	position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-	position.y = std::max(position.y, viewBounds.top + borderDistance);
-	position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-	mPlayerCharacter->setPosition(position);
+	for(Character* character : mPlayerCharacters)
+	{
+		sf::Vector2f position = character->getPosition();
+		position.x = std::max(position.x, viewBounds.left + borderDistance);
+		position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+		position.y = std::max(position.y, viewBounds.top + borderDistance);
+		position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+		character->setPosition(position);
+	}
 }
 
 void World::adaptPlayerVelocity()
 {
-	sf::Vector2f velocity = mPlayerCharacter->getVelocity();
+	//sf::Vector2f velocity = mPlayerCharacter->getVelocity();
 
-	// If moving diagonally, reduce velocity (to have always same velocity)
-	if (velocity.x != 0.f && velocity.y != 0.f)
-		mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
+	//// If moving diagonally, reduce velocity (to have always same velocity)
+	//if (velocity.x != 0.f && velocity.y != 0.f)
+	//	mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
 
-	// Add scrolling velocity
-	mPlayerCharacter->accelerate(0.f, mScrollSpeed);
+	//// Add scrolling velocity
+	//mPlayerCharacter->accelerate(0.f, mScrollSpeed);
+
+	for(Character* character : mPlayerCharacters)
+	{
+		sf::Vector2f velocity = character->getVelocity();
+
+		// If moving diagonally, reduce velocity (to have always same velocity)
+		if (velocity.x != 0.f && velocity.y != 0.f)
+			character->setVelocity(velocity / std::sqrt(2.f));
+
+		// Add scrolling velocity
+		character->accelerate(0.f, mScrollSpeed);
+	}
 }
 
 bool World::hasAlivePlayer() const
 {
-	return !mPlayerCharacter->isMarkedForRemoval();
+	//return !mPlayerCharacter->isMarkedForRemoval();
+	return mPlayerCharacters.size() > 0;
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-	return !mWorldBounds.contains(mPlayerCharacter->getPosition());
+	if (Character* character = getCharacter(0))
+		return !mWorldBounds.contains(character->getPosition());
+	else
+		return false;
 }
 
 void World::updateSounds()
 {
-	// Set listener's position to player position
-	mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
+	//// Set listener's position to player position
+	//mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
+
+	//// Remove unused sounds
+	//mSounds.removeStoppedSounds();
+
+	sf::Vector2f listenerPosition;
+
+	// 0 players (multiplayer mode, until server is connected) -> view center
+	if (mPlayerCharacters.empty())
+	{
+		listenerPosition = mWorldView.getCenter();
+	}
+
+	// 1 or more players -> mean position between all aircrafts
+	else
+	{
+		for(Character* character : mPlayerCharacters)
+			listenerPosition += character->getWorldPosition();
+
+		listenerPosition /= static_cast<float>(mPlayerCharacters.size());
+	}
+
+	// Set listener's position
+	mSounds.setListenerPosition(listenerPosition);
 
 	// Remove unused sounds
 	mSounds.removeStoppedSounds();
@@ -428,7 +555,7 @@ void World::buildScene()
 void World::SpawnObstacles()
 {
 	//Random Number of Obstacles to spawn
-	int rand = randomInt(10);
+	int rand = randomInt(20);
 
 	//List for all Spawned Bounding rects
 	std::list<sf::FloatRect> objectRects;
@@ -486,8 +613,8 @@ void World::handlePlayerCollision()
 }
 
 //Mike
-void World::handleCollisions()
-{
+void World::handleCollisions(sf::Time dt)
+{	
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 
@@ -497,6 +624,7 @@ void World::handleCollisions()
 		switch (collisionType)
 		{
 			case Character_Character:
+				incrementZombieHitElapsedTime(dt);
 				handleCharacterCollisions(pair);
 				break;
 			case Player_Pickup:
@@ -528,16 +656,30 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	sf::FloatRect r2 = character2.getBoundingRect();
 	sf::FloatRect intersection;
 
+	// Get collision intersection FloatRect
 	if (r1.intersects(r2, intersection))
 	{
+		// Get distance between two characters
 		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
 
+		/*
+			Get mainfold floatrect of colliding bodies
+			Return Type: Vector3f
+			X = Collision X-Axis Normal
+			Y = Collision Y-Axis Normal
+			Z = Penetration Amount
+		*/
 		sf::Vector3f mainfold = getMainfold(intersection, diff);
 
+		// Normal vector to move collidee out of the hitbox
 		sf::Vector2f normal(mainfold.x, mainfold.y);
 
+		// Assert an Entity cast can be made
 		assert(dynamic_cast<Entity*>(&character1) != nullptr);
 		assert(dynamic_cast<Entity*>(&character2) != nullptr);
+
+		// Normal vector * mainfold.z = Moving back by amount of penetration
+		// Normal & -Normal moves collidee's away from eachother
 		static_cast<Entity&>(character1).move(normal * mainfold.z);
 		static_cast<Entity&>(character2).move(-normal * mainfold.z);
 	}
@@ -549,7 +691,15 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	}
 	else
 	{
-		character1.damage(1);
+		if (getZombieHitElapsedTime() >= sf::milliseconds(ZOMBIEATTACKDELAY))
+		{
+			if (character1.isZombie())
+				character2.damage(ZOMBIEATTACKDAMAGE);
+			else
+				character1.damage(ZOMBIEATTACKDAMAGE);
+
+			resetZombieHitElapsedTime();
+		}
 	}
 }
 
@@ -628,7 +778,8 @@ void World::handleExplosionCollisions(SceneNode::Pair& pair)
 World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 {
 	if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter)
-		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter))
+		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter)
+		|| matchesCategories(pair, Category::PlayerCharacter, Category::PlayerCharacter))
 	{
 		return Character_Character;
 	}

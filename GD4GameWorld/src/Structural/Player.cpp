@@ -65,23 +65,38 @@ Player::Player(int localIdentifier)
 		setJoystick(nullptr);
 	}
 
-	//Set initial key bindings
-	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
-	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
-	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
-	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
-	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
-	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
-	// Alex - Init. rotation keys -------------------------
-	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
-	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+	if (localIdentifier == 0)
+	{
+		//Set initial key bindings
+		mKeyBindingPressed[sf::Keyboard::A] = Action::MoveLeft;
+		mKeyBindingPressed[sf::Keyboard::D] = Action::MoveRight;
+		mKeyBindingPressed[sf::Keyboard::W] = Action::MoveUp;
+		mKeyBindingPressed[sf::Keyboard::S] = Action::MoveDown;
+		mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
+		mKeyBindingPressed[sf::Keyboard::N] = Action::StartGrenade;
+		mKeyBindingReleased[sf::Keyboard::N] = Action::LaunchGrenade;
+		// Alex - Init. rotation keys -------------------------
+		mKeyBindingPressed[sf::Keyboard::J] = Action::RotateLeft;
+		mKeyBindingPressed[sf::Keyboard::K] = Action::RotateRight;
+	}
+	else if (localIdentifier == 1)
+	{
+		//Set initial key bindings
+		mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+		mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+		mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
+		mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
+		mKeyBindingPressed[sf::Keyboard::Numpad0] = Action::Fire;
+		mKeyBindingPressed[sf::Keyboard::Enter] = Action::StartGrenade;
+		mKeyBindingReleased[sf::Keyboard::Enter] = Action::LaunchGrenade;
+		// Alex - Init. rotation keys -------------------------
+		mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
+		mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+	}
 
 	// Set intial joystick button bindings
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;
-
-	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
-
-
+	
 	//set initial action bindings
 	initializeActions();
 
@@ -247,6 +262,16 @@ Xbox360Controller * Player::getJoystick() const
 void Player::setJoystick(Xbox360Controller * joystick)
 {
 	mJoystick = joystick;
+}
+
+int Player::getLocalIdentifier() const
+{
+	return mLocalIdentifier;
+}
+
+void Player::setLocalIdentifier(int id)
+{
+	mLocalIdentifier = id;
 }
 
 void Player::initializeActions()

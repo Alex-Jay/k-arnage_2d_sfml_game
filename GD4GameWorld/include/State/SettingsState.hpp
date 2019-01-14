@@ -1,6 +1,7 @@
 #pragma once
 #include "State.hpp"
-#include "Player.hpp"
+//#include "Player.hpp"
+#include "PlayerManager.hpp"
 #include "Container.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
@@ -25,12 +26,12 @@ public:
 
 private:
 	void updateLabels();
-	void addButtonLabel(Player::Action action, float y, const std::string& text, Context context);
+	void addButtonLabel(int index, float x, float y, const std::string& text, Context context);
 
 
 private:
 	sf::Sprite mBackgroundSprite;
 	GUI::Container mGUIContainer;
-	std::array<GUI::Button::Ptr, static_cast<int>(Player::Action::ActionCount)> mBindingButtons;
-	std::array<GUI::Label::Ptr, static_cast<int>(Player::Action::ActionCount)> mBindingLabels;
+	std::array<GUI::Button::Ptr, 2*static_cast<int>(Player::Action::ActionCount)> mBindingButtons;
+	std::array<GUI::Label::Ptr, 2*static_cast<int>(Player::Action::ActionCount)> mBindingLabels;
 };

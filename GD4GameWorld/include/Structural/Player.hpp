@@ -46,6 +46,9 @@ public:
 	Xbox360Controller* getJoystick() const;
 	void setJoystick(Xbox360Controller* joystick);
 
+	int getLocalIdentifier() const;
+	void setLocalIdentifier(int id);
+
 private:
 	void initializeActions();
 	static bool isRealtimeAction(Action action);

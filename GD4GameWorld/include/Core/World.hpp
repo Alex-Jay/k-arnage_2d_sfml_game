@@ -44,6 +44,13 @@ public:
 	void update(sf::Time dt);
 	void draw();
 
+	sf::Time getZombieHitDelay();
+	void setZombieHitDelay(sf::Time delay);
+
+	sf::Time getZombieHitElapsedTime();
+	void incrementZombieHitElapsedTime(sf::Time dt);
+	void resetZombieHitElapsedTime();
+
 	CommandQueue& getCommandQueue();
 
 	bool hasAlivePlayer() const;
@@ -53,6 +60,10 @@ public:
 	int getAliveZombieCount();
 	void setAliveZombieCount(int count);
 
+	Character* getCharacter(int localIdentifier) const;
+	void removeCharacter(int localIdentifier);
+	Character* addCharacter(int localIdentifier);
+
 private:
 	void loadTextures();
 	void buildScene();
@@ -60,7 +71,7 @@ private:
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
-	void handleCollisions();
+	void handleCollisions(sf::Time dt);
 	void handleCharacterCollisions(SceneNode::Pair& pair);
 	void handleObstacleCollisions(SceneNode::Pair& pair);
 	void handleProjectileCollisions(SceneNode::Pair& pair);
@@ -123,6 +134,7 @@ private:
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
 	Character* mPlayerCharacter;
+	std::vector<Character*> mPlayerCharacters;
 
 	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
@@ -133,6 +145,8 @@ private:
 	bool mZombieSpawnTimerStarted{};
 
 	sf::Time mZombieSpawnTimer;
+	sf::Time mZombieHitDelay;
+	sf::Time mZombieHitElapsedTime;
 
 	sf::Texture mWaterTexture;
 	SpriteNode mWaterSprite;

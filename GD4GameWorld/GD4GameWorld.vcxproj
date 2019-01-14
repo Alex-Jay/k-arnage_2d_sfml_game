@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Structural\PlayerManager.cpp" />
     <ClCompile Include="src\Animation\Animation.cpp" />
     <ClCompile Include="src/Main.cpp" />
     <ClCompile Include="src\Audio\MusicPlayer.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="include\Structural\KeyBinding.hpp" />
     <ClInclude Include="include\Structural\MapTiler.hpp" />
     <ClInclude Include="include\Structural\Xbox360Controller.hpp" />
+    <ClInclude Include="include\Structural\PlayerManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src/ResourceHolder.inl" />

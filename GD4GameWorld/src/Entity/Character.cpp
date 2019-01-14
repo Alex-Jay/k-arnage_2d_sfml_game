@@ -81,7 +81,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
 
-	if (Character::getCategory() == static_cast<int>(Category::PlayerCharacter))
+	if (getCategory() == static_cast<int>(Category::PlayerCharacter))
 	{
 		std::unique_ptr<TextNode> grenadeDisplay(new TextNode(fonts, ""));
 		grenadeDisplay->setPosition(0, 70);
