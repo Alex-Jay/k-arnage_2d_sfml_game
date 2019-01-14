@@ -31,7 +31,7 @@ private:
 	{
 		Character_Character,
 		Player_Pickup,
-		Player_Obstacle,
+		Character_Obstacle,
 		Projectile_Obstacle,
 		Projectile_Character,
 		Character_Explosion,
@@ -43,12 +43,15 @@ public:
 	explicit World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds);
 	void update(sf::Time dt);
 	void draw();
-	sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
 
 	CommandQueue& getCommandQueue();
 
 	bool hasAlivePlayer() const;
 	bool hasPlayerReachedEnd() const;
+
+	sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
+	int getAliveZombieCount();
+	void setAliveZombieCount(int count);
 
 private:
 	void loadTextures();
@@ -137,4 +140,5 @@ private:
 	int mWorldBoundsBuffer;
 	int mZombieSpawnTime;
 	int mNumZombiesSpawn;
+	int mNumZombiesAlive;
 };

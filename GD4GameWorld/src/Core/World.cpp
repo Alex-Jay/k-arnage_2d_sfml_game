@@ -26,7 +26,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mScrollSpeed(0.f)
 	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
-	  , mNumZombiesSpawn(0)
+	  , mNumZombiesSpawn(2)
+	  , mNumZombiesAlive(0)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -85,13 +86,7 @@ sf::FloatRect World::getBattlefieldBounds() const
 
 void World::update(sf::Time dt)
 {
-#pragma region Author: Alex
-	// Scroll the world, reset player velocity
-	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
-
-	//sf::Vector2f playerVelocity = mPlayerCharacter->getVelocity();
-
-	// Stick view to player position
+	// Alex - Stick view to player position
 	mWorldView.setCenter(mPlayerCharacter->getPosition());
 	/*
 	Quick Alternative To:
@@ -100,8 +95,6 @@ void World::update(sf::Time dt)
 
 	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
-
-#pragma endregion
 
 	mPlayerCharacter->setVelocity(0.f, 0.f);
 
@@ -125,7 +118,7 @@ void World::update(sf::Time dt)
 
 	adaptPlayerPosition();
 	updateSounds();
-	//spawnZombies(dt);
+	spawnZombies(dt);
 
 }
 
@@ -133,24 +126,24 @@ void World::draw()
 {
 	if (PostEffect::isSupported())
 	{
-		mWaterSceneTexture.clear();
-		//mSceneTexture.clear();
+		//mWaterSceneTexture.clear();
+		//mWaterSceneTexture.setView(mWorldView);
+		//mWaterSceneTexture.draw(mWaterSprite);
+		//mWaterSceneTexture.display();
+		//mDistortionEffect.apply(mWaterSceneTexture, mTarget);
 
-		mWaterSceneTexture.setView(mWorldView);
-		mWaterSceneTexture.draw(mWaterSprite);
-		mWaterSceneTexture.display();
-		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
-
-		//mSceneTexture.setView(mWorldView);
-		//mSceneTexture.draw(mSceneGraph);
-		//mSceneTexture.display();
-		//mBloomEffect.apply(mSceneTexture, mTarget);
+		mSceneTexture.clear();
+		mSceneTexture.setView(mWorldView);
+		mSceneTexture.draw(mSceneGraph);
+		mSceneTexture.display();
+		mBloomEffect.apply(mSceneTexture, mTarget);
 
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
 	else
 	{
+
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
@@ -182,6 +175,16 @@ sf::Vector3f World::getMainfold(const sf::FloatRect & overlap, const sf::Vector2
 	}
 
 	return mainfold;
+}
+
+int World::getAliveZombieCount()
+{
+	return mNumZombiesAlive;
+}
+
+void World::setAliveZombieCount(int count)
+{
+	mNumZombiesAlive = count;
 }
 
 void World::adaptPlayerPosition()
@@ -232,7 +235,6 @@ void World::updateSounds()
 //Mike
 void World::spawnZombies(sf::Time dt)
 {
-
 	if (!mZombieSpawnTimerStarted)
 	{
 		StartZombieSpawnTimer(dt);
@@ -244,30 +246,27 @@ void World::spawnZombies(sf::Time dt)
 
 	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
 	{
-		if (mNumZombiesSpawn < 20)
+		if (getAliveZombieCount() < 20)
 		{
-			mNumZombiesSpawn += 2; // Number of zombies to spawn
-		}
-
-		for (int i = 0; i < mNumZombiesSpawn; ++i)
-		{
-			//Picks A random position outside the view but within world bounds
-			int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
-			int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
-
-			std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
-			enemy->setPosition(xPos, yPos);
-			enemy->setRotation(180.f);
-
-			if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+			for (int i = 0; i < mNumZombiesSpawn; ++i)
 			{
-				mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+				//Picks A random position outside the view but within world bounds
+				int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+				int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
+
+				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
+				enemy->setPosition(xPos, yPos);
+				enemy->setRotation(-mPlayerCharacter->getAngle());
+
+				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+				{
+					mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+					++mNumZombiesAlive;
+				}
 			}
 		}
-
 		mZombieSpawnTimerStarted = false;
 	}
-	
 }
 
 //Mike
@@ -295,7 +294,11 @@ void World::destroyEntitiesOutsideView()
 	destroyZombies.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		if (!mWorldBounds.intersects(e.getBoundingRect()))
+		{
 			e.destroy();
+			int currZombiesAlive = getAliveZombieCount();
+			setAliveZombieCount(--currZombiesAlive);
+		}
 	});
 
 	mCommandQueue.push(destroyProjectiles);
@@ -417,7 +420,7 @@ void World::buildScene()
 
 	SpawnObstacles();
 
-	spawnZombies(sf::Time::Zero);
+	//spawnZombies(sf::Time::Zero);
 	mZombieSpawnTime = 10;//Spawn Every 10 seconds
 }
 
@@ -499,7 +502,7 @@ void World::handleCollisions()
 			case Player_Pickup:
 				handlePickupCollisions(pair);
 				break;
-			case Player_Obstacle:
+			case Character_Obstacle:
 				handleObstacleCollisions(pair);
 				break;
 			case Projectile_Obstacle:
@@ -521,27 +524,28 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	auto& character1 = static_cast<Character&>(*pair.first);
 	auto& character2 = static_cast<Character&>(*pair.second);
 
+	sf::FloatRect r1 = character1.getBoundingRect();
+	sf::FloatRect r2 = character2.getBoundingRect();
+	sf::FloatRect intersection;
+
+	if (r1.intersects(r2, intersection))
+	{
+		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
+
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		assert(dynamic_cast<Entity*>(&character1) != nullptr);
+		assert(dynamic_cast<Entity*>(&character2) != nullptr);
+		static_cast<Entity&>(character1).move(normal * mainfold.z);
+		static_cast<Entity&>(character2).move(-normal * mainfold.z);
+	}
+
 	if ((character1.isZombie() && character2.isZombie())
 		|| (character1.isPlayer() && character2.isPlayer()))
 	{
 		//DONE FIX COLLISION
-		sf::FloatRect r1 = character1.getBoundingRect();
-		sf::FloatRect r2 = character2.getBoundingRect();
-		sf::FloatRect intersection;
-
-		if (r1.intersects(r2, intersection))
-		{
-			sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
-
-			sf::Vector3f mainfold = getMainfold(intersection, diff);
-
-			sf::Vector2f normal(mainfold.x, mainfold.y);
-
-			assert(dynamic_cast<Entity*>(&character1) != nullptr);
-			assert(dynamic_cast<Entity*>(&character2) != nullptr);
-			static_cast<Entity&>(character1).move(normal * mainfold.z);
-			static_cast<Entity&>(character2).move(-normal * mainfold.z);
-		}
 	}
 	else
 	{
@@ -585,6 +589,11 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 	else
 	{
 		entity.damage(projectile.getDamage());
+		if (entity.isDestroyed())
+		{
+			int currZombiesAlive = getAliveZombieCount();
+			setAliveZombieCount(--currZombiesAlive);
+		}
 		projectile.destroy();
 	}
 }
@@ -630,7 +639,7 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle)
 		|| matchesCategories(pair, Category::EnemyCharacter, Category::Obstacle))
 	{
-		return Player_Obstacle;
+		return Character_Obstacle;
 	}
 	else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
 		|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
