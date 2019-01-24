@@ -44,7 +44,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	  , mLocalIdentifier(0)
 {
 	// Alex - Optimize texture rect size for collision detection
-	mSprite.setTextureRect(sf::IntRect(0, 0, 100, 60));
+	mSprite.setTextureRect(sf::IntRect(0, 0, 80, 70));
 
 	mCharacterMoveAnimation.setFrameSize(Table[static_cast<int>(type)].moveRect);
 	mCharacterMoveAnimation.setNumFrames(Table[static_cast<int>(type)].moveFrames);
@@ -120,8 +120,9 @@ void Character::guideTowards(sf::Vector2f position)
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
-
+	// Get players position
 	mLastPosition = getPosition();
+
 	//Update Player Animations
 	updateAnimations(dt, commands);
 
@@ -149,8 +150,9 @@ void Character::move(sf::Time dt, CommandQueue& commands)
 	else if (mType == Type::Player)
 	{
 		setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed()); // Alex - update players current rotation
-		updateVelocity(dt);
+		//updateVelocity(dt);
 	}
+
 	Entity::updateCurrent(dt, commands);
 }
 
@@ -413,4 +415,9 @@ sf::Vector2f Character::getLastPosition()
 {
 	return mLastPosition;
 
+}
+
+void Character::setLastPosition(sf::Vector2f position)
+{
+	mLastPosition = position;
 }

@@ -37,6 +37,7 @@ public:
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
 	sf::Vector2f getLastPosition();
+	void setLastPosition(sf::Vector2f position);
 
 	unsigned int const getLocalIdentifier() const;
 	void setLocalIdentifier(unsigned int localID);

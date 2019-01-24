@@ -53,21 +53,28 @@ Player::Player(int localIdentifier)
 	, mJoystick(nullptr)
 	, mLocalIdentifier(localIdentifier)
 {
+	// If joystick not set and there are available controllers
 	if (mJoystick == nullptr && sf::Joystick::Count > 0)
 	{
+		// Setup controller with local ID
 		setJoystick(new Xbox360Controller(localIdentifier));
+	}
+	else
+	{
+		// Else, reset the joystick if disconnected
+		setJoystick(nullptr);
 	}
 
 	//Set initial key bindings
-	//mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
-	//mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
 	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
 	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
 	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
 	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
 	// Alex - Init. rotation keys -------------------------
-	mKeyBindingPressed[sf::Keyboard::Left] = Action::RotateLeft;
-	mKeyBindingPressed[sf::Keyboard::Right] = Action::RotateRight;
+	mKeyBindingPressed[sf::Keyboard::A] = Action::RotateLeft;
+	mKeyBindingPressed[sf::Keyboard::D] = Action::RotateRight;
 
 	// Set intial joystick button bindings
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;

@@ -73,6 +73,7 @@ sf::FloatRect Obstacle::getBoundingRect() const
 
 void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	drawBoundingRect(target, states);
 	target.draw(mSprite, states);
 }
 
