@@ -37,6 +37,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	loadTextures();
 	
 	buildScene();
+
+	//Sets the Distortion shaders texture
 	mDistortionEffect.setTextureMap(mTextures);
 }
 
@@ -131,21 +133,26 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
+	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
+	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
 	if (PostEffect::isSupported())
 	{
 		mWaterSceneTexture.clear();
 		//mSceneTexture.clear();
 
+		//Apply distortion Shader to SpriteNode(Water) Background, this is seperated from the sceneGraph
 		mWaterSceneTexture.setView(mWorldView);
 		mWaterSceneTexture.draw(mWaterSprite);
 		mWaterSceneTexture.display();
 		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
 
+		//Apply BloomEffect to the sceneGraph that does not contain the water background.
 		//mSceneTexture.setView(mWorldView);
 		//mSceneTexture.draw(mSceneGraph);
 		//mSceneTexture.display();
 		//mBloomEffect.apply(mSceneTexture, mTarget);
 
+		//Draw Scenegraph on top of water background with no bloom effect.
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}

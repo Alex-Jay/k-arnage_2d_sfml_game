@@ -21,7 +21,12 @@ void PostEffect::applyShader(const sf::Shader& shader, sf::RenderTarget& output)
 
 	sf::RenderStates states;
 	states.shader = &shader;
+
 	states.blendMode = sf::BlendNone;
+
+	//Below is attempt at makeing shader transparent in areas that are not drawn
+	//states.blendMode = sf::BlendMode(sf::BlendMode::One, sf::BlendMode::OneMinusSrcAlpha);
+
 	output.draw(vertices, states);
 }
 

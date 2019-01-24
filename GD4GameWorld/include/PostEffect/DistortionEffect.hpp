@@ -41,5 +41,5 @@ private:
 
 
 	float mDistortionFactor;
-	float mRiseFactor;
+	float mDistortionSpeed;
 };
