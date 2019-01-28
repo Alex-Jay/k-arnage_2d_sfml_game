@@ -42,22 +42,23 @@ bool GameState::update(sf::Time dt)
 {
 	mWorld.update(dt);
 
+	CommandQueue& commands = mWorld.getCommandQueue();
+	mPlayerOne.handleRealtimeInput(commands);
+	mPlayerTwo.handleRealtimeInput(commands);
+
 	if (!mWorld.hasAlivePlayer())
 	{
 		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
 		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
 		requestStackPush(StateIDs::GameOver);
 	}
+
 	//else if (mWorld.hasPlayerReachedEnd())
 	//{
 	//	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionSuccess);
 	//	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionSuccess);
 	//	requestStackPush(StateIDs::GameOver);
 	//}
-
-	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayerOne.handleRealtimeInput(commands);
-	mPlayerTwo.handleRealtimeInput(commands);
 
 	return true;
 }
