@@ -47,8 +47,6 @@ MenuState::MenuState(StateStack& stack, Context context)
 
 	// Author: Alex - Play music upon going into menu
 	context.music->play(MusicIDs::MenuTheme);
-
-	//Xbox360Controller controller = Xbox360Controller::GetController();
 }
 
 void MenuState::draw()

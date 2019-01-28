@@ -24,13 +24,13 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSceneLayers()
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
-	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
 	  , mNumZombiesSpawn(2)
 	  , mNumZombiesAlive(0)
 	  , mZombieHitDelay(sf::Time::Zero)
 	  , mZombieHitElapsedTime(sf::Time::Zero)
-	  , mPlayerCharacters()
+	  , mPlayerOneCharacter(nullptr)
+	  , mPlayerTwoCharacter(nullptr)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -43,8 +43,9 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	buildScene();
 	mDistortionEffect.setTextureMap(mTextures);
 
-	// Add team-mate (Local)
-	addCharacter(1);
+	// Add Local Player on Start
+	mPlayerOneCharacter = addCharacter(0);
+	mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::loadTextures()
@@ -120,9 +121,8 @@ void World::resetZombieHitElapsedTime()
 void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
-	mWorldView.setCenter(mPlayerCharacter->getPosition());
+	mWorldView.setCenter(getCharacter(0)->getPosition());
 
-	sf::Vector2f midPointBetweenTwoObjects;
 	/*
 	Quick Alternative To:
 	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
@@ -309,19 +309,19 @@ void World::adaptPlayerVelocity()
 			character->setVelocity(velocity / std::sqrt(2.f));
 
 		// Add scrolling velocity
-		character->accelerate(0.f, mScrollSpeed);
+		//character->accelerate(0.f, mScrollSpeed);
 	}
 }
 
 bool World::hasAlivePlayer() const
 {
-	//return !mPlayerCharacter->isMarkedForRemoval();
-	return mPlayerCharacters.size() > 0;
+	return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
+	/*return mPlayerCharacters.size() > 0;*/
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-	if (Character* character = getCharacter(0))
+	if (Character* character = getCharacter(1))
 		return !mWorldBounds.contains(character->getPosition());
 	else
 		return false;
@@ -383,7 +383,7 @@ void World::spawnZombies(sf::Time dt)
 
 				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 				enemy->setPosition(xPos, yPos);
-				enemy->setRotation(-mPlayerCharacter->getAngle());
+				enemy->setRotation(-mPlayerOneCharacter->getAngle());
 
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
@@ -538,12 +538,12 @@ void World::buildScene()
 	mSceneGraph.attachChild(std::move(soundNode));
 
 	// Add player's Character
-	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	mPlayerCharacter = player.get();
+	//std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	//mPlayerCharacter = player.get();
 
 
-	mPlayerCharacter->setPosition(getCenter(mWorldBounds));
-	mSceneLayers[UpperLayer]->attachChild(std::move(player));
+	//mPlayerCharacter->setPosition(getCenter(mWorldBounds));
+	//mSceneLayers[UpperLayer]->attachChild(std::move(player));
 
 	SpawnObstacles();
 
@@ -606,9 +606,13 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 void World::handlePlayerCollision()
 {
 	// Map bound collision
-	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerCharacter->getPosition()))
+	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
 	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
+		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+	}
+	else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
+	{
+		mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
 	}
 }
 

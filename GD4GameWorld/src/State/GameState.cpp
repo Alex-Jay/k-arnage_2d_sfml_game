@@ -7,9 +7,12 @@
 GameState::GameState(StateStack& stack, Context context)
 	: State(stack, context)
 	  , mWorld(*context.window, *context.fonts, *context.sounds)
-	  , mPlayer(0)
+	  , mPlayerOne(0)
+	  , mPlayerTwo(1)
+	 
 {
-	mPlayer.setMissionStatus(Player::MissionStatus::MissionRunning);
+	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionRunning);
+	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionRunning);
 
 	//Play the mission theme
 	context.music->play(MusicIDs::MissionTheme);
@@ -41,17 +44,20 @@ bool GameState::update(sf::Time dt)
 
 	if (!mWorld.hasAlivePlayer())
 	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionFailure);
+		mPlayerOne.setMissionStatus(Player::MissionStatus::MissionFailure);
+		mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionFailure);
 		requestStackPush(StateIDs::GameOver);
 	}
-	//else if (mWorld.hasPlayerReachedEnd())
-	//{
-	//	mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
-	//	requestStackPush(StateIDs::GameOver);
-	//}
+	else if (mWorld.hasPlayerReachedEnd())
+	{
+		mPlayerOne.setMissionStatus(Player::MissionStatus::MissionSuccess);
+		mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionSuccess);
+		requestStackPush(StateIDs::GameOver);
+	}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayer.handleRealtimeInput(commands);
+	mPlayerOne.handleRealtimeInput(commands);
+	mPlayerTwo.handleRealtimeInput(commands);
 
 	return true;
 }
@@ -60,7 +66,8 @@ bool GameState::handleEvent(const sf::Event& event)
 {
 	//Game input handling
 	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayer.handleEvent(event, commands);
+	mPlayerOne.handleEvent(event, commands);
+	mPlayerTwo.handleEvent(event, commands);
 
 	//Escape pressed, trigger pause screen
 	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)

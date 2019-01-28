@@ -100,7 +100,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// Alex - Debug Bounding Rectangle	
-	drawBoundingRect(target, states);
+	//drawBoundingRect(target, states);
 
 	if (isDestroyed() && mShowDeath)
 	{

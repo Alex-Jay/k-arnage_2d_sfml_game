@@ -3,6 +3,7 @@
 #include "Character.hpp"
 
 #include <map>
+#include <iostream>
 
 using namespace std::placeholders;
 
@@ -36,7 +37,6 @@ struct CharacterFireTrigger
 	CharacterFireTrigger(unsigned int id)
 		: localIdentifier(id)
 	{
-
 	}
 
 	void operator() (Character& Character, sf::Time) const
@@ -282,7 +282,7 @@ void Player::initializeActions()
 	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f, mLocalIdentifier));
 	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
 	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
-	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) {	a.startGrenade(); });
 	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
 	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mLocalIdentifier));
 }

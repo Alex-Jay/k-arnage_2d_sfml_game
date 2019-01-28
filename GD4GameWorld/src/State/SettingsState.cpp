@@ -72,17 +72,17 @@ bool SettingsState::handleEvent(const sf::Event& event)
 				// Player One
 				if (index < static_cast<size_t>(Player::Action::ActionCount))
 				{
-					getContext().playerManager->getPlayerOne()->assignKey(static_cast<Player::Action>(index), event.key.code);
+					getContext().playerOne->assignKey(static_cast<Player::Action>(index), event.key.code);
 				}
 				// Player Two
 				else
 				{
-					getContext().playerManager->getPlayerTwo()->assignKey(static_cast<Player::Action>(index - static_cast<size_t>(Player::Action::ActionCount)), event.key.code);
+					getContext().playerTwo->assignKey(static_cast<Player::Action>(index - static_cast<size_t>(Player::Action::ActionCount)), event.key.code);
 				}
 
 				if (static_cast<Player::Action>(index) == Player::Action::StartGrenade)
 				{
-					getContext().playerManager->getPlayerOne()->assignReleaseKey(Player::Action::LaunchGrenade, event.key.code);
+					getContext().playerOne->assignReleaseKey(Player::Action::LaunchGrenade, event.key.code);
 				}
 
 				mBindingButtons[index]->deactivate();
@@ -131,8 +131,8 @@ void SettingsState::updateLabels()
 		Player::Action action = static_cast<Player::Action>(i);
 
 		//Get key from both players
-		sf::Keyboard::Key key1 = getContext().playerManager->getPlayerOne()->getAssignedKey(action);
-		sf::Keyboard::Key key2 = getContext().playerManager->getPlayerTwo()->getAssignedKey(action);
+		sf::Keyboard::Key key1 = getContext().playerOne->getAssignedKey(action);
+		sf::Keyboard::Key key2 = getContext().playerTwo->getAssignedKey(action);
 	
 		// Assign both strings to labels
 		mBindingLabels[i]->setText(toString(key1));

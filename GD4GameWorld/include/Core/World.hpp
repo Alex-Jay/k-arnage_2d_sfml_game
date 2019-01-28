@@ -133,7 +133,8 @@ private:
 	sf::FloatRect mWorldBounds;
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
-	Character* mPlayerCharacter;
+	Character* mPlayerOneCharacter;
+	Character* mPlayerTwoCharacter;
 	std::vector<Character*> mPlayerCharacters;
 
 	std::vector<SpawnPoint> mEnemySpawnPoints;

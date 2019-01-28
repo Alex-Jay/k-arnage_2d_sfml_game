@@ -29,7 +29,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mWorldBounds(0.f, 0.f, mWorldView.getSize().x * 2, 1000.f)
 	, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
 	, mScrollSpeed(0.f)
-	, mPlayerCharacter(nullptr)
+	, mPlayerCharacters(nullptr)
 	, mEnemySpawnPoints()
 	, mActiveEnemies()
 {
