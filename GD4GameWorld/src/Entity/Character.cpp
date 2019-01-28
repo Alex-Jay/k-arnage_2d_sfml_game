@@ -298,7 +298,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		// Interval expired: We can fire a new bullet
 		commands.push(mFireCommand);
-		playLocalSound(commands, isPlayer() ? SoundEffectIDs::AlliedGunfire : SoundEffectIDs::EnemyGunfire);
+		playLocalSound(commands,  SoundEffectIDs::AlliedGunfire);
 		mFireCountdown += Table[static_cast<int>(mType)].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 	}

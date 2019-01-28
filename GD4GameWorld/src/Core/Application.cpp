@@ -21,7 +21,7 @@ Application::Application()
 	mWindow.setVerticalSyncEnabled(true);
 	mWindow.setKeyRepeatEnabled(false);
 
-	mFonts.load(FontIDs::Main, "Media/Sansation.ttf");
+	mFonts.load(FontIDs::Main, "Media/Fonts/Sansation.ttf");
 
 	mTextures.load(TextureIDs::TitleScreen, "Media/Textures/TitleScreen.png");
 	mTextures.load(TextureIDs::Buttons, "Media/Textures/Buttons.png");
