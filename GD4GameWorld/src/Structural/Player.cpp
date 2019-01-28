@@ -99,6 +99,7 @@ Player::Player(int localIdentifier)
 		setJoystick(nullptr);
 	}
 
+
 	if (localIdentifier == 0)
 	{
 		//Set initial key bindings
@@ -127,6 +128,7 @@ Player::Player(int localIdentifier)
 		mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
 		mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
 	}
+
 
 	// Set intial joystick button bindings
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;

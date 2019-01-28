@@ -41,6 +41,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	loadTextures();
 	
 	buildScene();
+
+	//Sets the Distortion shaders texture
 	mDistortionEffect.setTextureMap(mTextures);
 
 	// Add Local Player on Start
@@ -165,20 +167,28 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
+	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
+	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
 	if (PostEffect::isSupported())
 	{
-		//mWaterSceneTexture.clear();
-		//mWaterSceneTexture.setView(mWorldView);
-		//mWaterSceneTexture.draw(mWaterSprite);
-		//mWaterSceneTexture.display();
-		//mDistortionEffect.apply(mWaterSceneTexture, mTarget);
 
-		mSceneTexture.clear();
-		mSceneTexture.setView(mWorldView);
-		mSceneTexture.draw(mSceneGraph);
-		mSceneTexture.display();
-		mBloomEffect.apply(mSceneTexture, mTarget);
+		mWaterSceneTexture.clear();
+		//mSceneTexture.clear();
 
+		//Apply distortion Shader to SpriteNode(Water) Background, this is seperated from the sceneGraph
+		mWaterSceneTexture.setView(mWorldView);
+		mWaterSceneTexture.draw(mWaterSprite);
+		mWaterSceneTexture.display();
+		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
+
+		//Apply BloomEffect to the sceneGraph that does not contain the water background.
+		//mSceneTexture.setView(mWorldView);
+		//mSceneTexture.draw(mSceneGraph);
+		//mSceneTexture.display();
+		//mBloomEffect.apply(mSceneTexture, mTarget);
+
+
+		//Draw Scenegraph on top of water background with no bloom effect.
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
@@ -371,10 +381,9 @@ void World::spawnZombies(sf::Time dt)
 		mZombieSpawnTimer += dt;
 	}
 
-	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
+	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime
+		&& getAliveZombieCount() < 20)
 	{
-		if (getAliveZombieCount() < 20)
-		{
 			for (int i = 0; i < mNumZombiesSpawn; ++i)
 			{
 				//Picks A random position outside the view but within world bounds
@@ -383,15 +392,26 @@ void World::spawnZombies(sf::Time dt)
 
 				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 				enemy->setPosition(xPos, yPos);
-				enemy->setRotation(-mPlayerOneCharacter->getAngle());
+				enemy->setRotation(180.f);
 
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
-					mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
-					++mNumZombiesAlive;
+					//Picks A random position outside the view but within world bounds
+					int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+					int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
+
+					std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
+					enemy->setPosition(xPos, yPos);
+					enemy->setRotation(-mPlayerOneCharacter->getAngle());
+
+					if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+					{
+						mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+						++mNumZombiesAlive;
+					}
 				}
 			}
-		}
+		
 		mZombieSpawnTimerStarted = false;
 	}
 }
@@ -663,6 +683,7 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	// Get collision intersection FloatRect
 	if (r1.intersects(r2, intersection))
 	{
+
 		// Get distance between two characters
 		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
 
@@ -674,6 +695,7 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 			Z = Penetration Amount
 		*/
 		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
 
 		// Normal vector to move collidee out of the hitbox
 		sf::Vector2f normal(mainfold.x, mainfold.y);

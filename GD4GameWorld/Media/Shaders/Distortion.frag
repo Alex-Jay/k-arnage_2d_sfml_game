@@ -6,7 +6,7 @@ uniform sampler2D distortionMapTexture; // Our heat distortion map texture
 
 uniform float time; // Time used to scroll the distortion map
 uniform float distortionFactor; // Factor used to control severity of the effect
-uniform float riseFactor; // Factor used to control how fast air rises
+uniform float distortionSpeed; // Factor used to control how fast air rises
 
 void main()
 {
@@ -18,7 +18,7 @@ void main()
     // the integer part and keeping the fractional part
     // Basically performing a "floating point modulo 1"
     // 1.1 = 0.1, 2.4 = 0.4, 10.3 = 0.3 etc.
-    distortionMapCoordinate.t -= time * riseFactor;
+    distortionMapCoordinate.t -= time * distortionSpeed;
 
     vec4 distortionMapValue = texture2D(distortionMapTexture, distortionMapCoordinate);
 
