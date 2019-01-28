@@ -48,6 +48,40 @@ struct CharacterFireTrigger
 	}
 };
 
+struct CharacterGrenadeStarter
+{
+	unsigned int localIdentifier;
+
+	CharacterGrenadeStarter(unsigned int id)
+		: localIdentifier(id)
+	{}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.startGrenade();
+		}
+	}
+};
+
+struct CharacterGrenadeLauncher
+{
+	unsigned int localIdentifier;
+
+	CharacterGrenadeLauncher(unsigned int id)
+		: localIdentifier(id)
+	{}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.launchGrenade();
+		}
+	}
+};
+
 Player::Player(int localIdentifier)
 	: mCurrentMissionStatus(MissionStatus::MissionRunning)
 	, mJoystick(nullptr)
@@ -282,8 +316,12 @@ void Player::initializeActions()
 	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f, mLocalIdentifier));
 	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
 	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
-	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) {	a.startGrenade(); });
-	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+	//mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) {	a.startGrenade(); });
+	//mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>(CharacterGrenadeStarter(mLocalIdentifier));
+	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>(CharacterGrenadeLauncher(mLocalIdentifier));
+
 	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mLocalIdentifier));
 }
 
