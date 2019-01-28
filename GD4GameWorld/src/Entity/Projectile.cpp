@@ -88,6 +88,16 @@ void Projectile::remove()
 	mShowExplosion = false;
 }
 
+unsigned int const Projectile::getProjectileId() const
+{
+	return mProjectileId;
+}
+
+void Projectile::setProjectileId(unsigned int id)
+{
+	mProjectileId = id;
+}
+
 //Mike
 void Projectile::updateCurrent(sf::Time dt, CommandQueue& commands)
 {

@@ -21,9 +21,10 @@ const int ZOMBIE_DEATH_ANIMATION_WIDTH = 150;
 //++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ PLAYER CONSTANTS ++++++++++++++++++
-const float PLAYERHITPOINTS = 100.f;
+const int ZOMBIE_KILL_MULTIPLIER = 10;
+const int PLAYERHITPOINTS = 100;
 const int GRENADEPICKUPAMMOVALUE = 3;
-const float PLAYERSPEED = 260.f;
+const int PLAYERSPEED = 260;
 const float PLAYERFIREINTERVAL = 1.f;
 const float HEALTHPICKUPREPAIRVALUE = 17.5f;
 const int FIRERATELEVEL = 2;

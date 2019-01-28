@@ -86,6 +86,7 @@ Player::Player(int localIdentifier)
 	: mCurrentMissionStatus(MissionStatus::MissionRunning)
 	, mJoystick(nullptr)
 	, mLocalIdentifier(localIdentifier)
+	, mScore(0)
 {
 	// If joystick not set and there are available controllers
 	if (mJoystick == nullptr && sf::Joystick::Count > 0)
@@ -130,7 +131,7 @@ Player::Player(int localIdentifier)
 	}
 
 
-	// Set intial joystick button bindings
+	// Set intial joystick button bindings - Default for all controllers
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;
 	mJoystickBindingPressed[JoystickButton::X] = Action::StartGrenade;
 	mJoystickBindingReleased[JoystickButton::X] = Action::LaunchGrenade;
@@ -149,8 +150,6 @@ Player::Player(int localIdentifier)
 // Executes when button is pressed once
 void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
-	
-
 	if (mJoystick->IsConnected())
 	{
 		if (event.type == sf::Event::JoystickButtonPressed)
@@ -343,6 +342,16 @@ int Player::getLocalIdentifier() const
 void Player::setLocalIdentifier(int id)
 {
 	mLocalIdentifier = id;
+}
+
+unsigned int const Player::getScore() const
+{
+	return mScore;
+}
+
+void Player::setScore(unsigned int incrementBy)
+{
+	mScore = incrementBy;
 }
 
 void Player::initializeActions()

@@ -48,8 +48,14 @@ bool GameState::update(sf::Time dt)
 
 	if (!mWorld.hasAlivePlayer())
 	{
+		// Set players' scores
+		getContext().playerOne->setScore(mWorld.getPlayerOneScore());
+		getContext().playerTwo->setScore(mWorld.getPlayerTwoScore());
+
+		// Set players' mission status
 		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
-		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
+		getContext().playerTwo->setMissionStatus(Player::MissionStatus::MissionFailure);
+
 		requestStackPush(StateIDs::GameOver);
 	}
 
