@@ -82,7 +82,7 @@ void Explosion::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 void Explosion::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	drawBoundingRect(target, states);
+	//drawBoundingRect(target, states);
 	target.draw(mAnimation, states);
 }
 

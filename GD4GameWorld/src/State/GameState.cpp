@@ -7,8 +7,9 @@
 GameState::GameState(StateStack& stack, Context context)
 	: State(stack, context)
 	  , mWorld(*context.window, *context.fonts, *context.sounds)
-	  , mPlayerOne(0)
-	  , mPlayerTwo(1)
+	  , mPlayerOne(context.playerOne->getLocalIdentifier())
+	  , mPlayerTwo(context.playerTwo->getLocalIdentifier())
+	  , mScoreText()
 	 
 {
 	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionRunning);
@@ -23,9 +24,9 @@ GameState::GameState(StateStack& stack, Context context)
 
 	//mScoreText.setFont(font);
 	//mScoreText.setString("Score: 10");
-	//mScoreText.setCharacterSize(20);
+	//mScoreText.setCharacterSize(60);
 	//centreOrigin(mScoreText);
-	//mScoreText.setPosition(150.f , 20.f);
+	//mScoreText.setPosition(windowSize.x, windowSize.y);
 }
 
 void GameState::draw()
@@ -34,7 +35,6 @@ void GameState::draw()
 	window.setView(window.getDefaultView());
 	
 	mWorld.draw();
-
 	//window.draw(mScoreText);
 }
 
@@ -44,16 +44,16 @@ bool GameState::update(sf::Time dt)
 
 	if (!mWorld.hasAlivePlayer())
 	{
-		mPlayerOne.setMissionStatus(Player::MissionStatus::MissionFailure);
-		mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionFailure);
+		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
+		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
 		requestStackPush(StateIDs::GameOver);
 	}
-	else if (mWorld.hasPlayerReachedEnd())
-	{
-		mPlayerOne.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionSuccess);
-		requestStackPush(StateIDs::GameOver);
-	}
+	//else if (mWorld.hasPlayerReachedEnd())
+	//{
+	//	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionSuccess);
+	//	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionSuccess);
+	//	requestStackPush(StateIDs::GameOver);
+	//}
 
 	CommandQueue& commands = mWorld.getCommandQueue();
 	mPlayerOne.handleRealtimeInput(commands);

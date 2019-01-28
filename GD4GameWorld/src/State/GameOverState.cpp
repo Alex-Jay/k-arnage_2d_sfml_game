@@ -1,8 +1,8 @@
 #include "GameOverState.hpp"
 #include "Utility.hpp"
-//#include "Player.hpp"
+#include "Player.hpp"
 #include "ResourceHolder.hpp"
-#include "PlayerManager.hpp"
+//#include "PlayerManager.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -18,11 +18,16 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 	
 	mGameOverText.setFont(font);
 	
+	// If one of the players dies, End game
 	if (context.playerOne->getMissionStatus() == Player::MissionStatus::MissionFailure ||
 		context.playerTwo->getMissionStatus() == Player::MissionStatus::MissionFailure)
+	{
 		mGameOverText.setString("Mission failed!");
+	}
 	else
+	{
 		mGameOverText.setString("Mission successful!");
+	}
 
 	mGameOverText.setCharacterSize(70);
 	centreOrigin(mGameOverText);
