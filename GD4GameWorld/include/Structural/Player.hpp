@@ -59,6 +59,7 @@ private:
 
 	std::map<sf::Joystick::Axis, Action> mJoystickBindingMoved;
 	std::map<JoystickButton, Action> mJoystickBindingPressed;
+	std::map<JoystickButton, Action> mJoystickBindingReleased;
 	std::map<sf::Keyboard::Key, Action> mKeyBindingPressed;
 	std::map<sf::Keyboard::Key, Action> mKeyBindingReleased;
 	std::map<Action, Command> mActionBinding;

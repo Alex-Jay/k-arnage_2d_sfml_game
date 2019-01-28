@@ -210,9 +210,6 @@
     <ClCompile Include="src\Structural\KeyBinding.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="include\Structural\PlayerManager.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
     <ClCompile Include="src/Main.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>

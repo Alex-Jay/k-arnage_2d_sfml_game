@@ -132,7 +132,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Structural\PlayerManager.cpp" />
     <ClCompile Include="src\Animation\Animation.cpp" />
     <ClCompile Include="src/Main.cpp" />
     <ClCompile Include="src\Audio\MusicPlayer.cpp" />
