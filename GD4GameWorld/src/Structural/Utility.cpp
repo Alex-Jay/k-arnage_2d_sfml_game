@@ -152,6 +152,7 @@ sf::FloatRect shrink(int amount, sf::FloatRect& rect)
 {
 	return sf::FloatRect(rect.left + amount, rect.top + amount, rect.width - amount, rect.height - amount);
 }
+
 //Mike
 //Returns if a list of rects intersects with one
 bool containsIntersection(std::list<sf::FloatRect>& rectList, sf::FloatRect& rect)

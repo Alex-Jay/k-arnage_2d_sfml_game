@@ -31,7 +31,7 @@ private:
 	{
 		Character_Character,
 		Player_Pickup,
-		Player_Obstacle,
+		Character_Obstacle,
 		Projectile_Obstacle,
 		Projectile_Character,
 		Character_Explosion,
@@ -44,10 +44,30 @@ public:
 	void update(sf::Time dt);
 	void draw();
 
+	sf::Time getZombieHitDelay();
+	void setZombieHitDelay(sf::Time delay);
+
+	sf::Time getZombieHitElapsedTime();
+	void incrementZombieHitElapsedTime(sf::Time dt);
+	void resetZombieHitElapsedTime();
+
 	CommandQueue& getCommandQueue();
 
 	bool hasAlivePlayer() const;
 	bool hasPlayerReachedEnd() const;
+
+	sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
+	int getAliveZombieCount();
+	void setAliveZombieCount(int count);
+
+	Character* getCharacter(int localIdentifier) const;
+	void removeCharacter(int localIdentifier);
+	Character* addCharacter(int localIdentifier);
+
+	unsigned int const getPlayerOneScore() const;
+	void incrementPlayerOneScore(unsigned int incBy);
+	unsigned int const getPlayerTwoScore() const;
+	void incrementPlayerTwoScore(unsigned int incBy);
 
 private:
 	void loadTextures();
@@ -56,7 +76,7 @@ private:
 	void adaptPlayerPosition();
 	void adaptPlayerVelocity();
 	void handlePlayerCollision();
-	void handleCollisions();
+	void handleCollisions(sf::Time dt);
 	void handleCharacterCollisions(SceneNode::Pair& pair);
 	void handleObstacleCollisions(SceneNode::Pair& pair);
 	void handleProjectileCollisions(SceneNode::Pair& pair);
@@ -118,7 +138,9 @@ private:
 	sf::FloatRect mWorldBounds;
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
-	Character* mPlayerCharacter;
+	Character* mPlayerOneCharacter;
+	Character* mPlayerTwoCharacter;
+	std::vector<Character*> mPlayerCharacters;
 
 	std::vector<SpawnPoint> mEnemySpawnPoints;
 	std::vector<Character*> mActiveEnemies;
@@ -129,6 +151,8 @@ private:
 	bool mZombieSpawnTimerStarted{};
 
 	sf::Time mZombieSpawnTimer;
+	sf::Time mZombieHitDelay;
+	sf::Time mZombieHitElapsedTime;
 
 	sf::Texture mWaterTexture;
 	SpriteNode mWaterSprite;
@@ -136,4 +160,8 @@ private:
 	int mWorldBoundsBuffer;
 	int mZombieSpawnTime;
 	int mNumZombiesSpawn;
+	int mNumZombiesAlive;
+
+	unsigned int mPlayerOneScore;
+	unsigned int mPlayerTwoScore;
 };

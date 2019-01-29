@@ -7,9 +7,13 @@
 GameState::GameState(StateStack& stack, Context context)
 	: State(stack, context)
 	  , mWorld(*context.window, *context.fonts, *context.sounds)
-	  , mPlayer(*context.player)
+	  , mPlayerOne(context.playerOne->getLocalIdentifier())
+	  , mPlayerTwo(context.playerTwo->getLocalIdentifier())
+	  , mScoreText()
+	 
 {
-	mPlayer.setMissionStatus(Player::MissionStatus::MissionRunning);
+	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionRunning);
+	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionRunning);
 
 	//Play the mission theme
 	context.music->play(MusicIDs::MissionTheme);
@@ -20,9 +24,9 @@ GameState::GameState(StateStack& stack, Context context)
 
 	//mScoreText.setFont(font);
 	//mScoreText.setString("Score: 10");
-	//mScoreText.setCharacterSize(20);
+	//mScoreText.setCharacterSize(60);
 	//centreOrigin(mScoreText);
-	//mScoreText.setPosition(150.f , 20.f);
+	//mScoreText.setPosition(windowSize.x, windowSize.y);
 }
 
 void GameState::draw()
@@ -31,7 +35,6 @@ void GameState::draw()
 	window.setView(window.getDefaultView());
 	
 	mWorld.draw();
-
 	//window.draw(mScoreText);
 }
 
@@ -39,19 +42,29 @@ bool GameState::update(sf::Time dt)
 {
 	mWorld.update(dt);
 
+	CommandQueue& commands = mWorld.getCommandQueue();
+	mPlayerOne.handleRealtimeInput(commands);
+	mPlayerTwo.handleRealtimeInput(commands);
+
 	if (!mWorld.hasAlivePlayer())
 	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionFailure);
-		requestStackPush(StateIDs::GameOver);
-	}
-	else if (mWorld.hasPlayerReachedEnd())
-	{
-		mPlayer.setMissionStatus(Player::MissionStatus::MissionSuccess);
+		// Set players' scores
+		getContext().playerOne->setScore(mWorld.getPlayerOneScore());
+		getContext().playerTwo->setScore(mWorld.getPlayerTwoScore());
+
+		// Set players' mission status
+		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
+		getContext().playerTwo->setMissionStatus(Player::MissionStatus::MissionFailure);
+
 		requestStackPush(StateIDs::GameOver);
 	}
 
-	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayer.handleRealtimeInput(commands);
+	//else if (mWorld.hasPlayerReachedEnd())
+	//{ 
+	//	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionSuccess);
+	//	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionSuccess); 
+	//	requestStackPush(StateIDs::GameOver);
+	//}
 
 	return true;
 }
@@ -60,7 +73,8 @@ bool GameState::handleEvent(const sf::Event& event)
 {
 	//Game input handling
 	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayer.handleEvent(event, commands);
+	mPlayerOne.handleEvent(event, commands);
+	mPlayerTwo.handleEvent(event, commands);
 
 	//Escape pressed, trigger pause screen
 	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)

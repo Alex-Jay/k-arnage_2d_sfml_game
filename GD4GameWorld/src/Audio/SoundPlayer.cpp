@@ -18,10 +18,8 @@ namespace
 SoundPlayer::SoundPlayer()
 {
 	mSoundBuffers.load(SoundEffectIDs::AlliedGunfire, "Media/Sound/AlliedGunfire.wav");
-	mSoundBuffers.load(SoundEffectIDs::EnemyGunfire, "Media/Sound/EnemyGunfire.wav");
 	mSoundBuffers.load(SoundEffectIDs::Explosion1, "Media/Sound/Explosion1.wav");
 	mSoundBuffers.load(SoundEffectIDs::Explosion2, "Media/Sound/Explosion2.wav");
-	mSoundBuffers.load(SoundEffectIDs::LaunchGrenade, "Media/Sound/LaunchMissile.wav");
 	mSoundBuffers.load(SoundEffectIDs::CollectPickup, "Media/Sound/CollectPickup.wav");
 	mSoundBuffers.load(SoundEffectIDs::Button, "Media/Sound/Button.wav");
 

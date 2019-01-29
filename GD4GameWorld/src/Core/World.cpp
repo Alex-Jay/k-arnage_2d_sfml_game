@@ -24,9 +24,13 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mSceneLayers()
 	  , mSpawnPosition(mWorldView.getCenter())
 	  , mScrollSpeed(0.f)
-	  , mPlayerCharacter(nullptr)
 	  , mZombieSpawnTime(-1)
-	  , mNumZombiesSpawn(0)
+	  , mNumZombiesSpawn(2)
+	  , mNumZombiesAlive(0)
+	  , mZombieHitDelay(sf::Time::Zero)
+	  , mZombieHitElapsedTime(sf::Time::Zero)
+	  , mPlayerOneCharacter(nullptr)
+	  , mPlayerTwoCharacter(nullptr)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -37,7 +41,13 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	loadTextures();
 	
 	buildScene();
+
+	//Sets the Distortion shaders texture
 	mDistortionEffect.setTextureMap(mTextures);
+
+	// Add Local Player on Start
+	mPlayerOneCharacter = addCharacter(0);
+	mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::loadTextures()
@@ -62,7 +72,7 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::DistortionMap, "Media/Textures/distortion_map.png");
 }
 
-#pragma region Getters
+#pragma region Mutators
 
 CommandQueue& World::getCommandQueue()
 {
@@ -79,21 +89,62 @@ sf::FloatRect World::getBattlefieldBounds() const
 	sf::FloatRect bounds = getViewBounds();
 	return bounds;
 }
+
+// Zombie Hit Delay Mutators
+sf::Time World::getZombieHitDelay()
+{
+	return mZombieHitDelay;
+}
+
+void World::setZombieHitDelay(sf::Time delay)
+{
+	mZombieHitDelay = delay;
+}
+
+sf::Time World::getZombieHitElapsedTime()
+{
+	return mZombieHitElapsedTime;
+}
+
+void World::incrementZombieHitElapsedTime(sf::Time dt)
+{
+	mZombieHitElapsedTime += dt;
+}
+
+void World::resetZombieHitElapsedTime()
+{
+	mZombieHitElapsedTime = sf::Time::Zero;
+}
+
+unsigned int const World::getPlayerOneScore() const
+{
+	return mPlayerOneScore;
+}
+
+void World::incrementPlayerOneScore(unsigned int incBy)
+{
+	mPlayerOneScore += incBy;
+}
+
+unsigned int const World::getPlayerTwoScore() const
+{
+	return mPlayerTwoScore;
+}
+
+void World::incrementPlayerTwoScore(unsigned int incBy)
+{
+	mPlayerTwoScore += incBy;
+}
+
 #pragma endregion
 
 #pragma region Update
 
 void World::update(sf::Time dt)
 {
-#pragma region Author: Alex
+	// Alex - Stick view to player position
+	mWorldView.setCenter(getCharacter(0)->getPosition());
 
-	// Scroll the world, reset player velocity
-	//mWorldView.move(0.f, mScrollSpeed * dt.asSeconds());
-
-	//sf::Vector2f playerVelocity = mPlayerCharacter->getVelocity();
-
-	// Stick view to player position
-	mWorldView.setCenter(mPlayerCharacter->getPosition());
 	/*
 	Quick Alternative To:
 	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
@@ -102,9 +153,12 @@ void World::update(sf::Time dt)
 	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
 
-#pragma endregion
+	for (Character* c : mPlayerCharacters)
+	{
+		c->setVelocity(0.f, 0.f);
+	}
 
-	mPlayerCharacter->setVelocity(0.f, 0.f);
+	//mPlayerCharacter->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
@@ -113,10 +167,11 @@ void World::update(sf::Time dt)
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
-	adaptPlayerVelocity();
+
+	//adaptPlayerVelocity();
 
 	// Collision detection and response (may destroy entities)
-	handleCollisions();
+	handleCollisions(dt);
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
@@ -132,71 +187,203 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
+	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
+	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
 	if (PostEffect::isSupported())
 	{
+
 		mWaterSceneTexture.clear();
 		//mSceneTexture.clear();
 
+		//Apply distortion Shader to SpriteNode(Water) Background, this is seperated from the sceneGraph
 		mWaterSceneTexture.setView(mWorldView);
 		mWaterSceneTexture.draw(mWaterSprite);
 		mWaterSceneTexture.display();
 		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
 
+		//Apply BloomEffect to the sceneGraph that does not contain the water background.
 		//mSceneTexture.setView(mWorldView);
 		//mSceneTexture.draw(mSceneGraph);
 		//mSceneTexture.display();
 		//mBloomEffect.apply(mSceneTexture, mTarget);
 
+
+		//Draw Scenegraph on top of water background with no bloom effect.
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
 	else
 	{
+
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
 }
 
+// Alex - Get collision mainfold
+sf::Vector3f World::getMainfold(const sf::FloatRect & overlap, const sf::Vector2f & collisionNormal)
+{
+	/*
+		X: Collision X-Axis Normal
+		Y: Collision Y-Axis Normal
+		Z: Penetration Amount
+	*/
+
+	sf::Vector3f mainfold;
+
+	// Determine Axis of collision
+	// X-Axis
+	if (overlap.width < overlap.height)
+	{
+		mainfold.x = (collisionNormal.x > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.width;
+	}
+	// Y-Axis
+	else
+	{
+		mainfold.y = (collisionNormal.y > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.height;
+	}
+
+	return mainfold;
+}
+
+int World::getAliveZombieCount()
+{
+	return mNumZombiesAlive;
+}
+
+void World::setAliveZombieCount(int count)
+{
+	mNumZombiesAlive = count;
+}
+
+Character * World::getCharacter(int localIdentifier) const
+{
+	for (Character* c : mPlayerCharacters)
+	{
+		if (c->getLocalIdentifier() == localIdentifier)
+		{
+			return c;
+		}
+	}
+	return nullptr;
+}
+
+void World::removeCharacter(int localIdentifier)
+{
+	Character* character = getCharacter(localIdentifier);
+	if (character)
+	{
+		character->destroy();
+		mPlayerCharacters.erase(std::find(mPlayerCharacters.begin(), mPlayerCharacters.end(), character));
+	}
+}
+
+Character * World::addCharacter(int localIdentifier)
+{
+	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	player->setPosition(mWorldView.getCenter());
+	player->setLocalIdentifier(localIdentifier);
+
+	mPlayerCharacters.push_back(player.get());
+	mSceneLayers[Layer::UpperLayer]->attachChild(std::move(player));
+	return mPlayerCharacters.back();
+}
+
 void World::adaptPlayerPosition()
 {
+	// Keep player's position inside the screen bounds, at least borderDistance units from the border
+	//sf::FloatRect viewBounds = getViewBounds();
+	//const float borderDistance = 40.f;
+
+	//sf::Vector2f position = mPlayerCharacter->getPosition();
+	//position.x = std::max(position.x, viewBounds.left + borderDistance);
+	//position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+	//position.y = std::max(position.y, viewBounds.top + borderDistance);
+	//position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+	//mPlayerCharacter->setPosition(position);
+
 	// Keep player's position inside the screen bounds, at least borderDistance units from the border
 	sf::FloatRect viewBounds = getViewBounds();
 	const float borderDistance = 40.f;
 
-	sf::Vector2f position = mPlayerCharacter->getPosition();
-	position.x = std::max(position.x, viewBounds.left + borderDistance);
-	position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-	position.y = std::max(position.y, viewBounds.top + borderDistance);
-	position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-	mPlayerCharacter->setPosition(position);
+	for(Character* character : mPlayerCharacters)
+	{
+		sf::Vector2f position = character->getPosition();
+		position.x = std::max(position.x, viewBounds.left + borderDistance);
+		position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
+		position.y = std::max(position.y, viewBounds.top + borderDistance);
+		position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
+		character->setPosition(position);
+	}
 }
 
 void World::adaptPlayerVelocity()
 {
-	sf::Vector2f velocity = mPlayerCharacter->getVelocity();
+	//sf::Vector2f velocity = mPlayerCharacter->getVelocity();
 
-	// If moving diagonally, reduce velocity (to have always same velocity)
-	if (velocity.x != 0.f && velocity.y != 0.f)
-		mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
+	//// If moving diagonally, reduce velocity (to have always same velocity)
+	//if (velocity.x != 0.f && velocity.y != 0.f)
+	//	mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
 
-	// Add scrolling velocity
-	mPlayerCharacter->accelerate(0.f, mScrollSpeed);
+	//// Add scrolling velocity
+	//mPlayerCharacter->accelerate(0.f, mScrollSpeed);
+
+	for(Character* character : mPlayerCharacters)
+	{
+		sf::Vector2f velocity = character->getVelocity();
+
+		// If moving diagonally, reduce velocity (to have always same velocity)
+		if (velocity.x != 0.f && velocity.y != 0.f)
+			character->setVelocity(velocity / std::sqrt(2.f));
+
+		// Add scrolling velocity
+		//character->accelerate(0.f, mScrollSpeed);
+	}
 }
 
 bool World::hasAlivePlayer() const
 {
-	return !mPlayerCharacter->isMarkedForRemoval();
+	return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
+	/*return mPlayerCharacters.size() > 0;*/
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-	return !mWorldBounds.contains(mPlayerCharacter->getPosition());
+	if (Character* character = getCharacter(1))
+		return !mWorldBounds.contains(character->getPosition());
+	else
+		return false;
 }
 
 void World::updateSounds()
 {
-	// Set listener's position to player position
-	mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
+	//// Set listener's position to player position
+	//mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
+
+	//// Remove unused sounds
+	//mSounds.removeStoppedSounds();
+
+	sf::Vector2f listenerPosition;
+
+	// 0 players (multiplayer mode, until server is connected) -> view center
+	if (mPlayerCharacters.empty())
+	{
+		listenerPosition = mWorldView.getCenter();
+	}
+
+	// 1 or more players -> mean position between all aircrafts
+	else
+	{
+		for(Character* character : mPlayerCharacters)
+			listenerPosition += character->getWorldPosition();
+
+		listenerPosition /= static_cast<float>(mPlayerCharacters.size());
+	}
+
+	// Set listener's position
+	mSounds.setListenerPosition(listenerPosition);
 
 	// Remove unused sounds
 	mSounds.removeStoppedSounds();
@@ -205,7 +392,6 @@ void World::updateSounds()
 //Mike
 void World::spawnZombies(sf::Time dt)
 {
-
 	if (!mZombieSpawnTimerStarted)
 	{
 		StartZombieSpawnTimer(dt);
@@ -215,30 +401,39 @@ void World::spawnZombies(sf::Time dt)
 		mZombieSpawnTimer += dt;
 	}
 
-	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime)
+	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime
+		&& getAliveZombieCount() < 20)
 	{
-		if (mNumZombiesSpawn < 20)
-		mNumZombiesSpawn += 2; // Number of zombies to spawn
-
-		for (int i = 0; i < mNumZombiesSpawn; ++i)
-		{
-			//Picks A random position outside the view but within world bounds
-			int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
-			int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
-
-			std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
-			enemy->setPosition(xPos, yPos);
-			enemy->setRotation(180.f);
-
-			if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+			for (int i = 0; i < mNumZombiesSpawn; ++i)
 			{
-				mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
-			}
-		}
+				//Picks A random position outside the view but within world bounds
+				int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+				int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
 
+				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
+				enemy->setPosition(xPos, yPos);
+				enemy->setRotation(180.f);
+
+				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+				{
+					//Picks A random position outside the view but within world bounds
+					int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+					int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
+
+					std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
+					enemy->setPosition(xPos, yPos);
+					enemy->setRotation(-mPlayerOneCharacter->getAngle());
+
+					if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+					{
+						mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+						++mNumZombiesAlive;
+					}
+				}
+			}
+		
 		mZombieSpawnTimerStarted = false;
 	}
-	
 }
 
 //Mike
@@ -266,7 +461,11 @@ void World::destroyEntitiesOutsideView()
 	destroyZombies.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		if (!mWorldBounds.intersects(e.getBoundingRect()))
+		{
 			e.destroy();
+			int currZombiesAlive = getAliveZombieCount();
+			setAliveZombieCount(--currZombiesAlive);
+		}
 	});
 
 	mCommandQueue.push(destroyProjectiles);
@@ -379,12 +578,12 @@ void World::buildScene()
 	mSceneGraph.attachChild(std::move(soundNode));
 
 	// Add player's Character
-	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	mPlayerCharacter = player.get();
+	//std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	//mPlayerCharacter = player.get();
 
 
-	mPlayerCharacter->setPosition(getCenter(mWorldBounds));
-	mSceneLayers[UpperLayer]->attachChild(std::move(player));
+	//mPlayerCharacter->setPosition(getCenter(mWorldBounds));
+	//mSceneLayers[UpperLayer]->attachChild(std::move(player));
 
 	SpawnObstacles();
 
@@ -396,7 +595,7 @@ void World::buildScene()
 void World::SpawnObstacles()
 {
 	//Random Number of Obstacles to spawn
-	int rand = randomInt(10);
+	int rand = randomInt(20);
 
 	//List for all Spawned Bounding rects
 	std::list<sf::FloatRect> objectRects;
@@ -446,15 +645,20 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 //Mike
 void World::handlePlayerCollision()
 {
-	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerCharacter->getPosition()))
+	// Map bound collision
+	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
 	{
-		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
+		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+	}
+	else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
+	{
+		mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
 	}
 }
 
 //Mike
-void World::handleCollisions()
-{
+void World::handleCollisions(sf::Time dt)
+{	
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 
@@ -463,24 +667,25 @@ void World::handleCollisions()
 		CollisionType collisionType = GetCollisionType(pair);
 		switch (collisionType)
 		{
-		case Character_Character:
-			handleCharacterCollisions(pair);
-			break;
-		case Player_Pickup:
-			handlePickupCollisions(pair);
-			break;
-		case Player_Obstacle:
-			handleObstacleCollisions(pair);
-			break;
-		case Projectile_Obstacle:
-		case Projectile_Character:
-			handleProjectileCollisions(pair);
-			break;
-		case Character_Explosion:
-			handleExplosionCollisions(pair);
-			break;
-		default:
-			break;
+			case Character_Character:
+				incrementZombieHitElapsedTime(dt);
+				handleCharacterCollisions(pair);
+				break;
+			case Player_Pickup:
+				handlePickupCollisions(pair);
+				break;
+			case Character_Obstacle:
+				handleObstacleCollisions(pair);
+				break;
+			case Projectile_Obstacle:
+			case Projectile_Character:
+				handleProjectileCollisions(pair);
+				break;
+			case Character_Explosion:
+				handleExplosionCollisions(pair);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -491,16 +696,56 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	auto& character1 = static_cast<Character&>(*pair.first);
 	auto& character2 = static_cast<Character&>(*pair.second);
 
+	sf::FloatRect r1 = character1.getBoundingRect();
+	sf::FloatRect r2 = character2.getBoundingRect();
+	sf::FloatRect intersection;
+
+	// Get collision intersection FloatRect
+	if (r1.intersects(r2, intersection))
+	{
+
+		// Get distance between two characters
+		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
+
+		/*
+			Get mainfold floatrect of colliding bodies
+			Return Type: Vector3f
+			X = Collision X-Axis Normal
+			Y = Collision Y-Axis Normal
+			Z = Penetration Amount
+		*/
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+
+		// Normal vector to move collidee out of the hitbox
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		// Assert an Entity cast can be made
+		assert(dynamic_cast<Entity*>(&character1) != nullptr);
+		assert(dynamic_cast<Entity*>(&character2) != nullptr);
+
+		// Normal vector * mainfold.z = Moving back by amount of penetration
+		// Normal & -Normal moves collidee's away from eachother
+		static_cast<Entity&>(character1).move(normal * mainfold.z);
+		static_cast<Entity&>(character2).move(-normal * mainfold.z);
+	}
+
 	if ((character1.isZombie() && character2.isZombie())
 		|| (character1.isPlayer() && character2.isPlayer()))
 	{
-		//TODO FIX COLLISION
-		character1.setPosition(character1.getLastPosition());
-		character2.setPosition(character2.getLastPosition());
+		//DONE FIX COLLISION
 	}
 	else
 	{
-		character1.damage(1);
+		if (getZombieHitElapsedTime() >= sf::milliseconds(ZOMBIEATTACKDELAY))
+		{
+			if (character1.isZombie())
+				character2.damage(ZOMBIEATTACKDAMAGE);
+			else
+				character1.damage(ZOMBIEATTACKDAMAGE);
+
+			resetZombieHitElapsedTime();
+		}
 	}
 }
 
@@ -509,7 +754,22 @@ void World::handleObstacleCollisions(SceneNode::Pair& pair)
 {
 	auto& character = static_cast<Character&>(*pair.first);
 	auto& obstacle = static_cast<Obstacle&>(*pair.second);
-	character.setPosition(character.getLastPosition());
+
+	sf::FloatRect r1 = character.getBoundingRect();
+	sf::FloatRect r2 = obstacle.getBoundingRect();
+	sf::FloatRect intersection;
+
+	if (r1.intersects(r2, intersection))
+	{
+		sf::Vector2f diff = character.getWorldPosition() - obstacle.getWorldPosition();
+
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		assert(dynamic_cast<Entity*>(&character) != nullptr);
+		static_cast<Entity&>(character).move(normal * mainfold.z);
+	}
 }
 
 //Mike
@@ -525,6 +785,28 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 	else
 	{
 		entity.damage(projectile.getDamage());
+
+		if (entity.isDestroyed())
+		{
+			// Alex - If entity can be dynamically casted to a Character [Zombie not a an Obstacle] when it's destroyed,
+			// decrement zombie alive count and increment player score accordingly
+			if (Character* zombie = dynamic_cast<Character*>(&entity))
+			{
+				int currZombiesAlive = getAliveZombieCount();
+				setAliveZombieCount(--currZombiesAlive);
+
+				// Increment Player 1 Score
+				if (projectile.getProjectileId() == 0)
+				{
+					incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
+				}
+				// Increment Player 2 Score
+				else if (projectile.getProjectileId() == 1)
+				{
+					incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
+				}
+			}
+		}
 		projectile.destroy();
 	}
 }
@@ -559,7 +841,8 @@ void World::handleExplosionCollisions(SceneNode::Pair& pair)
 World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 {
 	if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter)
-		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter))
+		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter)
+		|| matchesCategories(pair, Category::PlayerCharacter, Category::PlayerCharacter))
 	{
 		return Character_Character;
 	}
@@ -567,9 +850,10 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	{
 		return Player_Pickup;
 	}
-	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle))
+	else if (matchesCategories(pair, Category::PlayerCharacter, Category::Obstacle)
+		|| matchesCategories(pair, Category::EnemyCharacter, Category::Obstacle))
 	{
-		return Player_Obstacle;
+		return Character_Obstacle;
 	}
 	else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
 		|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))

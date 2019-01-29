@@ -44,7 +44,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	  , mLocalIdentifier(0)
 {
 	// Alex - Optimize texture rect size for collision detection
-	mSprite.setTextureRect(sf::IntRect(0, 0, 100, 60));
+	mSprite.setTextureRect(sf::IntRect(0, 0, 80, 70));
 
 	mCharacterMoveAnimation.setFrameSize(Table[static_cast<int>(type)].moveRect);
 	mCharacterMoveAnimation.setNumFrames(Table[static_cast<int>(type)].moveFrames);
@@ -72,7 +72,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mGrenadeCommand.category = static_cast<int>(Category::SceneLayer);
 	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time)
 	{
-		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures);
+		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures, getLocalIdentifier());
 		mGrenadeVelocity = 0.f;
 	};
 
@@ -81,7 +81,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
 
-	if (Character::getCategory() == static_cast<int>(Category::PlayerCharacter))
+	if (getCategory() == static_cast<int>(Category::PlayerCharacter))
 	{
 		std::unique_ptr<TextNode> grenadeDisplay(new TextNode(fonts, ""));
 		grenadeDisplay->setPosition(0, 70);
@@ -100,7 +100,7 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// Alex - Debug Bounding Rectangle	
-	drawBoundingRect(target, states);
+	//drawBoundingRect(target, states);
 
 	if (isDestroyed() && mShowDeath)
 	{
@@ -120,8 +120,9 @@ void Character::guideTowards(sf::Vector2f position)
 
 void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
-
+	// Get players position
 	mLastPosition = getPosition();
+
 	//Update Player Animations
 	updateAnimations(dt, commands);
 
@@ -132,6 +133,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	{
 		move(dt, commands);
 	}
+
 	updateTexts();
 }
 
@@ -149,8 +151,9 @@ void Character::move(sf::Time dt, CommandQueue& commands)
 	else if (mType == Type::Player)
 	{
 		setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed()); // Alex - update players current rotation
-		updateVelocity(dt);
+		//updateVelocity(dt);
 	}
+
 	Entity::updateCurrent(dt, commands);
 }
 
@@ -295,7 +298,7 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		// Interval expired: We can fire a new bullet
 		commands.push(mFireCommand);
-		playLocalSound(commands, isPlayer() ? SoundEffectIDs::AlliedGunfire : SoundEffectIDs::EnemyGunfire);
+		playLocalSound(commands,  SoundEffectIDs::AlliedGunfire);
 		mFireCountdown += Table[static_cast<int>(mType)].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 	}
@@ -319,15 +322,16 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
 { 
 	//TODO ALL Bullets Damage Everybody, NO Enemy or Allied Bullets
-	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.09f, 0.5f, textures);
+	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.09f, 0.5f, textures, getLocalIdentifier());
 }
 
 void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
-                                 const TextureHolder& textures) const
+                                 const TextureHolder& textures, unsigned int projectileId) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
 
+	projectile->setProjectileId(projectileId);
 	projectile->setOrigin(offset);
 	projectile->setPosition(getWorldPosition());
 	projectile->setRotation(getRotation() + 90);
@@ -413,4 +417,9 @@ sf::Vector2f Character::getLastPosition()
 {
 	return mLastPosition;
 
+}
+
+void Character::setLastPosition(sf::Vector2f position)
+{
+	mLastPosition = position;
 }

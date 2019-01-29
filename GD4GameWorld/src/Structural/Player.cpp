@@ -3,6 +3,7 @@
 #include "Character.hpp"
 
 #include <map>
+#include <iostream>
 
 using namespace std::placeholders;
 
@@ -36,7 +37,6 @@ struct CharacterFireTrigger
 	CharacterFireTrigger(unsigned int id)
 		: localIdentifier(id)
 	{
-
 	}
 
 	void operator() (Character& Character, sf::Time) const
@@ -48,33 +48,95 @@ struct CharacterFireTrigger
 	}
 };
 
+struct CharacterGrenadeStarter
+{
+	unsigned int localIdentifier;
+
+	CharacterGrenadeStarter(unsigned int id)
+		: localIdentifier(id)
+	{}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.startGrenade();
+		}
+	}
+};
+
+struct CharacterGrenadeLauncher
+{
+	unsigned int localIdentifier;
+
+	CharacterGrenadeLauncher(unsigned int id)
+		: localIdentifier(id)
+	{}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.launchGrenade();
+		}
+	}
+};
+
 Player::Player(int localIdentifier)
 	: mCurrentMissionStatus(MissionStatus::MissionRunning)
 	, mJoystick(nullptr)
 	, mLocalIdentifier(localIdentifier)
+	, mScore(0)
 {
+	// If joystick not set and there are available controllers
 	if (mJoystick == nullptr && sf::Joystick::Count > 0)
 	{
+		// Setup controller with local ID
 		setJoystick(new Xbox360Controller(localIdentifier));
 	}
+	else
+	{
+		// Else, reset the joystick if disconnected
+		setJoystick(nullptr);
+	}
 
-	//Set initial key bindings
-	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
-	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
-	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
-	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
-	mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
-	mKeyBindingPressed[sf::Keyboard::M] = Action::StartGrenade;
-	// Alex - Init. rotation keys -------------------------
-	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
-	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
 
-	// Set intial joystick button bindings
+	if (localIdentifier == 0)
+	{
+		//Set initial key bindings
+		mKeyBindingPressed[sf::Keyboard::A] = Action::MoveLeft;
+		mKeyBindingPressed[sf::Keyboard::D] = Action::MoveRight;
+		mKeyBindingPressed[sf::Keyboard::W] = Action::MoveUp;
+		mKeyBindingPressed[sf::Keyboard::S] = Action::MoveDown;
+		mKeyBindingPressed[sf::Keyboard::Space] = Action::Fire;
+		mKeyBindingPressed[sf::Keyboard::N] = Action::StartGrenade;
+		mKeyBindingReleased[sf::Keyboard::N] = Action::LaunchGrenade;
+		// Alex - Init. rotation keys -------------------------
+		mKeyBindingPressed[sf::Keyboard::J] = Action::RotateLeft;
+		mKeyBindingPressed[sf::Keyboard::K] = Action::RotateRight;
+	}
+	else if (localIdentifier == 1)
+	{
+		//Set initial key bindings
+		mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+		mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+		mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
+		mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
+		mKeyBindingPressed[sf::Keyboard::Numpad0] = Action::Fire;
+		mKeyBindingPressed[sf::Keyboard::Enter] = Action::StartGrenade;
+		mKeyBindingReleased[sf::Keyboard::Enter] = Action::LaunchGrenade;
+		// Alex - Init. rotation keys -------------------------
+		mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
+		mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+	}
+
+
+	// Set intial joystick button bindings - Default for all controllers
 	mJoystickBindingPressed[JoystickButton::RB] = Action::Fire;
+	mJoystickBindingPressed[JoystickButton::X] = Action::StartGrenade;
+	mJoystickBindingReleased[JoystickButton::X] = Action::LaunchGrenade;
 
-	mKeyBindingReleased[sf::Keyboard::M] = Action::LaunchGrenade;
-
-
+	
 	//set initial action bindings
 	initializeActions();
 
@@ -88,8 +150,37 @@ Player::Player(int localIdentifier)
 // Executes when button is pressed once
 void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 {
-	//check if key pressed is in the key bindings, if so trigger command
+	if (mJoystick->IsConnected())
+	{
+		if (event.type == sf::Event::JoystickButtonPressed)
+		{
+			if (event.joystickButton.joystickId == getLocalIdentifier())
+			{
+				auto found = mJoystickBindingPressed.find(static_cast<JoystickButton>(event.joystickButton.button));
 
+				if (found != mJoystickBindingPressed.end() && !isRealtimeAction(found->second))
+				{
+					commands.push(mActionBinding[found->second]);
+				}
+			}
+		}
+
+		if (event.type == sf::Event::JoystickButtonReleased)
+		{
+
+			if (event.joystickButton.joystickId == getLocalIdentifier())
+			{
+				auto found = mJoystickBindingReleased.find(static_cast<JoystickButton>(event.joystickButton.button));
+
+				if (found != mJoystickBindingReleased.end() && !isRealtimeAction(found->second))
+				{
+					commands.push(mActionBinding[found->second]);
+				}
+			}
+		}
+	}
+
+	//check if key pressed is in the key bindings, if so trigger command
 	if (event.type == sf::Event::KeyPressed)
 	{
 		auto found = mKeyBindingPressed.find(event.key.code);
@@ -133,6 +224,7 @@ void Player::handleRealtimeInput(CommandQueue& commands)
 				commands.push(mActionBinding[pair.second]);
 			}
 		}
+
 
 		if (sf::Event::JoystickMoved)
 		{
@@ -242,6 +334,26 @@ void Player::setJoystick(Xbox360Controller * joystick)
 	mJoystick = joystick;
 }
 
+int Player::getLocalIdentifier() const
+{
+	return mLocalIdentifier;
+}
+
+void Player::setLocalIdentifier(int id)
+{
+	mLocalIdentifier = id;
+}
+
+unsigned int const Player::getScore() const
+{
+	return mScore;
+}
+
+void Player::setScore(unsigned int incrementBy)
+{
+	mScore = incrementBy;
+}
+
 void Player::initializeActions()
 {
 	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f, mLocalIdentifier));
@@ -250,8 +362,10 @@ void Player::initializeActions()
 	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f, mLocalIdentifier));
 	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
 	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
-	mActionBinding[Action::StartGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.startGrenade(); });
-	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>([](Character& a, sf::Time) { a.launchGrenade(); });
+
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>(CharacterGrenadeStarter(mLocalIdentifier));
+	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>(CharacterGrenadeLauncher(mLocalIdentifier));
+
 	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mLocalIdentifier));
 }
 

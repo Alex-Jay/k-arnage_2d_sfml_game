@@ -32,6 +32,9 @@ public:
 	void setInitialVelocity(float vel);
 	void remove();
 
+	unsigned int const getProjectileId() const;
+	void setProjectileId(unsigned int id);
+
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -54,4 +57,6 @@ private:
 	bool mPlayedScreamSound;
 
 	float mInitialVelocity;
+
+	unsigned int mProjectileId;
 };

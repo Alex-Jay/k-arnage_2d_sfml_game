@@ -84,9 +84,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Animation\Animation.cpp">
       <Filter>Source Files\Animation</Filter>
     </ClCompile>
@@ -207,11 +204,17 @@
     <ClCompile Include="src\State\TitleState.cpp">
       <Filter>Source Files\State</Filter>
     </ClCompile>
+    <ClCompile Include="src\State\ScoreBoardState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
     <ClCompile Include="src\Structural\Xbox360Controller.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
     <ClCompile Include="src\Structural\KeyBinding.cpp">
       <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Main.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,37 +335,17 @@
     <ClInclude Include="include/State/PauseState.hpp">
       <Filter>Header Files\State</Filter>
     </ClInclude>
+    <ClInclude Include="include\State\ScoreBoardState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
     <ClInclude Include="include\Entity\Character.hpp">
       <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include\SceneNode\ShapeNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
     </ClInclude>
     <ClInclude Include="include\Entity\Explosion.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="include\Structural\MapTiler.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
     <ClInclude Include="include\Entity\Obstacle.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="include\Structural\Debugger.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include\PostEffect\DistortionEffect.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Structural\KeyBinding.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Structural\Xbox360Controller.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src/ResourceHolder.inl">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

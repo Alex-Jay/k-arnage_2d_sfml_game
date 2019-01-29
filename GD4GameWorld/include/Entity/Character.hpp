@@ -37,6 +37,7 @@ public:
 	void playLocalSound(CommandQueue& commands, SoundEffectIDs effect);
 
 	sf::Vector2f getLastPosition();
+	void setLastPosition(sf::Vector2f position);
 
 	unsigned int const getLocalIdentifier() const;
 	void setLocalIdentifier(unsigned int localID);
@@ -54,7 +55,7 @@ private:
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
-	                      const TextureHolder& textures) const;
+	                      const TextureHolder& textures, unsigned int projectileId) const;
 
 	void updateTexts();
 

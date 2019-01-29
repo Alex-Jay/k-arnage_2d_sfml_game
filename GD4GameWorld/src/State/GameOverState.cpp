@@ -2,6 +2,7 @@
 #include "Utility.hpp"
 #include "Player.hpp"
 #include "ResourceHolder.hpp"
+//#include "PlayerManager.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -14,14 +15,21 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 {
 	sf::Font& font = context.fonts->get(FontIDs::Main);
 	sf::Vector2f windowSize(context.window->getSize());
-
+	
 	mGameOverText.setFont(font);
-	if (context.player->getMissionStatus() == Player::MissionStatus::MissionFailure)
-		mGameOverText.setString("Mission failed!");
+	
+	// If one of the players dies, End game
+	if (context.playerOne->getMissionStatus() == Player::MissionStatus::MissionFailure ||
+		context.playerTwo->getMissionStatus() == Player::MissionStatus::MissionFailure)
+	{
+		mGameOverText.setString("Game Over.");
+	}
 	else
-		mGameOverText.setString("Mission successful!");
+	{
+		mGameOverText.setString("You have survived the zombie wave.");
+	}
 
-	mGameOverText.setCharacterSize(70);
+	mGameOverText.setCharacterSize(50);
 	centreOrigin(mGameOverText);
 	mGameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 }
@@ -47,7 +55,7 @@ bool GameOverState::update(sf::Time dt)
 	if (mElapsedTime > sf::seconds(3))
 	{
 		requestStackClear();
-		requestStackPush(StateIDs::Menu);
+		requestStackPush(StateIDs::ScoreBoard);
 	}
 	return false;
 }

@@ -15,7 +15,7 @@ namespace
 }
 
 Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
-	: Entity(1)
+	: Entity(30)
 	  , mType(type)
 	  , mSprite(textures.get(TextureIDs::Crate))
 	  , mDroppedPickup(false)
@@ -73,9 +73,9 @@ sf::FloatRect Obstacle::getBoundingRect() const
 
 void Obstacle::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	//drawBoundingRect(target, states);
 	target.draw(mSprite, states);
 }
-
 
 void Obstacle::updateCurrent(sf::Time dt, CommandQueue& commands)
 {

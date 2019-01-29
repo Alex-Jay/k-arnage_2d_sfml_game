@@ -46,6 +46,12 @@ public:
 	Xbox360Controller* getJoystick() const;
 	void setJoystick(Xbox360Controller* joystick);
 
+	int getLocalIdentifier() const;
+	void setLocalIdentifier(int id);
+
+	unsigned int const getScore() const;
+	void setScore(unsigned int incrementBy);
+
 private:
 	void initializeActions();
 	static bool isRealtimeAction(Action action);
@@ -53,9 +59,11 @@ private:
 private:
 	int mLocalIdentifier;
 	Xbox360Controller* mJoystick;
+	unsigned int mScore;
 
 	std::map<sf::Joystick::Axis, Action> mJoystickBindingMoved;
 	std::map<JoystickButton, Action> mJoystickBindingPressed;
+	std::map<JoystickButton, Action> mJoystickBindingReleased;
 	std::map<sf::Keyboard::Key, Action> mKeyBindingPressed;
 	std::map<sf::Keyboard::Key, Action> mKeyBindingReleased;
 	std::map<Action, Command> mActionBinding;

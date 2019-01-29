@@ -21,27 +21,30 @@ const int ZOMBIE_DEATH_ANIMATION_WIDTH = 150;
 //++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ PLAYER CONSTANTS ++++++++++++++++++
-const float PLAYERHITPOINTS = 100.f;
+const int ZOMBIE_KILL_MULTIPLIER = 10;
+const int PLAYERHITPOINTS = 100;
 const int GRENADEPICKUPAMMOVALUE = 3;
-const float PLAYERSPEED = 300.f;
+const int PLAYERSPEED = 260;
 const float PLAYERFIREINTERVAL = 1.f;
-const float HEALTHPICKUPREPAIRVALUE = 25.f;
-const int FIRERATELEVEL = 1;
-const float MAXFIRERATELEVEL = 10.f;
-const int MAXSPREADLEVEL = 3;
+const float HEALTHPICKUPREPAIRVALUE = 17.5f;
+const int FIRERATELEVEL = 2;
+const float MAXFIRERATELEVEL = 3.f;
+const int MAXSPREADLEVEL = 1;
 const int SPREADLEVEL = 1;
 const int GRENADEAMMO = 2;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ ENEMY CONSTANTS ++++++++++++++++++++
-const float ZOMBIEHITPOINTS = 20.f;
-const float ZOMBIESPEED = 100.f;
+const float ZOMBIEHITPOINTS = 100.f;
+const float ZOMBIESPEED = 160.f;
+const float ZOMBIEATTACKDAMAGE = 19.5f;
+const float ZOMBIEATTACKDELAY = 600.f; // In miliseconds
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
-const float BULLETDAMAGE = 10.f;
-const float BULLETSPEED = 800.f;
-const float GRENADEDAMAGE = 150.f;
+const float BULLETDAMAGE = 17.5f;
+const float BULLETSPEED = 1200.f;
+const float GRENADEDAMAGE = 130.f;
 const float GRENADESPEED = 300.f;
 const float GRENADBLASTRADIOUS = 25.f;
 const float LEVEL_ZOOM_FACTOR = 1.5f;
