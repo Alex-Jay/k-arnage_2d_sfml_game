@@ -72,7 +72,7 @@ void World::loadTextures()
 	mTextures.load(TextureIDs::DistortionMap, "Media/Textures/distortion_map.png");
 }
 
-#pragma region Getters
+#pragma region Mutators
 
 CommandQueue& World::getCommandQueue()
 {
@@ -114,6 +114,26 @@ void World::incrementZombieHitElapsedTime(sf::Time dt)
 void World::resetZombieHitElapsedTime()
 {
 	mZombieHitElapsedTime = sf::Time::Zero;
+}
+
+unsigned int const World::getPlayerOneScore() const
+{
+	return mPlayerOneScore;
+}
+
+void World::incrementPlayerOneScore(unsigned int incBy)
+{
+	mPlayerOneScore += incBy;
+}
+
+unsigned int const World::getPlayerTwoScore() const
+{
+	return mPlayerTwoScore;
+}
+
+void World::incrementPlayerTwoScore(unsigned int incBy)
+{
+	mPlayerTwoScore += incBy;
 }
 
 #pragma endregion
@@ -765,10 +785,27 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 	else
 	{
 		entity.damage(projectile.getDamage());
+
 		if (entity.isDestroyed())
 		{
-			int currZombiesAlive = getAliveZombieCount();
-			setAliveZombieCount(--currZombiesAlive);
+			// Alex - If entity can be dynamically casted to a Character [Zombie not a an Obstacle] when it's destroyed,
+			// decrement zombie alive count and increment player score accordingly
+			if (Character* zombie = dynamic_cast<Character*>(&entity))
+			{
+				int currZombiesAlive = getAliveZombieCount();
+				setAliveZombieCount(--currZombiesAlive);
+
+				// Increment Player 1 Score
+				if (projectile.getProjectileId() == 0)
+				{
+					incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
+				}
+				// Increment Player 2 Score
+				else if (projectile.getProjectileId() == 1)
+				{
+					incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
+				}
+			}
 		}
 		projectile.destroy();
 	}

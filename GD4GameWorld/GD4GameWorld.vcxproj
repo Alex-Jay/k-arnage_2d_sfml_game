@@ -132,9 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Structural\PlayerManager.cpp" />
     <ClCompile Include="src\Animation\Animation.cpp" />
-    <ClCompile Include="src/Main.cpp" />
+    <ClCompile Include="src\Core\Main.cpp" />
     <ClCompile Include="src\Audio\MusicPlayer.cpp" />
     <ClCompile Include="src\Audio\SoundPlayer.cpp" />
     <ClCompile Include="src\Command\Command.cpp" />
@@ -167,6 +166,7 @@
     <ClCompile Include="src\State\MenuState.cpp" />
     <ClCompile Include="src\State\PauseState.cpp" />
     <ClCompile Include="src\State\SettingsState.cpp" />
+    <ClCompile Include="src\State\ScoreBoardState.cpp" />
     <ClCompile Include="src\State\State.cpp" />
     <ClCompile Include="src\State\StateStack.cpp" />
     <ClCompile Include="src\State\TitleState.cpp" />
@@ -178,7 +178,6 @@
     <ClCompile Include="src\Structural\Xbox360Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Entity\Character.hpp" />
     <ClInclude Include="include/Animation/Animation.hpp" />
     <ClInclude Include="include/Core/Application.hpp" />
     <ClInclude Include="include/PostEffect/BloomEffect.hpp" />
@@ -218,18 +217,10 @@
     <ClInclude Include="include/State/TitleState.hpp" />
     <ClInclude Include="include/Structural/Utility.hpp" />
     <ClInclude Include="include/Core/World.hpp" />
+    <ClInclude Include="include\Entity\Character.hpp" />
     <ClInclude Include="include\Entity\Explosion.hpp" />
     <ClInclude Include="include\Entity\Obstacle.hpp" />
-    <ClInclude Include="include\PostEffect\DistortionEffect.hpp" />
-    <ClInclude Include="include\SceneNode\ShapeNode.hpp" />
-    <ClInclude Include="include\Structural\Debugger.hpp" />
-    <ClInclude Include="include\Structural\KeyBinding.hpp" />
-    <ClInclude Include="include\Structural\MapTiler.hpp" />
-    <ClInclude Include="include\Structural\Xbox360Controller.hpp" />
-    <ClInclude Include="include\Structural\PlayerManager.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src/ResourceHolder.inl" />
+    <ClInclude Include="include\State\ScoreBoardState.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

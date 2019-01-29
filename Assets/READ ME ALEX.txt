@@ -1,4 +1,0 @@
-JUST A collection of assets that can be used in the game,
-When downloading packs add them here and include a reference.
-Anything that we use from here just copy to media folder and include reference.
-This folder can then be deleted when game is finished.

@@ -55,7 +55,7 @@ private:
 
 	void createBullets(SceneNode& node, const TextureHolder& textures) const;
 	void createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
-	                      const TextureHolder& textures) const;
+	                      const TextureHolder& textures, unsigned int projectileId) const;
 
 	void updateTexts();
 

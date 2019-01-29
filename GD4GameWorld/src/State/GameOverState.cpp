@@ -22,14 +22,14 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 	if (context.playerOne->getMissionStatus() == Player::MissionStatus::MissionFailure ||
 		context.playerTwo->getMissionStatus() == Player::MissionStatus::MissionFailure)
 	{
-		mGameOverText.setString("Mission failed!");
+		mGameOverText.setString("Game Over.");
 	}
 	else
 	{
-		mGameOverText.setString("Mission successful!");
+		mGameOverText.setString("You have survived the zombie wave.");
 	}
 
-	mGameOverText.setCharacterSize(70);
+	mGameOverText.setCharacterSize(50);
 	centreOrigin(mGameOverText);
 	mGameOverText.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 }
@@ -55,7 +55,7 @@ bool GameOverState::update(sf::Time dt)
 	if (mElapsedTime > sf::seconds(3))
 	{
 		requestStackClear();
-		requestStackPush(StateIDs::Menu);
+		requestStackPush(StateIDs::ScoreBoard);
 	}
 	return false;
 }

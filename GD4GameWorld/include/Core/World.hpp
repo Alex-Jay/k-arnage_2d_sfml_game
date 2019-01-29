@@ -64,6 +64,11 @@ public:
 	void removeCharacter(int localIdentifier);
 	Character* addCharacter(int localIdentifier);
 
+	unsigned int const getPlayerOneScore() const;
+	void incrementPlayerOneScore(unsigned int incBy);
+	unsigned int const getPlayerTwoScore() const;
+	void incrementPlayerTwoScore(unsigned int incBy);
+
 private:
 	void loadTextures();
 	void buildScene();
@@ -156,4 +161,7 @@ private:
 	int mZombieSpawnTime;
 	int mNumZombiesSpawn;
 	int mNumZombiesAlive;
+
+	unsigned int mPlayerOneScore;
+	unsigned int mPlayerTwoScore;
 };

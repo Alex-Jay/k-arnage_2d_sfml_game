@@ -7,5 +7,6 @@ enum class StateIDs
 	Game,
 	Settings,
 	Pause,
-	GameOver
+	GameOver,
+	ScoreBoard
 };
