@@ -32,12 +32,12 @@ ScoreBoardState::ScoreBoardState(StateStack& stack, Context context)
 	centreOrigin(mPlayerOneScore);
 	mPlayerOneScore.setPosition(0.5f * windowSize.x, 0.3f * windowSize.y);
 
-	// Scoreboard Player One Score
-	mPlayerTwoScore.setFont(font);
-	mPlayerTwoScore.setString("Player Two:   " + std::to_string(getContext().playerTwo->getScore()) + " pts   |   " + std::to_string((getContext().playerTwo->getScore()) / ZOMBIE_KILL_MULTIPLIER) + " kill(s)");
-	mPlayerTwoScore.setCharacterSize(30);
-	centreOrigin(mPlayerTwoScore);
-	mPlayerTwoScore.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
+	//// Scoreboard Player One Score
+	//mPlayerTwoScore.setFont(font);
+	//mPlayerTwoScore.setString("Player Two:   " + std::to_string(getContext().playerTwo->getScore()) + " pts   |   " + std::to_string((getContext().playerTwo->getScore()) / ZOMBIE_KILL_MULTIPLIER) + " kill(s)");
+	//mPlayerTwoScore.setCharacterSize(30);
+	//centreOrigin(mPlayerTwoScore);
+	//mPlayerTwoScore.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
 
 	auto backToMenuButton = std::make_shared<GUI::Button>(context);
 	backToMenuButton->setPosition(0.5f * windowSize.x - 100, 0.4f * windowSize.y + 150);
@@ -66,7 +66,7 @@ void ScoreBoardState::draw()
 	window.draw(backgroundShape);
 	window.draw(mScoreboardTitle);
 	window.draw(mPlayerOneScore);
-	window.draw(mPlayerTwoScore);
+	//window.draw(mPlayerTwoScore);
 	window.draw(mGUIContainer);
 }
 

@@ -8,12 +8,12 @@ GameState::GameState(StateStack& stack, Context context)
 	: State(stack, context)
 	  , mWorld(*context.window, *context.fonts, *context.sounds)
 	  , mPlayerOne(context.playerOne->getLocalIdentifier())
-	  , mPlayerTwo(context.playerTwo->getLocalIdentifier())
+	  /*, mPlayerTwo(context.playerTwo->getLocalIdentifier())*/
 	  , mScoreText()
 	 
 {
 	mPlayerOne.setMissionStatus(Player::MissionStatus::MissionRunning);
-	mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionRunning);
+	/*mPlayerTwo.setMissionStatus(Player::MissionStatus::MissionRunning);*/
 
 	//Play the mission theme
 	context.music->play(MusicIDs::MissionTheme);
@@ -44,7 +44,7 @@ bool GameState::update(sf::Time dt)
 
 	CommandQueue& commands = mWorld.getCommandQueue();
 	mPlayerOne.handleRealtimeInput(commands);
-	mPlayerTwo.handleRealtimeInput(commands);
+	/*mPlayerTwo.handleRealtimeInput(commands);*/
 
 	if (!mWorld.hasAlivePlayer())
 	{
@@ -54,7 +54,7 @@ bool GameState::update(sf::Time dt)
 
 		// Set players' mission status
 		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);
-		getContext().playerTwo->setMissionStatus(Player::MissionStatus::MissionFailure);
+		/*getContext().playerTwo->setMissionStatus(Player::MissionStatus::MissionFailure);*/
 
 		requestStackPush(StateIDs::GameOver);
 	}
@@ -74,7 +74,7 @@ bool GameState::handleEvent(const sf::Event& event)
 	//Game input handling
 	CommandQueue& commands = mWorld.getCommandQueue();
 	mPlayerOne.handleEvent(event, commands);
-	mPlayerTwo.handleEvent(event, commands);
+	/*mPlayerTwo.handleEvent(event, commands);*/
 
 	//Escape pressed, trigger pause screen
 	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
