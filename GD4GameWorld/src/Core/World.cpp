@@ -30,7 +30,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mZombieHitDelay(sf::Time::Zero)
 	  , mZombieHitElapsedTime(sf::Time::Zero)
 	  , mPlayerOneCharacter(nullptr)
-	  , mPlayerTwoCharacter(nullptr)
+	  //, mPlayerTwoCharacter(nullptr)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
 	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -47,7 +47,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 
 	// Add Local Player on Start
 	mPlayerOneCharacter = addCharacter(0);
-	mPlayerTwoCharacter = addCharacter(1);
+	//mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::loadTextures()
@@ -345,7 +345,8 @@ void World::adaptPlayerVelocity()
 
 bool World::hasAlivePlayer() const
 {
-	return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
+	//return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
+	return !mPlayerOneCharacter->isMarkedForRemoval();
 	/*return mPlayerCharacters.size() > 0;*/
 }
 
@@ -650,10 +651,10 @@ void World::handlePlayerCollision()
 	{
 		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
 	}
-	else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
-	{
-		mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
-	}
+	//else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
+	//{
+	//	mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
+	//}
 }
 
 //Mike
