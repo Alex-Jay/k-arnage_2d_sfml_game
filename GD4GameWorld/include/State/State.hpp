@@ -38,13 +38,13 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, Player& playerOne, Player& playerTwo,
+		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, Player& playerOne, /*Player& playerTwo,*/
 			MusicPlayer& music, SoundPlayer& sounds);
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
 		Player* playerOne;
-		Player* playerTwo;
+		/*Player* playerTwo;*/
 		MusicPlayer* music;
 		SoundPlayer* sounds;
 	};

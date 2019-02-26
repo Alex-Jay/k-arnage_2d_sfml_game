@@ -11,74 +11,74 @@ struct CharacterMover
 {
 	sf::Vector2f velocity;
 	float angle;
-	unsigned int localIdentifier;
+	//unsigned int localIdentifier;
 
-	CharacterMover(float vx, float vy, float da, unsigned int id) 
+	CharacterMover(float vx, float vy, float da /*,unsigned int id*/) 
 		: velocity(vx, vy)
 		, angle(da)
-		, localIdentifier(id)
+		//, localIdentifier(id)
 	{
 	}
 
 	void operator()(Character& Character, sf::Time) const
 	{
-		if (Character.getLocalIdentifier() == localIdentifier)
-		{
-			Character.accelerate(velocity * Character.getMaxSpeed());
-			Character.applyRotation(angle * Character.getMaxRotationSpeed());
-		}
+		//if (Character.getLocalIdentifier() == localIdentifier)
+		//{
+		Character.accelerate(velocity * Character.getMaxSpeed());
+		Character.applyRotation(angle * Character.getMaxRotationSpeed());
+		//}
 	}
 };
 
 struct CharacterFireTrigger
 {
-	unsigned int localIdentifier;
+	//unsigned int localIdentifier;
 
-	CharacterFireTrigger(unsigned int id)
-		: localIdentifier(id)
+	CharacterFireTrigger(/*unsigned int id*/)
+		//: localIdentifier(id)
 	{
 	}
 
 	void operator() (Character& Character, sf::Time) const
 	{
-		if (Character.getLocalIdentifier() == localIdentifier)
-		{
-			Character.fire();
-		}
+		//if (Character.getLocalIdentifier() == localIdentifier)
+		//{
+		Character.fire();
+		//}
 	}
 };
 
 struct CharacterGrenadeStarter
 {
-	unsigned int localIdentifier;
+	//unsigned int localIdentifier;
 
-	CharacterGrenadeStarter(unsigned int id)
-		: localIdentifier(id)
+	CharacterGrenadeStarter(/*unsigned int id*/)
+		//: localIdentifier(id)
 	{}
 
 	void operator() (Character& Character, sf::Time) const
 	{
-		if (Character.getLocalIdentifier() == localIdentifier)
-		{
-			Character.startGrenade();
-		}
+		//if (Character.getLocalIdentifier() == localIdentifier)
+		//{
+		Character.startGrenade();
+		//}
 	}
 };
 
 struct CharacterGrenadeLauncher
 {
-	unsigned int localIdentifier;
+	//unsigned int localIdentifier;
 
-	CharacterGrenadeLauncher(unsigned int id)
-		: localIdentifier(id)
+	CharacterGrenadeLauncher(/*unsigned int id*/)
+		//: localIdentifier(id)
 	{}
 
 	void operator() (Character& Character, sf::Time) const
 	{
-		if (Character.getLocalIdentifier() == localIdentifier)
-		{
-			Character.launchGrenade();
-		}
+		//if (Character.getLocalIdentifier() == localIdentifier)
+		//{
+		Character.launchGrenade();
+		//}
 	}
 };
 
@@ -101,8 +101,8 @@ Player::Player(int localIdentifier)
 	}
 
 
-	if (localIdentifier == 0)
-	{
+	//if (localIdentifier == 0)
+	//{
 		//Set initial key bindings
 		mKeyBindingPressed[sf::Keyboard::A] = Action::MoveLeft;
 		mKeyBindingPressed[sf::Keyboard::D] = Action::MoveRight;
@@ -114,21 +114,21 @@ Player::Player(int localIdentifier)
 		// Alex - Init. rotation keys -------------------------
 		mKeyBindingPressed[sf::Keyboard::J] = Action::RotateLeft;
 		mKeyBindingPressed[sf::Keyboard::K] = Action::RotateRight;
-	}
-	else if (localIdentifier == 1)
-	{
-		//Set initial key bindings
-		mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
-		mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
-		mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
-		mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
-		mKeyBindingPressed[sf::Keyboard::Numpad0] = Action::Fire;
-		mKeyBindingPressed[sf::Keyboard::Enter] = Action::StartGrenade;
-		mKeyBindingReleased[sf::Keyboard::Enter] = Action::LaunchGrenade;
-		// Alex - Init. rotation keys -------------------------
-		mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
-		mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
-	}
+	//}
+	//else if (localIdentifier == 1)
+	//{
+	//	//Set initial key bindings
+	//	mKeyBindingPressed[sf::Keyboard::Left] = Action::MoveLeft;
+	//	mKeyBindingPressed[sf::Keyboard::Right] = Action::MoveRight;
+	//	mKeyBindingPressed[sf::Keyboard::Up] = Action::MoveUp;
+	//	mKeyBindingPressed[sf::Keyboard::Down] = Action::MoveDown;
+	//	mKeyBindingPressed[sf::Keyboard::Numpad0] = Action::Fire;
+	//	mKeyBindingPressed[sf::Keyboard::Enter] = Action::StartGrenade;
+	//	mKeyBindingReleased[sf::Keyboard::Enter] = Action::LaunchGrenade;
+	//	// Alex - Init. rotation keys -------------------------
+	//	mKeyBindingPressed[sf::Keyboard::Numpad4] = Action::RotateLeft;
+	//	mKeyBindingPressed[sf::Keyboard::Numpad6] = Action::RotateRight;
+	//}
 
 
 	// Set intial joystick button bindings - Default for all controllers
@@ -154,29 +154,29 @@ void Player::handleEvent(const sf::Event& event, CommandQueue& commands)
 	{
 		if (event.type == sf::Event::JoystickButtonPressed)
 		{
-			if (event.joystickButton.joystickId == getLocalIdentifier())
-			{
+			//if (event.joystickButton.joystickId == getLocalIdentifier())
+			//{
 				auto found = mJoystickBindingPressed.find(static_cast<JoystickButton>(event.joystickButton.button));
 
 				if (found != mJoystickBindingPressed.end() && !isRealtimeAction(found->second))
 				{
 					commands.push(mActionBinding[found->second]);
 				}
-			}
+			//}
 		}
 
 		if (event.type == sf::Event::JoystickButtonReleased)
 		{
 
-			if (event.joystickButton.joystickId == getLocalIdentifier())
-			{
+			//if (event.joystickButton.joystickId == getLocalIdentifier())
+			//{
 				auto found = mJoystickBindingReleased.find(static_cast<JoystickButton>(event.joystickButton.button));
 
 				if (found != mJoystickBindingReleased.end() && !isRealtimeAction(found->second))
 				{
 					commands.push(mActionBinding[found->second]);
 				}
-			}
+			//}
 		}
 	}
 
@@ -356,17 +356,17 @@ void Player::setScore(unsigned int incrementBy)
 
 void Player::initializeActions()
 {
-	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f, mLocalIdentifier));
-	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f, 0.f, mLocalIdentifier));
-	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f, 0.f, mLocalIdentifier));
-	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f, mLocalIdentifier));
-	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
-	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f, 0.f));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f, 0.f));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f, 0.f));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f, 0.f));
+	mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f)); // Alex - Rotate left action
+	mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f)); // Alex - Rotate right action
 
-	mActionBinding[Action::StartGrenade].action = derivedAction<Character>(CharacterGrenadeStarter(mLocalIdentifier));
-	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>(CharacterGrenadeLauncher(mLocalIdentifier));
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>(CharacterGrenadeStarter());
+	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>(CharacterGrenadeLauncher());
 
-	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mLocalIdentifier));
+	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger());
 }
 
 bool Player::isRealtimeAction(Action action)

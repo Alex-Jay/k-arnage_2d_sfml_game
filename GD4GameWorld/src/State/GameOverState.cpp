@@ -19,8 +19,8 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 	mGameOverText.setFont(font);
 	
 	// If one of the players dies, End game
-	if (context.playerOne->getMissionStatus() == Player::MissionStatus::MissionFailure ||
-		context.playerTwo->getMissionStatus() == Player::MissionStatus::MissionFailure)
+	if (context.playerOne->getMissionStatus() == Player::MissionStatus::MissionFailure/* ||
+		context.playerTwo->getMissionStatus() == Player::MissionStatus::MissionFailure)*/)
 	{
 		mGameOverText.setString("Game Over.");
 	}

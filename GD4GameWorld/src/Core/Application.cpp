@@ -14,8 +14,8 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 Application::Application()
 	: mWindow(sf::VideoMode(1024, 768), "K-ARNAGE", sf::Style::Close)
 	, mPlayerOne(0)
-	, mPlayerTwo(1)
-	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayerOne, mPlayerTwo, mMusic, mSounds))
+	//, mPlayerTwo(1)
+	, mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayerOne, /*mPlayerTwo,*/ mMusic, mSounds))
 	, mStatisticsNumFrames(0)
 {	
 	mWindow.setVerticalSyncEnabled(true);

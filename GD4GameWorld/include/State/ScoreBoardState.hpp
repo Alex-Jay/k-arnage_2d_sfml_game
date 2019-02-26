@@ -20,6 +20,6 @@ private:
 	sf::Sprite mBackgroundSprite;
 	sf::Text mScoreboardTitle;
 	sf::Text mPlayerOneScore;
-	sf::Text mPlayerTwoScore;
+	//sf::Text mPlayerTwoScore;
 	GUI::Container mGUIContainer;
 };

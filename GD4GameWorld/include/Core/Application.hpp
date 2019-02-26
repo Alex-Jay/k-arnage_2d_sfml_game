@@ -36,7 +36,7 @@ private:
 	TextureHolder mTextures;
 	FontHolder mFonts;
 	Player mPlayerOne;
-	Player mPlayerTwo;
+	//Player mPlayerTwo;
 	//PlayerManager mPlayerManager;
 
 	StateStack mStateStack;

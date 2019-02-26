@@ -1,7 +1,7 @@
 #pragma once
 #include "State.hpp"
-//#include "Player.hpp"
-#include "PlayerManager.hpp"
+#include "Player.hpp"
+//#include "PlayerManager.hpp"
 #include "Container.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
@@ -26,7 +26,7 @@ public:
 
 private:
 	void updateLabels();
-	void addButtonLabel(int index, float x, float y, const std::string& text, Context context);
+	void addButtonLabel(Player::Action action, /*float x,*/ float y, const std::string& text, Context context);
 
 
 private:

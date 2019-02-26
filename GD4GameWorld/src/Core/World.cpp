@@ -133,7 +133,7 @@ void World::incrementPlayerOneScore(unsigned int incBy)
 void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
-	mWorldView.setCenter(getCharacter(0)->getPosition());
+	mWorldView.setCenter(mPlayerCharacter->getPosition());
 
 	/*
 	Quick Alternative To:
@@ -143,10 +143,12 @@ void World::update(sf::Time dt)
 	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
 
-	for (Character* c : mPlayerCharacters)
-	{
-		c->setVelocity(0.f, 0.f);
-	}
+	mPlayerCharacter->setVelocity(0.f, 0.f);
+
+	//for (Character* c : mPlayerCharacters)
+	//{
+	//	c->setVelocity(0.f, 0.f);
+	//}
 
 	//mPlayerCharacter->setVelocity(0.f, 0.f);
 
@@ -341,7 +343,7 @@ bool World::hasAlivePlayer() const
 
 bool World::hasPlayerReachedEnd() const
 {
-	if (Character* character = getCharacter(1))
+	if (Character* character = mPlayerCharacter)
 		return !mWorldBounds.contains(character->getPosition());
 	else
 		return false;
