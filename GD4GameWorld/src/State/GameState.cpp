@@ -50,7 +50,7 @@ bool GameState::update(sf::Time dt)
 	{
 		// Set players' scores
 		getContext().playerOne->setScore(mWorld.getPlayerOneScore());
-		getContext().playerTwo->setScore(mWorld.getPlayerTwoScore());
+		//getContext().playerTwo->setScore(mWorld.getPlayerTwoScore());
 
 		// Set players' mission status
 		getContext().playerOne->setMissionStatus(Player::MissionStatus::MissionFailure);

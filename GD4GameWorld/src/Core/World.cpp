@@ -29,7 +29,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	  , mNumZombiesAlive(0)
 	  , mZombieHitDelay(sf::Time::Zero)
 	  , mZombieHitElapsedTime(sf::Time::Zero)
-	  , mPlayerOneCharacter(nullptr)
+	  , mPlayerCharacter(nullptr)
 	  //, mPlayerTwoCharacter(nullptr)
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
@@ -46,7 +46,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mDistortionEffect.setTextureMap(mTextures);
 
 	// Add Local Player on Start
-	mPlayerOneCharacter = addCharacter(0);
+	mPlayerCharacter = addCharacter(0);
 	//mPlayerTwoCharacter = addCharacter(1);
 }
 
@@ -124,16 +124,6 @@ unsigned int const World::getPlayerOneScore() const
 void World::incrementPlayerOneScore(unsigned int incBy)
 {
 	mPlayerOneScore += incBy;
-}
-
-unsigned int const World::getPlayerTwoScore() const
-{
-	return mPlayerTwoScore;
-}
-
-void World::incrementPlayerTwoScore(unsigned int incBy)
-{
-	mPlayerTwoScore += incBy;
 }
 
 #pragma endregion
@@ -345,8 +335,7 @@ void World::adaptPlayerVelocity()
 
 bool World::hasAlivePlayer() const
 {
-	//return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
-	return !mPlayerOneCharacter->isMarkedForRemoval();
+	return !mPlayerCharacter->isMarkedForRemoval();
 	/*return mPlayerCharacters.size() > 0;*/
 }
 
@@ -423,7 +412,7 @@ void World::spawnZombies(sf::Time dt)
 
 					std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 					enemy->setPosition(xPos, yPos);
-					enemy->setRotation(-mPlayerOneCharacter->getAngle());
+					enemy->setRotation(-mPlayerCharacter->getAngle());
 
 					if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 					{
@@ -647,9 +636,9 @@ bool matchesCategories(SceneNode::Pair& colliders, Category type1, Category type
 void World::handlePlayerCollision()
 {
 	// Map bound collision
-	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
+	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerCharacter->getPosition()))
 	{
-		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+		mPlayerCharacter->setPosition(mPlayerCharacter->getLastPosition());
 	}
 	//else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
 	//{
@@ -801,11 +790,11 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 				{
 					incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
 				}
-				// Increment Player 2 Score
-				else if (projectile.getProjectileId() == 1)
-				{
-					incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
-				}
+				//// Increment Player 2 Score
+				//else if (projectile.getProjectileId() == 1)
+				//{
+				//	incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
+				//}
 			}
 		}
 		projectile.destroy();

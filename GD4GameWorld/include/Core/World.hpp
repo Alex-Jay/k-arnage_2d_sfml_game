@@ -66,8 +66,8 @@ public:
 
 	unsigned int const getPlayerOneScore() const;
 	void incrementPlayerOneScore(unsigned int incBy);
-	unsigned int const getPlayerTwoScore() const;
-	void incrementPlayerTwoScore(unsigned int incBy);
+	//unsigned int const getPlayerTwoScore() const;
+	//void incrementPlayerTwoScore(unsigned int incBy);
 
 private:
 	void loadTextures();
@@ -138,8 +138,8 @@ private:
 	sf::FloatRect mWorldBounds;
 	sf::Vector2f mSpawnPosition;
 	float mScrollSpeed;
-	Character* mPlayerOneCharacter;
-	Character* mPlayerTwoCharacter;
+	Character* mPlayerCharacter;
+	//Character* mPlayerTwoCharacter;
 	std::vector<Character*> mPlayerCharacters;
 
 	std::vector<SpawnPoint> mEnemySpawnPoints;
@@ -163,5 +163,5 @@ private:
 	int mNumZombiesAlive;
 
 	unsigned int mPlayerOneScore;
-	unsigned int mPlayerTwoScore;
+	//unsigned int mPlayerTwoScore;
 };
