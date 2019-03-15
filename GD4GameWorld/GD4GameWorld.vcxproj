@@ -29,6 +29,7 @@
     <ClInclude Include="Include\Book\Component\Component.hpp" />
     <ClInclude Include="Include\Book\Component\Container.hpp" />
     <ClInclude Include="Include\Book\Component\Label.hpp" />
+    <ClInclude Include="Include\Book\Constant\Constants.hpp" />
     <ClInclude Include="Include\Book\Core\Application.hpp" />
     <ClInclude Include="Include\Book\Core\World.hpp" />
     <ClInclude Include="Include\Book\DataTable\DataTables.hpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="Include\Book\Structural\Category.hpp" />
     <ClInclude Include="Include\Book\Structural\Foreach.hpp" />
     <ClInclude Include="Include\Book\Structural\KeyBinding.hpp" />
+    <ClInclude Include="Include\Book\Structural\MapTiler.hpp" />
     <ClInclude Include="Include\Book\Structural\ResourceHolder.hpp" />
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
@@ -108,6 +110,7 @@
     <ClCompile Include="Source\State\StateStack.cpp" />
     <ClCompile Include="Source\State\TitleState.cpp" />
     <ClCompile Include="Source\Structural\KeyBinding.cpp" />
+    <ClCompile Include="Source\Structural\MapTiler.cpp" />
     <ClCompile Include="Source\Structural\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +174,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Michael\Desktop\NetworkingCode\gd4201819classcode\GD4GameWorld\Include;C:\Users\johnloane\Documents\SFML-2.5.0-windows-vc15-32-bit\SFML-2.5.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\college work\4th Year\C++\CA2\k-arnage_2d_sfml_game\GD4GameWorld\Include\Book\DataTable;E:\college work\4th Year\C++\CA2\k-arnage_2d_sfml_game\GD4GameWorld\Include\Book;C:\Users\Michael\Desktop\NetworkingCode\gd4201819classcode\GD4GameWorld\Include;C:\Users\johnloane\Documents\SFML-2.5.0-windows-vc15-32-bit\SFML-2.5.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\johnloane\Documents\SFML-2.5.0-windows-vc15-32-bit\SFML-2.5.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

@@ -10,8 +10,10 @@
 #include <vector>
 #include <functional>
 
-
+class Character;
+class Explosion;
 class Aircraft;
+class MapTileData;
 
 struct Direction
 {
@@ -23,6 +25,25 @@ struct Direction
 
 	float angle;
 	float distance;
+};
+
+struct CharacterData
+{
+	int hitpoints;
+	float speed;
+	float rotationSpeed;
+	float deathScale;
+	float moveScale;
+	Textures::ID texture;
+	Textures::ID moveAnimation;
+	int moveFrames;
+	Textures::ID deathAnimation;
+	int deathFrames;
+	sf::IntRect textureRect;
+	sf::IntRect deathRect;
+	sf::IntRect moveRect;
+	sf::Time fireInterval;
+	std::vector<Direction> directions;
 };
 
 struct AircraftData
@@ -57,10 +78,37 @@ struct ParticleData
 	sf::Time						lifetime;
 };
 
+struct MapTileData
+{
+	std::string mapFile;
+	sf::Vector2u tileSize;
+	Textures::ID texture;
+};
+
+struct ExplosionData
+{
+	int damage;
+	float radius;
+	int lifeTimeSeconds;
+	Textures::ID texture;
+	sf::IntRect textureRect;
+};
+
+struct ObstacleData
+{
+};
 
 std::vector<AircraftData>	initializeAircraftData();
 std::vector<ProjectileData>	initializeProjectileData();
 std::vector<PickupData>		initializePickupData();
 std::vector<ParticleData>	initializeParticleData();
+std::vector<MapTileData> initializeMapTileData();
+
+//std::vector<CharacterData> initializeCharacterData();
+//std::vector<ExplosionData> initializeExplosionData();
+//std::vector<ProjectileData> initializeProjectileData();
+//std::vector<PickupData> initializePickupData();
+//std::vector<ObstacleData> initializeObstacleData();
+
 
 #endif // BOOK_DATATABLES_HPP

@@ -228,6 +228,12 @@
     <ClInclude Include="Include\Book\Structural\Utility.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Book\Structural\MapTiler.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Constant\Constants.hpp">
+      <Filter>Header Files\Constant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl">
@@ -353,6 +359,9 @@
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
     <ClCompile Include="Source\Structural\Utility.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Structural\MapTiler.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
   </ItemGroup>
