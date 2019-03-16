@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DistortionEffect.hpp" />
     <ClInclude Include="Include\Book\Animation\Animation.hpp" />
     <ClInclude Include="Include\Book\Audio\MusicPlayer.hpp" />
     <ClInclude Include="Include\Book\Audio\SoundNode.hpp" />
@@ -75,6 +76,7 @@
     <None Include="Include\Book\Structural\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DistortionEffect.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="ShapeNode.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />

@@ -132,9 +132,6 @@
     <ClInclude Include="Include\Book\DataTable\DataTables.hpp">
       <Filter>Header Files\DataTable</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Book\Effect\Aircraft.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Book\Effect\BloomEffect.hpp">
       <Filter>Header Files\Effect</Filter>
     </ClInclude>
@@ -241,6 +238,12 @@
       <Filter>Header Files\Node</Filter>
     </ClInclude>
     <ClInclude Include="Obstacle.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="DistortionEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Effect\Aircraft.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
   </ItemGroup>
@@ -381,6 +384,9 @@
     </ClCompile>
     <ClCompile Include="Obstacle.cpp">
       <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="DistortionEffect.cpp">
+      <Filter>Source Files\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
