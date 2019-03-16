@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger.hpp" />
     <ClInclude Include="DistortionEffect.hpp" />
     <ClInclude Include="Include\Book\Animation\Animation.hpp" />
     <ClInclude Include="Include\Book\Audio\MusicPlayer.hpp" />
@@ -78,6 +79,7 @@
     <None Include="Include\Book\Structural\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DistortionEffect.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="ScoreBoardState.cpp" />

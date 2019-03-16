@@ -252,6 +252,9 @@
     <ClInclude Include="ScoreBoardState.hpp">
       <Filter>Header Files\State</Filter>
     </ClInclude>
+    <ClInclude Include="Debugger.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl">
@@ -399,6 +402,9 @@
     </ClCompile>
     <ClCompile Include="ScoreBoardState.cpp">
       <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files\Structural</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
