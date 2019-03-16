@@ -1,7 +1,7 @@
 #pragma once
 #include <Book/Entity.hpp>
-#include <Book/Command.hpp>
-#include <Book/CommandQueue.hpp>
+#include "Command/Command.hpp"
+#include "Command/CommandQueue.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include <SFML/Graphics/Sprite.hpp>
 

@@ -99,9 +99,6 @@
     <ClInclude Include="Include\Book\Audio\MusicPlayer.hpp">
       <Filter>Header Files\Audio</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Book\Audio\SoundNode.hpp">
-      <Filter>Header Files\Audio</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Book\Audio\SoundPlayer.hpp">
       <Filter>Header Files\Audio</Filter>
     </ClInclude>
@@ -136,9 +133,6 @@
       <Filter>Header Files\Effect</Filter>
     </ClInclude>
     <ClInclude Include="Include\Book\Effect\PostEffect.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Book\Effect\Projectile.hpp">
       <Filter>Header Files\Effect</Filter>
     </ClInclude>
     <ClInclude Include="Include\Book\Entity\Entity.hpp">
@@ -237,9 +231,6 @@
     <ClInclude Include="ShapeNode.hpp">
       <Filter>Header Files\Node</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Book\Effect\Aircraft.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="Xbox360Controller.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
@@ -254,6 +245,15 @@
     </ClInclude>
     <ClInclude Include="Include\Book\Effect\DistortionEffect.hpp">
       <Filter>Header Files\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Aircraft.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Projectile.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\SoundNode.hpp">
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 #ifndef BOOK_NETWORKNODE_HPP
 #define BOOK_NETWORKNODE_HPP
 
-#include <Book/SceneNode.hpp>
-#include <Book/NetworkProtocol.hpp>
+#include "Node/SceneNode.hpp"
+#include "Networking/NetworkProtocol.hpp"
 
 #include <queue>
 

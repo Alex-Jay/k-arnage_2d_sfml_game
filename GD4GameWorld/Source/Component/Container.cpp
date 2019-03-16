@@ -1,5 +1,5 @@
 #include <Book/Container.hpp>
-#include <Book/Foreach.hpp>
+#include "Structural/Foreach.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

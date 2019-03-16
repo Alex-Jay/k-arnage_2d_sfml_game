@@ -1,5 +1,5 @@
 #include <Book/GameOverState.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include <Book/Player.hpp>
 #include "Structural/ResourceHolder.hpp"
 

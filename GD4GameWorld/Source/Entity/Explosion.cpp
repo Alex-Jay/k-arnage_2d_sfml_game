@@ -1,10 +1,10 @@
 #include "Entity/Explosion.hpp"
 #include "DataTable/DataTables.hpp"
 #include <Book/Entity.hpp>
-#include <Book/Command.hpp>
+#include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
-#include <Book/Utility.hpp>
-#include <Book/CommandQueue.hpp>
+#include "Structural/Utility.hpp"
+#include "Command/CommandQueue.hpp"
 #include <Book/EmitterNode.hpp>
 #include "Structural/ResourceHolder.hpp"
 

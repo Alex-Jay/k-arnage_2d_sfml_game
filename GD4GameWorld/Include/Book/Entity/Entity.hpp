@@ -1,7 +1,7 @@
 #ifndef BOOK_ENTITY_HPP
 #define BOOK_ENTITY_HPP
 
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 
 
 class Entity : public SceneNode

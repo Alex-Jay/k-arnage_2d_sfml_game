@@ -1,7 +1,7 @@
 #ifndef BOOK_SPRITENODE_HPP
 #define BOOK_SPRITENODE_HPP
 
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 

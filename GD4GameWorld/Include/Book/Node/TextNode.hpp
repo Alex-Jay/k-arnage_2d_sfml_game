@@ -3,7 +3,7 @@
 
 #include "Structural/ResourceHolder.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>

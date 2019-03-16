@@ -1,5 +1,5 @@
 #include "ShapeNode.hpp"
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 
 #include "SFML/Graphics/RenderTarget.hpp"
 

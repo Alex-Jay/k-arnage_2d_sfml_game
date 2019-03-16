@@ -6,7 +6,7 @@
 #include <Book/KeyBinding.hpp>
 #include <Book/StateStack.hpp>
 #include <Book/MusicPlayer.hpp>
-#include <Book/SoundPlayer.hpp>
+#include "Audio/SoundPlayer.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

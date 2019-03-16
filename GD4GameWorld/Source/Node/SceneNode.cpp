@@ -1,7 +1,7 @@
-#include <Book/SceneNode.hpp>
-#include <Book/Command.hpp>
-#include <Book/Foreach.hpp>
-#include <Book/Utility.hpp>
+#include "Node/SceneNode.hpp"
+#include "Command/Command.hpp"
+#include "Structural/Foreach.hpp"
+#include "Structural/Utility.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>

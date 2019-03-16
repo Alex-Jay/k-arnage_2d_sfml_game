@@ -2,10 +2,10 @@
 #define BOOK_AIRCRAFT_HPP
 
 #include <Book/Entity.hpp>
-#include <Book/Command.hpp>
+#include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
-#include <Book/Projectile.hpp>
-#include <Book/TextNode.hpp>
+#include "Entity/Projectile.hpp"
+#include "Node/TextNode.hpp"
 #include <Book/Animation.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>

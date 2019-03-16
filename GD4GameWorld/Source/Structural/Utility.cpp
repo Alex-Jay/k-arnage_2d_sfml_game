@@ -1,4 +1,4 @@
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include <Book/Animation.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>

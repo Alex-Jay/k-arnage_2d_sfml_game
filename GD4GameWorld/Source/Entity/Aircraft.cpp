@@ -1,10 +1,10 @@
-#include <Book/Aircraft.hpp>
+#include "Entity/Aircraft.hpp"
 #include <Book/DataTables.hpp>
-#include <Book/Utility.hpp>
-#include <Book/Pickup.hpp>
-#include <Book/CommandQueue.hpp>
-#include <Book/SoundNode.hpp>
-#include <Book/NetworkNode.hpp>
+#include "Structural/Utility.hpp"
+#include "Entity/Pickup.hpp"
+#include "Command/CommandQueue.hpp"
+#include "Node/SoundNode.hpp"
+#include "Node/NetworkNode.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>

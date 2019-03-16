@@ -2,14 +2,14 @@
 #define BOOK_WORLD_HPP
 
 #include "Structural/ResourceHolder.hpp"
-#include <Book/SceneNode.hpp>
-#include <Book/Aircraft.hpp>
-#include <Book/CommandQueue.hpp>
-#include <Book/Command.hpp>
-#include <Book/Pickup.hpp>
-#include <Book/BloomEffect.hpp>
-#include <Book/SoundPlayer.hpp>
-#include <Book/NetworkProtocol.hpp>
+#include "Node/SceneNode.hpp"
+#include "Entity/Aircraft.hpp"
+#include "Command/CommandQueue.hpp"
+#include "Command/Command.hpp"
+#include "Entity/Pickup.hpp"
+#include "Effect/BloomEffect.hpp"
+#include "Audio/SoundPlayer.hpp"
+#include "Networking/NetworkProtocol.hpp"
 
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Node/SpriteNode.hpp"

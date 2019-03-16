@@ -3,7 +3,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Err.hpp>
 #include <SFML/System/Clock.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 
 
 // Frag File and tutorial from Here https://www.lucidarme.me/sfml-distorsion-shader/

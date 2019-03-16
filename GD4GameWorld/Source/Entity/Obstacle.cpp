@@ -1,7 +1,7 @@
 #include <Book/Category.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"
-#include <Book/Pickup.hpp>
+#include "Entity/Pickup.hpp"
 
 #include "Entity/Obstacle.hpp"
 #include "DataTable/DataTables.hpp"

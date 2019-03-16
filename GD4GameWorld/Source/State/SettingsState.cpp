@@ -1,5 +1,5 @@
 #include <Book/SettingsState.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>

@@ -2,7 +2,7 @@
 #define BOOK_PICKUP_HPP
 
 #include <Book/Entity.hpp>
-#include <Book/Command.hpp>
+#include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>

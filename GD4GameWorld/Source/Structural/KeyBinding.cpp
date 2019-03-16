@@ -1,5 +1,5 @@
 #include <Book/KeyBinding.hpp>
-#include <Book/Foreach.hpp>
+#include "Structural/Foreach.hpp"
 
 #include <string>
 #include <algorithm>

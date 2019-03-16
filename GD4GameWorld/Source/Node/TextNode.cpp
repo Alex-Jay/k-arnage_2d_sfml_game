@@ -1,5 +1,5 @@
-#include <Book/TextNode.hpp>
-#include <Book/Utility.hpp>
+#include "Node/TextNode.hpp"
+#include "Structural/Utility.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 

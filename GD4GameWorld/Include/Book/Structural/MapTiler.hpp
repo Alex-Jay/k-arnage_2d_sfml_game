@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Core/World.hpp"
 

@@ -1,8 +1,8 @@
-#include <Book/Pickup.hpp>
+#include "Entity/Pickup.hpp"
 #include <Book/DataTables.hpp>
 #include <Book/Category.hpp>
-#include <Book/CommandQueue.hpp>
-#include <Book/Utility.hpp>
+#include "Command/CommandQueue.hpp"
+#include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>

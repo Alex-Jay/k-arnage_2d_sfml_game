@@ -1,6 +1,6 @@
 #include <Book/Button.hpp>
-#include <Book/Utility.hpp>
-#include <Book/SoundPlayer.hpp>
+#include "Structural/Utility.hpp"
+#include "Audio/SoundPlayer.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Window/Event.hpp>

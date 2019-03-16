@@ -1,7 +1,7 @@
 //#include <Book/DataTables.hpp>
-#include <Book/Aircraft.hpp>
-#include <Book/Projectile.hpp>
-#include <Book/Pickup.hpp>
+#include "Entity/Aircraft.hpp"
+#include "Entity/Projectile.hpp"
+#include "Entity/Pickup.hpp"
 #include <Book/Particle.hpp>
 #include "Structural/MapTiler.hpp"
 #include "Entity/Explosion.hpp"

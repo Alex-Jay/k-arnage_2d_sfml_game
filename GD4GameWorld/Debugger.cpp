@@ -1,5 +1,5 @@
 #include "Debugger.hpp"
-#include <Book/Utility.hpp> // Contains Windows API handle to use GotoXY()
+#include "Structural/Utility.hpp" // Contains Windows API handle to use GotoXY()
 
 Debugger& Debugger::GetInstance()
 {

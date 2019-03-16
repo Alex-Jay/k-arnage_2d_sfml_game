@@ -1,7 +1,7 @@
 #ifndef BOOK_EMITTERNODE_HPP
 #define BOOK_EMITTERNODE_HPP
 
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 #include <Book/Particle.hpp>
 
 

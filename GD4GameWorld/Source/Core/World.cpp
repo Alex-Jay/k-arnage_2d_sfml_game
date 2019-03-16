@@ -1,17 +1,17 @@
-#include <Book/Projectile.hpp>
-#include <Book/Pickup.hpp>
-#include <Book/Foreach.hpp>
-#include <Book/TextNode.hpp>
-#include <Book/ParticleNode.hpp>
-#include <Book/SoundNode.hpp>
-#include <Book/NetworkNode.hpp>
-#include <Book/Utility.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-
+#include "Entity/Projectile.hpp"
+#include "Entity/Pickup.hpp"
+#include "Structural/Foreach.hpp"
+#include "Node/TextNode.hpp"
+#include "Node/ParticleNode.hpp"
+#include "Node/SoundNode.hpp"
+#include "Node/NetworkNode.hpp"
+#include "Structural/Utility.hpp"
 #include "Core/World.hpp"
 #include "Entity/Obstacle.hpp"
 #include "Constant/Constants.hpp"
 #include "Structural/MapTiler.hpp"
+
+#include <SFML/Graphics/RenderTarget.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -90,19 +90,22 @@ void World::update(sf::Time dt)
 
 void World::draw()
 {
-	if (PostEffect::isSupported())
-	{
-		mSceneTexture.clear();
-		mSceneTexture.setView(mWorldView);
-		mSceneTexture.draw(mSceneGraph);
-		mSceneTexture.display();
-		mBloomEffect.apply(mSceneTexture, mTarget);
-	}
-	else
-	{
-		mTarget.setView(mWorldView);
-		mTarget.draw(mSceneGraph);
-	}
+	//if (PostEffect::isSupported())
+	//{
+	//	mSceneTexture.clear();
+	//	mSceneTexture.setView(mWorldView);
+	//	mSceneTexture.draw(mSceneGraph);
+	//	mSceneTexture.display();
+	//	mBloomEffect.apply(mSceneTexture, mTarget);
+	//}
+	//else
+	//{
+	//	mTarget.setView(mWorldView);
+	//	mTarget.draw(mSceneGraph);
+	//}
+
+	mTarget.setView(mWorldView);
+	mTarget.draw(mSceneGraph);
 }
 
 CommandQueue& World::getCommandQueue()
@@ -328,7 +331,7 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	// Prepare the tiled background
+	//// Prepare the tiled background
 	sf::Texture& jungleTexture = mTextures.get(Textures::MapTiles);
 	jungleTexture.setRepeated(true);
 
@@ -342,6 +345,12 @@ void World::buildScene()
 	mSceneLayers[Background]->attachChild(std::move(jungleSprite));
 
 
+	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+	//mWorldBounds = map->getMapBounds();
+	//mWorldBoundsBuffer = map->getTileSize().x;
+
+	//mWaterTexture = mTextures.get(Textures::ID::Water);
+	//mWaterTexture.setRepeated(true);
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));

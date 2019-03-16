@@ -1,6 +1,6 @@
 #include <Book/MenuState.hpp>
 #include <Book/Button.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include <Book/MusicPlayer.hpp>
 #include "Structural/ResourceHolder.hpp"
 

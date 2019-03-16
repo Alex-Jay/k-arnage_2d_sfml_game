@@ -1,5 +1,5 @@
 #include <Book/Application.hpp>
-#include <Book/Utility.hpp>
+#include "Structural/Utility.hpp"
 #include <Book/State.hpp>
 #include <Book/StateIdentifiers.hpp>
 #include <Book/TitleState.hpp>

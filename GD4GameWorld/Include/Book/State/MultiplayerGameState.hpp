@@ -5,7 +5,7 @@
 #include "Core/World.hpp"
 #include <Book/Player.hpp>
 #include <Book/GameServer.hpp>
-#include <Book/NetworkProtocol.hpp>
+#include "Networking/NetworkProtocol.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>

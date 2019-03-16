@@ -1,7 +1,7 @@
 #pragma once
 #include "Structural/ResourceHolder.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 
 class ShapeNode : public SceneNode

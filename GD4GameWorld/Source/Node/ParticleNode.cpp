@@ -1,5 +1,5 @@
-#include <Book/ParticleNode.hpp>
-#include <Book/Foreach.hpp>
+#include "Node/ParticleNode.hpp"
+#include "Structural/Foreach.hpp"
 #include <Book/DataTables.hpp>
 #include "Structural/ResourceHolder.hpp"
 

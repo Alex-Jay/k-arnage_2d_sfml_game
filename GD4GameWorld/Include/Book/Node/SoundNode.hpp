@@ -1,7 +1,7 @@
 #ifndef BOOK_SOUNDNODE_HPP
 #define BOOK_SOUNDNODE_HPP
 
-#include <Book/SceneNode.hpp>
+#include "Node/SceneNode.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 
 
