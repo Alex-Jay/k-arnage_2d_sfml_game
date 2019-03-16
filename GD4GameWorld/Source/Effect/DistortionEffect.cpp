@@ -1,4 +1,4 @@
-#include "DistortionEffect.hpp"
+#include "Effect/DistortionEffect.hpp"
 #include <iostream>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Err.hpp>
@@ -19,7 +19,7 @@ DistortionEffect::DistortionEffect()
 		throw std::runtime_error("Failed to load Media/Shaders/Distortion.frag");
 	}
 
-	mShaders.load(Shaders::AddPass, "Media/Shaders/Fullpass.vert", "Media/Shaders/Add.frag");
+	//mShaders.load(Shaders::AddPass, "Media/Shaders/Fullpass.vert", "Media/Shaders/Add.frag");
 }
 
 void DistortionEffect::setTextureMap(const TextureHolder & textures)
@@ -107,7 +107,7 @@ void DistortionEffect::distort(sf::RenderTexture& output)
 
 void DistortionEffect::add(const sf::RenderTexture& source, const sf::RenderTexture& distort, sf::RenderTarget& output)
 {
-	sf::Shader& adder = mShaders.get(Shaders::AddPass);
+	sf::Shader& adder = mShaders.get(Shaders::ID::AddPass);
 
 	adder.setUniform("source", source.getTexture());
 	adder.setUniform("distort", distort.getTexture());

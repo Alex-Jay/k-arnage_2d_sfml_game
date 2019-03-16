@@ -1,6 +1,6 @@
 #pragma once
-#include <Book/ResourceHolder.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceHolder.hpp"
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/SceneNode.hpp>
 #include "SFML/Graphics/RectangleShape.hpp"
 

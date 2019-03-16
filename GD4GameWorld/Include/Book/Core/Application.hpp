@@ -1,8 +1,8 @@
 #ifndef BOOK_APPLICATION_HPP
 #define BOOK_APPLICATION_HPP
 
-#include <Book/ResourceHolder.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceHolder.hpp"
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/KeyBinding.hpp>
 #include <Book/StateStack.hpp>
 #include <Book/MusicPlayer.hpp>

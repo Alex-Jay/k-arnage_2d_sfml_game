@@ -1,4 +1,3 @@
-#include <Book/World.hpp>
 #include <Book/Projectile.hpp>
 #include <Book/Pickup.hpp>
 #include <Book/Foreach.hpp>
@@ -8,6 +7,11 @@
 #include <Book/NetworkNode.hpp>
 #include <Book/Utility.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
+#include "Core/World.hpp"
+#include "Entity/Obstacle.hpp"
+#include "Constant/Constants.hpp"
+#include "Structural/MapTiler.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -24,8 +28,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 , mSceneGraph()
 , mSceneLayers()
 , mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
-, mSpawnPosition(mWorldView.getSize().x / 2.f, mWorldBounds.height - mWorldView.getSize().y / 2.f)
-, mScrollSpeed(-50.f)
+, mSpawnPosition(mWorldView.getCenter())
+, mScrollSpeed(0.f) //TODO REMOVE SCROLL SPEED
 , mScrollSpeedCompensation(1.f)
 , mPlayerAircrafts()
 , mEnemySpawnPoints()
@@ -67,7 +71,7 @@ void World::update(sf::Time dt)
 	adaptPlayerVelocity();
 
 	// Collision detection and response (may destroy entities)
-	handleCollisions();
+	handleCollisions(dt);
 
 	// Remove aircrafts that were destroyed (World::removeWrecks() only destroys the entities, not the pointers in mPlayerAircraft)
 	auto firstToRemove = std::remove_if(mPlayerAircrafts.begin(), mPlayerAircrafts.end(), std::mem_fn(&Aircraft::isMarkedForRemoval));
@@ -178,10 +182,17 @@ bool World::hasPlayerReachedEnd() const
 void World::loadTextures()
 {
 	mTextures.load(Textures::Entities, "Media/Textures/Entities.png");
-	mTextures.load(Textures::Jungle, "Media/Textures/Jungle.png");
 	mTextures.load(Textures::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(Textures::Particle, "Media/Textures/Particle.png");
-	mTextures.load(Textures::FinishLine, "Media/Textures/FinishLine.png");
+	mTextures.load(Textures::Water, "Media/Textures/Water.jpg");
+	mTextures.load(Textures::PlayerMove, "Media/Textures/PlayerMove.png");
+	mTextures.load(Textures::PlayerDeath, "Media/Textures/Blood.png");
+	mTextures.load(Textures::ZombieMove, "Media/Textures/ZombieWalk.png");
+	mTextures.load(Textures::ZombieDeath, "Media/Textures/ZombieDeath.png");
+	mTextures.load(Textures::Grenade, "Media/Textures/Grenade.png");
+	mTextures.load(Textures::MapTiles, "Media/Textures/Tiles.png");
+	mTextures.load(Textures::Crate, "Media/Textures/Crate.png");
+	mTextures.load(Textures::DistortionMap, "Media/Textures/distortion_map.png");
 }
 
 void World::adaptPlayerPosition()
@@ -237,7 +248,7 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 	}
 }
 
-void World::handleCollisions()
+void World::handleCollisions(sf::Time dt)
 {
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
@@ -318,7 +329,7 @@ void World::buildScene()
 	}
 
 	// Prepare the tiled background
-	sf::Texture& jungleTexture = mTextures.get(Textures::Jungle);
+	sf::Texture& jungleTexture = mTextures.get(Textures::MapTiles);
 	jungleTexture.setRepeated(true);
 
 	float viewHeight = mWorldView.getSize().y;
@@ -330,12 +341,7 @@ void World::buildScene()
 	jungleSprite->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight);
 	mSceneLayers[Background]->attachChild(std::move(jungleSprite));
 
-	// Add the finish line to the scene
-	sf::Texture& finishTexture = mTextures.get(Textures::FinishLine);
-	std::unique_ptr<SpriteNode> finishSprite(new SpriteNode(finishTexture));
-	finishSprite->setPosition(0.f, -76.f);
-	mFinishSprite = finishSprite.get();
-	mSceneLayers[Background]->attachChild(std::move(finishSprite));
+
 
 	// Add particle node to the scene
 	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));

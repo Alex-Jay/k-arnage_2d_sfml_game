@@ -1,7 +1,7 @@
 #include <Book/ParticleNode.hpp>
 #include <Book/Foreach.hpp>
 #include <Book/DataTables.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>

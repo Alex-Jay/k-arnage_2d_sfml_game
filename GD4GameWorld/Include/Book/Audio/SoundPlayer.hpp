@@ -1,8 +1,8 @@
 #ifndef BOOK_SOUNDPLAYER_HPP
 #define BOOK_SOUNDPLAYER_HPP
 
-#include <Book/ResourceHolder.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceHolder.hpp"
+#include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/NonCopyable.hpp>

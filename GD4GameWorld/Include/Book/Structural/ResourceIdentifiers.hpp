@@ -16,24 +16,25 @@ namespace Textures
 	enum ID
 	{
 		Entities,
-		Jungle,
+		Water,
 		TitleScreen,
 		Buttons,
 		Explosion,
+		Grenade,
 		Particle,
-		FinishLine,
+		PlayerMove,
+		PlayerDeath,
+		ZombieMove,
+		ZombieDeath,
+		MapTiles,
+		Crate,
+		DistortionMap
 	};
 }
 
 namespace Shaders
 {
-	enum ID
-	{
-		BrightnessPass,
-		DownSamplePass,
-		GaussianBlurPass,
-		AddPass,
-	};
+	enum class ID { BrightnessPass, DownSamplePass, GaussianBlurPass, AddPass, Distortion };
 }
 
 namespace Fonts
@@ -55,6 +56,7 @@ namespace SoundEffect
 		LaunchMissile,
 		CollectPickup,
 		Button,
+		Scream,
 	};
 }
 

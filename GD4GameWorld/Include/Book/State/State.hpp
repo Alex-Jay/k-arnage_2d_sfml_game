@@ -2,7 +2,7 @@
 #define BOOK_STATE_HPP
 
 #include <Book/StateIdentifiers.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>

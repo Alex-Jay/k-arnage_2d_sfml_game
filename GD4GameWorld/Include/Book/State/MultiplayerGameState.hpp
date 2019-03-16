@@ -2,7 +2,7 @@
 #define BOOK_MULTIPLAYERGAMESTATE_HPP
 
 #include <Book/State.hpp>
-#include <Book/World.hpp>
+#include "Core/World.hpp"
 #include <Book/Player.hpp>
 #include <Book/GameServer.hpp>
 #include <Book/NetworkProtocol.hpp>

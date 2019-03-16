@@ -1,11 +1,12 @@
-#include "Obstacle.hpp"
-#include "DataTables.hpp"
 #include <Book/Category.hpp>
 #include <Book/Utility.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 #include <Book/Pickup.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 
+#include "Entity/Obstacle.hpp"
+#include "DataTable/DataTables.hpp"
+
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 //Mike - Obstacle Class

@@ -2,8 +2,8 @@
 #define BOOK_LABEL_HPP
 
 #include <Book/Component.hpp>
-#include <Book/ResourceIdentifiers.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/Text.hpp>
 

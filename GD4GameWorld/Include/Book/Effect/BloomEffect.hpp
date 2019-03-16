@@ -2,8 +2,8 @@
 #define BOOK_BLOOMEFFECT_HPP
 
 #include <Book/PostEffect.hpp>
-#include <Book/ResourceIdentifiers.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Shader.hpp>

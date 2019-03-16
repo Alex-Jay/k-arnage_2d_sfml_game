@@ -3,7 +3,7 @@
 
 #include <Book/State.hpp>
 #include <Book/StateIdentifiers.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>

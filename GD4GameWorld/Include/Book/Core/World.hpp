@@ -1,10 +1,8 @@
 #ifndef BOOK_WORLD_HPP
 #define BOOK_WORLD_HPP
 
-#include <Book/ResourceHolder.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceHolder.hpp"
 #include <Book/SceneNode.hpp>
-#include <Book/SpriteNode.hpp>
 #include <Book/Aircraft.hpp>
 #include <Book/CommandQueue.hpp>
 #include <Book/Command.hpp>
@@ -12,6 +10,11 @@
 #include <Book/BloomEffect.hpp>
 #include <Book/SoundPlayer.hpp>
 #include <Book/NetworkProtocol.hpp>
+
+#include "Structural/ResourceIdentifiers.hpp"
+#include "Node/SpriteNode.hpp"
+#include "Structural/MapTiler.hpp"
+#include "Effect/DistortionEffect.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -31,6 +34,18 @@ class NetworkNode;
 
 class World : private sf::NonCopyable
 {
+private:
+	enum CollisionType
+	{
+		Character_Character,
+		Player_Pickup,
+		Character_Obstacle,
+		Projectile_Obstacle,
+		Projectile_Character,
+		Character_Explosion,
+		Default
+	};
+
 	public:
 											World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds, bool networked = false);
 		void								update(sf::Time dt);
@@ -57,12 +72,25 @@ class World : private sf::NonCopyable
 		void								createPickup(sf::Vector2f position, Pickup::Type type);
 		bool								pollGameAction(GameActions::Action& out);
 
+		sf::Time getZombieHitDelay();
+		void setZombieHitDelay(sf::Time delay);
+
+		sf::Time getZombieHitElapsedTime();
+		void incrementZombieHitElapsedTime(sf::Time dt);
+		void resetZombieHitElapsedTime();
+		sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
+		int getAliveZombieCount();
+		void setAliveZombieCount(int count);
+
+		unsigned int const getPlayerOneScore() const;
+		void incrementPlayerOneScore(unsigned int incBy);
+		unsigned int const getPlayerTwoScore() const;
+		void incrementPlayerTwoScore(unsigned int incBy);
 
 	private:
 		void								loadTextures();
 		void								adaptPlayerPosition();
 		void								adaptPlayerVelocity();
-		void								handleCollisions();
 		void								updateSounds();
 
 		void								buildScene();
@@ -71,6 +99,20 @@ class World : private sf::NonCopyable
 		void								destroyEntitiesOutsideView();
 		void								guideMissiles();
 
+		void SpawnObstacles();
+		void handlePlayerCollision();
+		void handleCollisions(sf::Time dt);
+		void handleCharacterCollisions(SceneNode::Pair& pair);
+		void handleObstacleCollisions(SceneNode::Pair& pair);
+		void handleProjectileCollisions(SceneNode::Pair& pair);
+		void handlePickupCollisions(SceneNode::Pair& pair);
+		void handleExplosionCollisions(SceneNode::Pair& pair);
+		CollisionType GetCollisionType(SceneNode::Pair& pair);
+
+		void spawnZombies(sf::Time dt);
+
+		void StartZombieSpawnTimer(sf::Time dt);
+		void guideZombies();
 
 	private:
 		enum Layer
@@ -122,6 +164,31 @@ class World : private sf::NonCopyable
 		bool								mNetworkedWorld;
 		NetworkNode*						mNetworkNode;
 		SpriteNode*							mFinishSprite;
+
+		//sf::RenderTexture mWaterSceneTexture;
+		//TextNode* mScoreText;
+		//DistortionEffect mDistortionEffect;
+
+		//Character* mPlayerOneCharacter;
+		//Character* mPlayerTwoCharacter;
+		//std::vector<Character*> mPlayerCharacters;
+
+		bool mZombieSpawnTimerStarted{};
+
+		sf::Time mZombieSpawnTimer;
+		sf::Time mZombieHitDelay;
+		sf::Time mZombieHitElapsedTime;
+
+		//sf::Texture mWaterTexture;
+		//SpriteNode mWaterSprite;
+
+		int mWorldBoundsBuffer;
+		int mZombieSpawnTime;
+		int mNumZombiesSpawn;
+		int mNumZombiesAlive;
+
+		unsigned int mPlayerOneScore;
+		unsigned int mPlayerTwoScore;
 };
 
 #endif // BOOK_WORLD_HPP

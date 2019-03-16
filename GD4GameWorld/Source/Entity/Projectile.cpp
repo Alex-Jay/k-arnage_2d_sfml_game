@@ -2,7 +2,7 @@
 #include <Book/EmitterNode.hpp>
 #include <Book/DataTables.hpp>
 #include <Book/Utility.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

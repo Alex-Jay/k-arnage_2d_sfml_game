@@ -2,7 +2,7 @@
 #include <Book/Button.hpp>
 #include <Book/Utility.hpp>
 #include <Book/MusicPlayer.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

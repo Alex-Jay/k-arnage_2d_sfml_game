@@ -3,9 +3,9 @@
 #define BOOK_BUTTON_HPP
 
 #include <Book/Component.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/State.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>

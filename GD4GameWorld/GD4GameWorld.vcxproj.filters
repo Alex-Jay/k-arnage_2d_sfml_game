@@ -237,12 +237,6 @@
     <ClInclude Include="ShapeNode.hpp">
       <Filter>Header Files\Node</Filter>
     </ClInclude>
-    <ClInclude Include="Obstacle.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="DistortionEffect.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Book\Effect\Aircraft.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
@@ -254,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="Debugger.hpp">
       <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Obstacle.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Effect\DistortionEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,12 +391,6 @@
     <ClCompile Include="ShapeNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="Obstacle.cpp">
-      <Filter>Source Files\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="DistortionEffect.cpp">
-      <Filter>Source Files\Effect</Filter>
-    </ClCompile>
     <ClCompile Include="Xbox360Controller.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
@@ -405,6 +399,12 @@
     </ClCompile>
     <ClCompile Include="Debugger.cpp">
       <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity\Obstacle.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect\DistortionEffect.cpp">
+      <Filter>Source Files\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

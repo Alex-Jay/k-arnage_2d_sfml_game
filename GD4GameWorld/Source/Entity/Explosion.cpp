@@ -2,11 +2,11 @@
 #include "DataTable/DataTables.hpp"
 #include <Book/Entity.hpp>
 #include <Book/Command.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/Utility.hpp>
 #include <Book/CommandQueue.hpp>
 #include <Book/EmitterNode.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <iostream>

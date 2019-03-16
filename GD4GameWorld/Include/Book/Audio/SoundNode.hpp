@@ -2,7 +2,7 @@
 #define BOOK_SOUNDNODE_HPP
 
 #include <Book/SceneNode.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 
 
 class SoundPlayer;

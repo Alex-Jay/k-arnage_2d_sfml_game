@@ -1,7 +1,7 @@
 #ifndef BOOK_DATATABLES_HPP
 #define BOOK_DATATABLES_HPP
 
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/Color.hpp>

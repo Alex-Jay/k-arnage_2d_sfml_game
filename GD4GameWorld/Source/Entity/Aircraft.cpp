@@ -5,7 +5,7 @@
 #include <Book/CommandQueue.hpp>
 #include <Book/SoundNode.hpp>
 #include <Book/NetworkNode.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

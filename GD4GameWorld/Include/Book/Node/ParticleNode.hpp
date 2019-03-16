@@ -2,7 +2,7 @@
 #define BOOK_PARTICLENODE_HPP
 
 #include <Book/SceneNode.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/Particle.hpp>
 
 #include <SFML/Graphics/VertexArray.hpp>

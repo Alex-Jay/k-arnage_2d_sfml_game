@@ -3,7 +3,7 @@
 #include <Book/Category.hpp>
 #include <Book/CommandQueue.hpp>
 #include <Book/Utility.hpp>
-#include <Book/ResourceHolder.hpp>
+#include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 

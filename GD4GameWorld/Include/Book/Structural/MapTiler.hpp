@@ -7,8 +7,8 @@
 #include <vector>
 #include <sstream>
 #include <Book/SceneNode.hpp>
-#include <Book/ResourceIdentifiers.hpp>
-#include <Book/World.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
+#include "Core/World.hpp"
 
 //Mike
 

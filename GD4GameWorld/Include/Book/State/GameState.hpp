@@ -2,7 +2,7 @@
 #define BOOK_GAMESTATE_HPP
 
 #include <Book/State.hpp>
-#include <Book/World.hpp>
+#include "Core/World.hpp"
 #include <Book/Player.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>

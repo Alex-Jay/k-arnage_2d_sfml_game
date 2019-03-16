@@ -1,6 +1,6 @@
 #include "Structural/MapTiler.hpp"
-#include <Book/ResourceHolder.hpp>
-#include "DataTables.hpp"
+#include "Structural/ResourceHolder.hpp"
+#include "DataTable/DataTables.hpp"
 
 
 //Mike Map Tiler Class, following tutorials from below

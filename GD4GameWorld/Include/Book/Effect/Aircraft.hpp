@@ -3,7 +3,7 @@
 
 #include <Book/Entity.hpp>
 #include <Book/Command.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/Projectile.hpp>
 #include <Book/TextNode.hpp>
 #include <Book/Animation.hpp>

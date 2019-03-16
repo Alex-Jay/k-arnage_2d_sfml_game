@@ -1,6 +1,6 @@
 #pragma once
 #include <Book/Entity.hpp>
-#include <Book/ResourceIdentifiers.hpp>
+#include "Structural/ResourceIdentifiers.hpp"
 #include <Book/SoundNode.hpp>
 #include <Book/Animation.hpp>
 #include "SFML/Graphics/Sprite.hpp"
