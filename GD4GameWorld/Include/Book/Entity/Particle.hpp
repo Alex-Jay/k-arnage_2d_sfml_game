@@ -10,7 +10,7 @@ struct Particle
 {
 	enum Type
 	{
-		Propellant,
+		Exhaust,
 		Smoke,
 		ParticleCount
 	};

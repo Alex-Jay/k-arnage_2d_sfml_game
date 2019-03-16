@@ -23,6 +23,7 @@ MapTiler::MapTiler(MapID type, TextureHolder& textures)
 	  , mMapWidth(0)
 	  , mMapHeight(-1)
 {
+
 	if (mMapFile.is_open())
 	{
 		populateMap();

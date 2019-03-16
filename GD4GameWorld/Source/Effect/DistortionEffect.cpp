@@ -19,7 +19,7 @@ DistortionEffect::DistortionEffect()
 		throw std::runtime_error("Failed to load Media/Shaders/Distortion.frag");
 	}
 
-	//mShaders.load(Shaders::AddPass, "Media/Shaders/Fullpass.vert", "Media/Shaders/Add.frag");
+	mShaders.load(Shaders::ID::AddPass, "Media/Shaders/Fullpass.vert", "Media/Shaders/Add.frag");
 }
 
 void DistortionEffect::setTextureMap(const TextureHolder & textures)

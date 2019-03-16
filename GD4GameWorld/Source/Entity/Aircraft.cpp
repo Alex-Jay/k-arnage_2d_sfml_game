@@ -259,7 +259,7 @@ void Aircraft::updateMovementPattern(sf::Time dt)
 		}
 
 		// Compute velocity from direction
-		float radians = toRadian(directions[mDirectionIndex].angle + 90.f);
+		float radians = toRadians(directions[mDirectionIndex].angle + 90.f);
 		float vx = getMaxSpeed() * std::cos(radians);
 		float vy = getMaxSpeed() * std::sin(radians);
 
@@ -364,7 +364,7 @@ void Aircraft::updateTexts()
 	if (isDestroyed())
 		mHealthDisplay->setString("");
 	else
-		mHealthDisplay->setString(toString(getHitpoints()) + " HP");
+		mHealthDisplay->setString(getHitpoints() + " HP");
 	mHealthDisplay->setPosition(0.f, 50.f);
 	mHealthDisplay->setRotation(-getRotation());
 
@@ -374,7 +374,7 @@ void Aircraft::updateTexts()
 		if (mMissileAmmo == 0 || isDestroyed())
 			mMissileDisplay->setString("");
 		else
-			mMissileDisplay->setString("M: " + toString(mMissileAmmo));
+			mMissileDisplay->setString("M: " + mMissileAmmo);
 	}
 }
 

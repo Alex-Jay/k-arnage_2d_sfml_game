@@ -57,11 +57,11 @@ const float APPROACHRATE = 200;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ COLOUR CONSTANTS ++++++++++++++++++
-const sf::Uint32 BLACK = 0x000000ff;
-const sf::Uint32 RED = 0Xb20000ff;
-const sf::Uint32 GREEN = 0X008432ff;
-const sf::Uint32 BLUE = 0X0056adff;
-const sf::Uint32 ORANGE = 0Xffa100ff;
+const int BLACK = 0x000000ff;
+const int RED = 0Xb20000ff;
+const int GREEN = 0X008432ff;
+const int BLUE = 0X0056adff;
+const int ORANGE = 0Xffa100ff;
 
 
 //+++++++++++ CONTROLLER CONSTANS ++++++++++++++++++

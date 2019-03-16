@@ -1,5 +1,6 @@
 #include "Entity/Projectile.hpp"
 #include "Entity/Pickup.hpp"
+#include "Entity/Explosion.hpp"
 #include "Structural/Foreach.hpp"
 #include "Node/TextNode.hpp"
 #include "Node/ParticleNode.hpp"
@@ -19,32 +20,40 @@
 
 
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds, bool networked)
-: mTarget(outputTarget)
-, mSceneTexture()
-, mWorldView(outputTarget.getDefaultView())
-, mTextures() 
-, mFonts(fonts)
-, mSounds(sounds)
-, mSceneGraph()
-, mSceneLayers()
-, mWorldBounds(0.f, 0.f, mWorldView.getSize().x, 5000.f)
-, mSpawnPosition(mWorldView.getCenter())
-, mScrollSpeed(0.f) //TODO REMOVE SCROLL SPEED
-, mScrollSpeedCompensation(1.f)
-, mPlayerAircrafts()
-, mEnemySpawnPoints()
-, mActiveEnemies()
-, mNetworkedWorld(networked)
-, mNetworkNode(nullptr)
-, mFinishSprite(nullptr)
+	: mTarget(outputTarget)
+	, mWorldView(outputTarget.getDefaultView())
+	, mFonts(fonts)
+	, mSounds(sounds)
+	, mSceneLayers()
+	, mSpawnPosition(mWorldView.getCenter())
+	, mScrollSpeed(0.f)
+	, mZombieSpawnTime(-1)
+	, mNumZombiesSpawn(2)
+	, mNumZombiesAlive(0)
+	, mZombieHitDelay(sf::Time::Zero)
+	, mZombieHitElapsedTime(sf::Time::Zero)
+	//, mPlayerOneCharacter(nullptr)
+	//, mPlayerTwoCharacter(nullptr)
+	, mNetworkedWorld(networked)
+	, mNetworkNode(nullptr)
+
 {
 	mSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+	mWaterSceneTexture.create(mTarget.getSize().x, mTarget.getSize().y);
+	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
 	buildScene();
 
+	//Sets the Distortion shaders texture
+	mDistortionEffect.setTextureMap(mTextures);
+
 	// Prepare the view
-	mWorldView.setCenter(mSpawnPosition);
+	//mWorldView.setCenter(mSpawnPosition);
+
+		// Add Local Player on Start
+	//mPlayerOneCharacter = addCharacter(0);
+	//mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::setWorldScrollCompensation(float compensation)
@@ -54,21 +63,22 @@ void World::setWorldScrollCompensation(float compensation)
 
 void World::update(sf::Time dt)
 {
-	// Scroll the world, reset player velocity
-	mWorldView.move(0.f, mScrollSpeed * dt.asSeconds() * mScrollSpeedCompensation);	
+	mWorldView.setCenter(getAircraft(1)->getPosition());
+
+	handlePlayerCollision();
 
 	FOREACH(Aircraft* a, mPlayerAircrafts)
 		a->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide missiles
 	destroyEntitiesOutsideView();
-	guideMissiles();
+	guideZombies();
 
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
 
-	adaptPlayerVelocity();
+	//adaptPlayerVelocity();
 
 	// Collision detection and response (may destroy entities)
 	handleCollisions(dt);
@@ -79,33 +89,49 @@ void World::update(sf::Time dt)
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
-	spawnEnemies();
+	spawnZombies(dt);
 
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
 	adaptPlayerPosition();
 
 	updateSounds();
+	//spawnZombies(dt);
 }
 
 void World::draw()
 {
-	//if (PostEffect::isSupported())
-	//{
-	//	mSceneTexture.clear();
-	//	mSceneTexture.setView(mWorldView);
-	//	mSceneTexture.draw(mSceneGraph);
-	//	mSceneTexture.display();
-	//	mBloomEffect.apply(mSceneTexture, mTarget);
-	//}
-	//else
-	//{
-	//	mTarget.setView(mWorldView);
-	//	mTarget.draw(mSceneGraph);
-	//}
+	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
+	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
+	if (PostEffect::isSupported())
+	{
 
-	mTarget.setView(mWorldView);
-	mTarget.draw(mSceneGraph);
+		mWaterSceneTexture.clear();
+		//mSceneTexture.clear();
+
+		//Apply distortion Shader to SpriteNode(Water) Background, this is seperated from the sceneGraph
+		mWaterSceneTexture.setView(mWorldView);
+		mWaterSceneTexture.draw(mWaterSprite);
+		mWaterSceneTexture.display();
+		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
+
+		//Apply BloomEffect to the sceneGraph that does not contain the water background.
+		//mSceneTexture.setView(mWorldView);
+		//mSceneTexture.draw(mSceneGraph);
+		//mSceneTexture.display();
+		//mBloomEffect.apply(mSceneTexture, mTarget);
+
+
+		//Draw Scenegraph on top of water background with no bloom effect.
+		mTarget.setView(mWorldView);
+		mTarget.draw(mSceneGraph);
+	}
+	else
+	{
+
+		mTarget.setView(mWorldView);
+		mTarget.draw(mSceneGraph);
+	}
 }
 
 CommandQueue& World::getCommandQueue()
@@ -176,9 +202,9 @@ bool World::hasAlivePlayer() const
 
 bool World::hasPlayerReachedEnd() const
 {
-	if (Aircraft* aircraft = getAircraft(1))
-		return !mWorldBounds.contains(aircraft->getPosition());
-	else 
+	//if (Aircraft* aircraft = getAircraft(1))
+	//	return !mWorldBounds.contains(aircraft->getPosition());
+	//else 
 		return false;
 }
 
@@ -226,7 +252,7 @@ void World::adaptPlayerVelocity()
 			aircraft->setVelocity(velocity / std::sqrt(2.f));
 
 		// Add scrolling velocity
-		aircraft->accelerate(0.f, mScrollSpeed);
+		//aircraft->accelerate(0.f, mScrollSpeed);
 	}
 }
 
@@ -236,61 +262,18 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 	unsigned int category2 = colliders.second->getCategory();
 
 	// Make sure first pair entry has category type1 and second has type2
-	if (type1 & category1 && type2 & category2)
+	if (static_cast<int>(type1) & category1 && static_cast<int>(type2) & category2)
 	{
 		return true;
 	}
-	else if (type1 & category2 && type2 & category1)
+	if (static_cast<int>(type1) & category2 && static_cast<int>(type2) & category1)
 	{
 		std::swap(colliders.first, colliders.second);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
-void World::handleCollisions(sf::Time dt)
-{
-	std::set<SceneNode::Pair> collisionPairs;
-	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
-
-	FOREACH(SceneNode::Pair pair, collisionPairs)
-	{
-		if (matchesCategories(pair, Category::PlayerAircraft, Category::EnemyAircraft))
-		{
-			auto& player = static_cast<Aircraft&>(*pair.first);
-			auto& enemy = static_cast<Aircraft&>(*pair.second);
-
-			// Collision: Player damage = enemy's remaining HP
-			player.damage(enemy.getHitpoints());
-			enemy.destroy();
-		}
-
-		else if (matchesCategories(pair, Category::PlayerAircraft, Category::Pickup))
-		{
-			auto& player = static_cast<Aircraft&>(*pair.first);
-			auto& pickup = static_cast<Pickup&>(*pair.second);
-
-			// Apply pickup effect to player, destroy projectile
-			pickup.apply(player);
-			pickup.destroy();
-			player.playLocalSound(mCommandQueue, SoundEffect::CollectPickup);
-		}
-
-		else if (matchesCategories(pair, Category::EnemyAircraft, Category::AlliedProjectile)
-			  || matchesCategories(pair, Category::PlayerAircraft, Category::EnemyProjectile))
-		{
-			auto& aircraft = static_cast<Aircraft&>(*pair.first);
-			auto& projectile = static_cast<Projectile&>(*pair.second);
-
-			// Apply projectile damage to aircraft, destroy projectile
-			aircraft.damage(projectile.getDamage());
-			projectile.destroy();
-		}
-	}
-}
 
 void World::updateSounds()
 {
@@ -331,38 +314,60 @@ void World::buildScene()
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	//// Prepare the tiled background
-	sf::Texture& jungleTexture = mTextures.get(Textures::MapTiles);
-	jungleTexture.setRepeated(true);
+	std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
+	mWorldBounds = map->getMapBounds();
+	mWorldBoundsBuffer = map->getTileSize().x;
 
-	float viewHeight = mWorldView.getSize().y;
-	sf::IntRect textureRect(mWorldBounds);
+	mWaterTexture = mTextures.get(Textures::ID::Water);
+	mWaterTexture.setRepeated(true);
+
+	float viewHeight = mWorldBounds.height;
+	float viewWidth = mWorldBounds.width;
+
+	sf::IntRect textureRect(sf::FloatRect(mWorldBoundsBuffer, mWorldBoundsBuffer, mWorldBounds.width * 2, mWorldBounds.height * 2));
 	textureRect.height += static_cast<int>(viewHeight);
 
 	// Add the background sprite to the scene
-	std::unique_ptr<SpriteNode> jungleSprite(new SpriteNode(jungleTexture, textureRect));
-	jungleSprite->setPosition(mWorldBounds.left, mWorldBounds.top - viewHeight);
-	mSceneLayers[Background]->attachChild(std::move(jungleSprite));
+	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(mWaterTexture, textureRect));
+	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
+
+	if (PostEffect::isSupported())
+	{
+		mWaterSprite.attachChild(std::move(waterSprite));
+	}
+	else
+	{
+		mSceneLayers[Background]->attachChild(std::move(waterSprite));
+	}
 
 
-	//std::unique_ptr<MapTiler> map(new MapTiler(MapTiler::MapID::Dessert, mTextures));
-	//mWorldBounds = map->getMapBounds();
-	//mWorldBoundsBuffer = map->getTileSize().x;
-
-	//mWaterTexture = mTextures.get(Textures::ID::Water);
-	//mWaterTexture.setRepeated(true);
-
+	map->setPosition(mWorldBounds.left, mWorldBounds.top);
+	mSceneLayers[Background]->attachChild(std::move(map));
+	
 	// Add particle node to the scene
-	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Smoke, mTextures));
+	std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(Particle::Type::Smoke, mTextures));
 	mSceneLayers[LowerAir]->attachChild(std::move(smokeNode));
 
-	// Add propellant particle node to the scene
-	std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(Particle::Propellant, mTextures));
-	mSceneLayers[LowerAir]->attachChild(std::move(propellantNode));
+	// Add exhaust particle node to the scene
+	std::unique_ptr<ParticleNode> exhaustNode(new ParticleNode(Particle::Type::Exhaust, mTextures));
+	mSceneLayers[LowerAir]->attachChild(std::move(exhaustNode));
 
-	// Add sound effect node
+	//Add sound effect node
 	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
 	mSceneGraph.attachChild(std::move(soundNode));
+
+	// Add player's Character
+	//std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
+	//mPlayerCharacter = player.get();
+
+
+	//mPlayerCharacter->setPosition(getCenter(mWorldBounds));
+	//mSceneLayers[UpperLayer]->attachChild(std::move(player));
+
+	SpawnObstacles();
+
+	//spawnZombies(sf::Time::Zero);
+	mZombieSpawnTime = 10;//Spawn Every 10 seconds
 
 	// Add network node, if necessary
 	if (mNetworkedWorld)
@@ -371,9 +376,6 @@ void World::buildScene()
 		mNetworkNode = networkNode.get();
 		mSceneGraph.attachChild(std::move(networkNode));
 	}
-
-	// Add enemy aircraft
-	addEnemies();
 }
 
 void World::addEnemies()
@@ -448,15 +450,30 @@ void World::spawnEnemies()
 
 void World::destroyEntitiesOutsideView()
 {
-	Command command;
-	command.category = Category::Projectile | Category::EnemyAircraft;
-	command.action = derivedAction<Entity>([this] (Entity& e, sf::Time)
+	// Destroy Projectiles outside of view
+	Command destroyProjectiles;
+	destroyProjectiles.category = static_cast<int>(Category::Projectile);
+	destroyProjectiles.action = derivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
-			e.remove();
+			e.destroy();
 	});
 
-	mCommandQueue.push(command);
+	//Destroy Zombies Outside of world Bounds
+	Command destroyZombies;
+	destroyZombies.category = static_cast<int>(Category::EnemyAircraft);
+	destroyZombies.action = derivedAction<Entity>([this](Entity& e, sf::Time)
+	{
+		if (!mWorldBounds.intersects(e.getBoundingRect()))
+		{
+			e.destroy();
+			int currZombiesAlive = getAliveZombieCount();
+			setAliveZombieCount(--currZombiesAlive);
+		}
+	});
+
+	mCommandQueue.push(destroyProjectiles);
+	mCommandQueue.push(destroyZombies);
 }
 
 void World::guideMissiles()
@@ -511,10 +528,450 @@ sf::FloatRect World::getViewBounds() const
 
 sf::FloatRect World::getBattlefieldBounds() const
 {
-	// Return view bounds + some area at top, where enemies spawn
 	sf::FloatRect bounds = getViewBounds();
-	bounds.top -= 100.f;
-	bounds.height += 100.f;
-
 	return bounds;
+}
+
+// Zombie Hit Delay Mutators
+sf::Time World::getZombieHitDelay()
+{
+	return mZombieHitDelay;
+}
+
+void World::setZombieHitDelay(sf::Time delay)
+{
+	mZombieHitDelay = delay;
+}
+
+sf::Time World::getZombieHitElapsedTime()
+{
+	return mZombieHitElapsedTime;
+}
+
+void World::incrementZombieHitElapsedTime(sf::Time dt)
+{
+	mZombieHitElapsedTime += dt;
+}
+
+void World::resetZombieHitElapsedTime()
+{
+	mZombieHitElapsedTime = sf::Time::Zero;
+}
+
+unsigned int const World::getPlayerOneScore() const
+{
+	return mPlayerOneScore;
+}
+
+void World::incrementPlayerOneScore(unsigned int incBy)
+{
+	mPlayerOneScore += incBy;
+}
+
+unsigned int const World::getPlayerTwoScore() const
+{
+	return mPlayerTwoScore;
+}
+
+void World::incrementPlayerTwoScore(unsigned int incBy)
+{
+	mPlayerTwoScore += incBy;
+}
+
+// Alex - Get collision mainfold
+sf::Vector3f World::getMainfold(const sf::FloatRect & overlap, const sf::Vector2f & collisionNormal)
+{
+	/*
+		X: Collision X-Axis Normal
+		Y: Collision Y-Axis Normal
+		Z: Penetration Amount
+	*/
+
+	sf::Vector3f mainfold;
+
+	// Determine Axis of collision
+	// X-Axis
+	if (overlap.width < overlap.height)
+	{
+		mainfold.x = (collisionNormal.x > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.width;
+	}
+	// Y-Axis
+	else
+	{
+		mainfold.y = (collisionNormal.y > 0) ? 1.f : -1.f;
+		mainfold.z = overlap.height;
+	}
+
+	return mainfold;
+}
+
+int World::getAliveZombieCount()
+{
+	return mNumZombiesAlive;
+}
+
+void World::setAliveZombieCount(int count)
+{
+	mNumZombiesAlive = count;
+}
+
+//Mike
+void World::spawnZombies(sf::Time dt)
+{
+	if (!mZombieSpawnTimerStarted)
+	{
+		StartZombieSpawnTimer(dt);
+	}
+	else
+	{
+		mZombieSpawnTimer += dt;
+	}
+
+	if (mZombieSpawnTimer.asSeconds() >= mZombieSpawnTime
+		&& getAliveZombieCount() < 20)
+	{
+		for (int i = 0; i < mNumZombiesSpawn; ++i)
+		{
+			//Picks A random position outside the view but within world bounds
+			int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+			int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
+
+			std::unique_ptr<Aircraft> enemy(new Aircraft(Aircraft::Type::Avenger, mTextures, mFonts));
+			enemy->setPosition(xPos, yPos);
+			enemy->setRotation(180.f);
+
+			if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+			{
+				//Picks A random position outside the view but within world bounds
+				int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
+				int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
+
+				std::unique_ptr<Aircraft> enemy(new Aircraft(Aircraft::Type::Avenger, mTextures, mFonts));
+				enemy->setPosition(xPos, yPos);
+				//enemy->setRotation(-mPlayerOneCharacter->getAngle());
+
+				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
+				{
+					mSceneLayers[UpperAir]->attachChild(std::move(enemy));
+					++mNumZombiesAlive;
+				}
+			}
+		}
+
+		mZombieSpawnTimerStarted = false;
+	}
+}
+
+//Mike
+void World::StartZombieSpawnTimer(sf::Time dt)
+{
+	mZombieSpawnTimerStarted = true;
+	mZombieSpawnTimer = dt;
+}
+
+//Mike
+void World::guideZombies()
+{
+	// Setup command that stores all players in mActiveEnemies
+	Command enemyCollector;
+	enemyCollector.category = static_cast<int>(Category::PlayerAircraft);
+	enemyCollector.action = derivedAction<Aircraft>([this](Aircraft& player, sf::Time)
+	{
+		if (!player.isDestroyed())
+			mActiveEnemies.push_back(&player);
+	});
+
+	// Setup command that guides all grenades to the enemy which is currently closest to the player
+	Command zombieGuider;
+	zombieGuider.category = static_cast<int>(Category::EnemyAircraft);
+	zombieGuider.action = derivedAction<Aircraft>([this](Aircraft& zombie, sf::Time)
+	{
+		//// Ignore unguided players
+		//if (zombie.isPlayer())
+		//	return;
+
+		float minDistance = std::numeric_limits<float>::max();
+		Aircraft* closestEnemy = nullptr;
+
+		// Find closest enemy
+		for (Aircraft* enemy : mActiveEnemies)
+		{
+			float enemyDistance = distance(zombie, *enemy);
+
+			if (enemyDistance < minDistance)
+			{
+				closestEnemy = enemy;
+				minDistance = enemyDistance;
+			}
+		}
+
+		//if (closestEnemy)
+		//	zombie.guideTowards(closestEnemy->getWorldPosition());
+	});
+
+	// Push commands, reset active enemies
+	mCommandQueue.push(enemyCollector);
+	mCommandQueue.push(zombieGuider);
+	mActiveEnemies.clear();
+}
+
+//Mike
+void World::SpawnObstacles()
+{
+	//Random Number of Obstacles to spawn
+	int rand = randomInt(20);
+
+	//List for all Spawned Bounding rects
+	std::list<sf::FloatRect> objectRects;
+
+	for (int i = 0; i < rand; i++)
+	{
+		//Random Position in the world
+		int xPos = randomInt(std::ceil(mWorldBounds.width));
+		int yPos = randomInt(std::ceil(mWorldBounds.height));
+
+		std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+		obstacle->setPosition(sf::Vector2f(xPos, yPos));
+		sf::FloatRect boundingRectangle = obstacle->getBoundingRect();
+
+		//If the list does not contain that rectangle spawn a new object TOFIX
+		//if (!containsIntersection(objectRects, boundingRectangle)
+		//	&& shrink((mWorldBoundsBuffer * 2), mWorldBounds).contains(sf::Vector2f(xPos, yPos)))
+		//{
+		//	objectRects.push_back(boundingRectangle);
+		//	mSceneLayers[UpperAir]->attachChild(std::move(obstacle));
+		//}
+	}
+}
+
+//Mike
+void World::handlePlayerCollision()
+{
+	// Map bound collision //TOFIX
+	//if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
+	//{
+	//	mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+	//}
+	//else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
+	//{
+	//	mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
+	//}
+}
+
+//Mike
+void World::handleCollisions(sf::Time dt)
+{
+	std::set<SceneNode::Pair> collisionPairs;
+	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
+
+	for (SceneNode::Pair pair : collisionPairs)
+	{
+		CollisionType collisionType = GetCollisionType(pair);
+		switch (collisionType)
+		{
+		case Character_Character:
+			incrementZombieHitElapsedTime(dt);
+			handleCharacterCollisions(pair);
+			break;
+		case Player_Pickup:
+			handlePickupCollisions(pair);
+			break;
+		case Character_Obstacle:
+			handleObstacleCollisions(pair);
+			break;
+		case Projectile_Obstacle:
+		case Projectile_Character:
+			handleProjectileCollisions(pair);
+			break;
+		case Character_Explosion:
+			handleExplosionCollisions(pair);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+//Mike
+void World::handleCharacterCollisions(SceneNode::Pair& pair)
+{
+	auto& character1 = static_cast<Aircraft&>(*pair.first);
+	auto& character2 = static_cast<Aircraft&>(*pair.second);
+
+	sf::FloatRect r1 = character1.getBoundingRect();
+	sf::FloatRect r2 = character2.getBoundingRect();
+	sf::FloatRect intersection;
+
+	// Get collision intersection FloatRect
+	if (r1.intersects(r2, intersection))
+	{
+
+		// Get distance between two characters
+		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
+
+		/*
+			Get mainfold floatrect of colliding bodies
+			Return Type: Vector3f
+			X = Collision X-Axis Normal
+			Y = Collision Y-Axis Normal
+			Z = Penetration Amount
+		*/
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+
+		// Normal vector to move collidee out of the hitbox
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		// Assert an Entity cast can be made
+		assert(dynamic_cast<Entity*>(&character1) != nullptr);
+		assert(dynamic_cast<Entity*>(&character2) != nullptr);
+
+		// Normal vector * mainfold.z = Moving back by amount of penetration
+		// Normal & -Normal moves collidee's away from eachother
+		static_cast<Entity&>(character1).move(normal * mainfold.z);
+		static_cast<Entity&>(character2).move(-normal * mainfold.z);
+	}
+
+	//if ((character1.isZombie() && character2.isZombie())
+	//	|| (character1.isPlayer() && character2.isPlayer())) //TOFIX
+	//{
+	//	//DONE FIX COLLISION
+	//}
+	//else
+	//{
+		if (getZombieHitElapsedTime() >= sf::milliseconds(ZOMBIEATTACKDELAY))
+		{
+			if (!character1.isAllied())
+				character2.damage(ZOMBIEATTACKDAMAGE);
+			else
+				character1.damage(ZOMBIEATTACKDAMAGE);
+
+			resetZombieHitElapsedTime();
+		}
+	//}
+}
+
+//Mike
+void World::handleObstacleCollisions(SceneNode::Pair& pair)
+{
+	auto& character = static_cast<Aircraft&>(*pair.first);
+	auto& obstacle = static_cast<Obstacle&>(*pair.second);
+
+	sf::FloatRect r1 = character.getBoundingRect();
+	sf::FloatRect r2 = obstacle.getBoundingRect();
+	sf::FloatRect intersection;
+
+	if (r1.intersects(r2, intersection))
+	{
+		sf::Vector2f diff = character.getWorldPosition() - obstacle.getWorldPosition();
+
+		sf::Vector3f mainfold = getMainfold(intersection, diff);
+
+		sf::Vector2f normal(mainfold.x, mainfold.y);
+
+		assert(dynamic_cast<Entity*>(&character) != nullptr);
+		static_cast<Entity&>(character).move(normal * mainfold.z);
+	}
+}
+
+//Mike
+void World::handleProjectileCollisions(SceneNode::Pair& pair)
+{
+	auto& entity = static_cast<Entity&>(*pair.first);
+	auto& projectile = static_cast<Projectile&>(*pair.second);
+
+	if (projectile.isGuided())
+	{
+		projectile.setVelocity(-projectile.getVelocity() / 2.f);
+	}
+	else
+	{
+		entity.damage(projectile.getDamage());
+
+		if (entity.isDestroyed())
+		{
+			// Alex - If entity can be dynamically casted to a Character [Zombie not a an Obstacle] when it's destroyed,
+			// decrement zombie alive count and increment player score accordingly
+			if (Aircraft* zombie = dynamic_cast<Aircraft*>(&entity))
+			{
+				int currZombiesAlive = getAliveZombieCount();
+				setAliveZombieCount(--currZombiesAlive);
+
+				//// Increment Player 1 Score //TOFIX
+				//if (projectile.getProjectileId() == 0)
+				//{
+				//	incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
+				//}
+				//// Increment Player 2 Score
+				//else if (projectile.getProjectileId() == 1)
+				//{
+				//	incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
+				//}
+			}
+		}
+		projectile.destroy();
+	}
+}
+
+//Mike
+void World::handlePickupCollisions(SceneNode::Pair& pair)
+{
+	auto& player = static_cast<Aircraft&>(*pair.first);
+	auto& pickup = static_cast<Pickup&>(*pair.second);
+
+	// Apply pickup effect to player, destroy projectile
+	//TODO APPLY PICKUP EFFECTS
+	pickup.apply(player);
+	pickup.destroy();
+
+	player.playLocalSound(mCommandQueue, SoundEffect::ID::CollectPickup);
+}
+
+//Mike
+void World::handleExplosionCollisions(SceneNode::Pair& pair)
+{
+	auto& entity = static_cast<Entity&>(*pair.first);
+	auto& explosion = static_cast<Explosion&>(*pair.second);
+
+	// Distance between characters and explosions center-points
+	//float dV = vectorDistance(entity.getWorldPosition(), explosion.getWorldPosition());
+
+	entity.damage(1);
+}
+
+//Mike
+World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
+{
+	if (matchesCategories(pair, Category::PlayerAircraft, Category::EnemyAircraft)
+		|| matchesCategories(pair, Category::EnemyAircraft, Category::EnemyAircraft)
+		|| matchesCategories(pair, Category::PlayerAircraft, Category::PlayerAircraft))
+	{
+		return Character_Character;
+	}
+	else if (matchesCategories(pair, Category::PlayerAircraft, Category::Pickup))
+	{
+		return Player_Pickup;
+	}
+	else if (matchesCategories(pair, Category::PlayerAircraft, Category::Obstacle)
+		|| matchesCategories(pair, Category::EnemyAircraft, Category::Obstacle))
+	{
+		return Character_Obstacle;
+	}
+	else if (matchesCategories(pair, Category::Obstacle, Category::AlliedProjectile)
+		|| matchesCategories(pair, Category::Obstacle, Category::EnemyProjectile))
+	{
+		return Projectile_Obstacle;
+	}
+	else if (matchesCategories(pair, Category::EnemyAircraft, Category::AlliedProjectile)
+		|| matchesCategories(pair, Category::PlayerAircraft, Category::EnemyProjectile))
+	{
+		return Projectile_Character;
+	}
+	else if (matchesCategories(pair, Category::EnemyAircraft, Category::Explosion)
+		|| matchesCategories(pair, Category::PlayerAircraft, Category::Explosion))
+	{
+		return Character_Explosion;
+	}
+	else { return Default; }
 }

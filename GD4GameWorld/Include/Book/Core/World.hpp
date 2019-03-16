@@ -165,9 +165,9 @@ private:
 		NetworkNode*						mNetworkNode;
 		SpriteNode*							mFinishSprite;
 
-		//sf::RenderTexture mWaterSceneTexture;
+		sf::RenderTexture mWaterSceneTexture;
 		//TextNode* mScoreText;
-		//DistortionEffect mDistortionEffect;
+		DistortionEffect mDistortionEffect;
 
 		//Character* mPlayerOneCharacter;
 		//Character* mPlayerTwoCharacter;
@@ -180,7 +180,7 @@ private:
 		sf::Time mZombieHitElapsedTime;
 
 		sf::Texture mWaterTexture;
-		//SpriteNode mWaterSprite;
+		SpriteNode mWaterSprite;
 
 		int mWorldBoundsBuffer;
 		int mZombieSpawnTime;
