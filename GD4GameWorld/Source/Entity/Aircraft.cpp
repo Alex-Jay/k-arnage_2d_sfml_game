@@ -59,7 +59,7 @@ Aircraft::Aircraft(Type type, const TextureHolder& textures, const FontHolder& f
 	mMissileCommand.category = Category::SceneLayer;
 	mMissileCommand.action   = [this, &textures] (SceneNode& node, sf::Time)
 	{
-		createProjectile(node, Projectile::Missile, 0.f, 0.5f, textures);
+		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures);
 	};
 
 	mDropPickupCommand.category = Category::SceneLayer;
@@ -72,13 +72,13 @@ Aircraft::Aircraft(Type type, const TextureHolder& textures, const FontHolder& f
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
 
-	if (getCategory() == Category::PlayerAircraft)
-	{
-		std::unique_ptr<TextNode> missileDisplay(new TextNode(fonts, ""));
-		missileDisplay->setPosition(0, 70);
-		mMissileDisplay = missileDisplay.get();
-		attachChild(std::move(missileDisplay));
-	}
+	//if (getCategory() == Category::PlayerAircraft)
+	//{
+	//	std::unique_ptr<TextNode> missileDisplay(new TextNode(fonts, ""));
+	//	missileDisplay->setPosition(0, 70);
+	//	mMissileDisplay = missileDisplay.get();
+	//	attachChild(std::move(missileDisplay));
+	//}
 
 	updateTexts();
 }
@@ -155,10 +155,11 @@ void Aircraft::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 unsigned int Aircraft::getCategory() const
 {
-	if (isAllied())
-		return Category::PlayerAircraft;
-	else
-		return Category::EnemyAircraft;
+	//if (isAllied())
+	//	return Category::PlayerAircraft;
+	//else
+	//	return Category::EnemyAircraft;
+	return 0;
 }
 
 sf::FloatRect Aircraft::getBoundingRect() const
@@ -314,7 +315,7 @@ void Aircraft::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 void Aircraft::createBullets(SceneNode& node, const TextureHolder& textures) const
 {
-	Projectile::Type type = isAllied() ? Projectile::AlliedBullet : Projectile::EnemyBullet;
+	Projectile::ProjectileIDs type = Projectile::ProjectileIDs::Grenade;//isAllied() ? Projectile::AlliedBullet : Projectile::EnemyBullet;
 
 	switch (mSpreadLevel)
 	{
@@ -335,7 +336,7 @@ void Aircraft::createBullets(SceneNode& node, const TextureHolder& textures) con
 	}
 }
 
-void Aircraft::createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const
+void Aircraft::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 
@@ -350,12 +351,12 @@ void Aircraft::createProjectile(SceneNode& node, Projectile::Type type, float xO
 
 void Aircraft::createPickup(SceneNode& node, const TextureHolder& textures) const
 {
-	auto type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
+	//auto type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
 
-	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
-	pickup->setPosition(getWorldPosition());
-	pickup->setVelocity(0.f, 1.f);
-	node.attachChild(std::move(pickup));
+	//std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	//pickup->setPosition(getWorldPosition());
+	//pickup->setVelocity(0.f, 1.f);
+	//node.attachChild(std::move(pickup));
 }
 
 void Aircraft::updateTexts()

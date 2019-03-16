@@ -1,11 +1,12 @@
 #include "Entity/Entity.hpp"
+#include "Constant/Constants.hpp"
 
 #include <cassert>
 
 
-Entity::Entity(int hitpoints)
-: mVelocity()
-, mHitpoints(hitpoints)
+Entity::Entity(int hitpoints) :
+	mAngle(0),
+	mHitpoints(hitpoints)
 {
 }
 
@@ -41,23 +42,15 @@ int Entity::getHitpoints() const
 	return mHitpoints;
 }
 
-void Entity::setHitpoints(int points)
-{
-	assert(points > 0);
-	mHitpoints = points;
-}
-
 void Entity::repair(int points)
 {
 	assert(points > 0);
-
 	mHitpoints += points;
 }
 
 void Entity::damage(int points)
 {
 	assert(points > 0);
-
 	mHitpoints -= points;
 }
 
@@ -76,7 +69,25 @@ bool Entity::isDestroyed() const
 	return mHitpoints <= 0;
 }
 
-void Entity::updateCurrent(sf::Time dt, CommandQueue&)
-{	
+//Mike
+void Entity::updateCurrent(sf::Time dt, CommandQueue& commands)
+{
 	move(mVelocity * dt.asSeconds());
+}
+
+// Alex - Get/Set Angle, Separating movement and rotation
+void Entity::setAngle(float angle)
+{
+	mAngle = angle;
+}
+
+float Entity::getAngle() const
+{
+	return mAngle;
+}
+
+// da - Delta of angle
+void Entity::applyRotation(float da)
+{
+	mAngle += da;
 }

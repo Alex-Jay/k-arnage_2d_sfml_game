@@ -345,7 +345,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 			{
 				sf::Packet packet;
 				packet << static_cast<sf::Int32>(Server::SpawnPickup);
-				packet << static_cast<sf::Int32>(randomInt(Pickup::TypeCount));
+				packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Pickup::Type::TypeCount)));
 				packet << x;
 				packet << y;
 

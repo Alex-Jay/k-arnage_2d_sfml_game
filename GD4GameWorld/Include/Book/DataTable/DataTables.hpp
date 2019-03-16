@@ -58,10 +58,11 @@ struct AircraftData
 
 struct ProjectileData
 {
-	int								damage;
-	float							speed;
-	Textures::ID					texture;
-	sf::IntRect						textureRect;
+	int damage;
+	float speed;
+	float textureScale;
+	Textures::ID texture;
+	sf::IntRect textureRect;
 };
 
 struct PickupData
@@ -103,10 +104,8 @@ std::vector<PickupData>		initializePickupData();
 std::vector<ParticleData>	initializeParticleData();
 std::vector<MapTileData> initializeMapTileData();
 
-//std::vector<CharacterData> initializeCharacterData();
+std::vector<CharacterData> initializeCharacterData();
 std::vector<ExplosionData> initializeExplosionData();
-//std::vector<ProjectileData> initializeProjectileData();
-//std::vector<PickupData> initializePickupData();
 std::vector<ObstacleData> initializeObstacleData();
 
 

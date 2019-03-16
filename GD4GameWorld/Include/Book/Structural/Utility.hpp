@@ -21,8 +21,10 @@ std::string		toString(sf::Keyboard::Key key);
 
 void centreOrigin(sf::RectangleShape shape);
 void			centerOrigin(sf::Sprite& sprite);
+void			centreOrigin(sf::Sprite& sprite);
 void			centerOrigin(sf::Text& text);
 void			centerOrigin(Animation& animation);
+void			centreOrigin(Animation& animation);
 float toRadians(float degrees);
 float toDegrees(float radians);
 int randomInt(int range);

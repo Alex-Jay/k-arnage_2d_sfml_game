@@ -37,6 +37,7 @@
     <ClInclude Include="Include\Book\Effect\DistortionEffect.hpp" />
     <ClInclude Include="Include\Book\Effect\PostEffect.hpp" />
     <ClInclude Include="Include\Book\Entity\Aircraft.hpp" />
+    <ClInclude Include="Include\Book\Entity\Character.hpp" />
     <ClInclude Include="Include\Book\Entity\Entity.hpp" />
     <ClInclude Include="Include\Book\Entity\Explosion.hpp" />
     <ClInclude Include="Include\Book\Entity\Obstacle.hpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="Include\Book\Node\NetworkNode.hpp" />
     <ClInclude Include="Include\Book\Node\ParticleNode.hpp" />
     <ClInclude Include="Include\Book\Node\SceneNode.hpp" />
+    <ClInclude Include="Include\Book\Node\ShapeNode.hpp" />
     <ClInclude Include="Include\Book\Node\SoundNode.hpp" />
     <ClInclude Include="Include\Book\Node\SpriteNode.hpp" />
     <ClInclude Include="Include\Book\Node\TextNode.hpp" />
@@ -71,7 +73,6 @@
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
     <ClInclude Include="ScoreBoardState.hpp" />
-    <ClInclude Include="ShapeNode.hpp" />
     <ClInclude Include="Xbox360Controller.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +82,6 @@
   <ItemGroup>
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ScoreBoardState.cpp" />
-    <ClCompile Include="ShapeNode.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
     <ClCompile Include="Source\Audio\MusicPlayer.cpp" />
     <ClCompile Include="Source\Audio\SoundPlayer.cpp" />
@@ -99,6 +99,7 @@
     <ClCompile Include="Source\Effect\DistortionEffect.cpp" />
     <ClCompile Include="Source\Effect\PostEffect.cpp" />
     <ClCompile Include="Source\Entity\Aircraft.cpp" />
+    <ClCompile Include="Source\Entity\Character.cpp" />
     <ClCompile Include="Source\Entity\Entity.cpp" />
     <ClCompile Include="Source\Entity\Explosion.cpp" />
     <ClCompile Include="Source\Entity\Obstacle.cpp" />
@@ -110,6 +111,7 @@
     <ClCompile Include="Source\Node\NetworkNode.cpp" />
     <ClCompile Include="Source\Node\ParticleNode.cpp" />
     <ClCompile Include="Source\Node\SceneNode.cpp" />
+    <ClCompile Include="Source\Node\ShapeNode.cpp" />
     <ClCompile Include="Source\Node\SoundNode.cpp" />
     <ClCompile Include="Source\Node\SpriteNode.cpp" />
     <ClCompile Include="Source\Node\TextNode.cpp" />

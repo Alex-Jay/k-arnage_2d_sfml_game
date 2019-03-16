@@ -41,6 +41,23 @@ void Animation::setFrameSize(sf::Vector2i frameSize)
 	mFrameSize = frameSize;
 }
 
+//Mike
+sf::Sprite Animation::getSprite()
+{
+	return mSprite;
+}
+
+//Mike
+void Animation::setTextureRect()
+{
+	mSprite.setTextureRect(sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y));
+}
+
+void Animation::setFrameSize(sf::IntRect frameSize)
+{
+	mFrameSize = sf::Vector2i(frameSize.width, frameSize.height);
+}
+
 sf::Vector2i Animation::getFrameSize() const
 {
 	return mFrameSize;

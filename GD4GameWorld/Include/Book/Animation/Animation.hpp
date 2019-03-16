@@ -15,6 +15,7 @@ class Animation : public sf::Drawable, public sf::Transformable
 		const sf::Texture* 		getTexture() const;
 
 		void 					setFrameSize(sf::Vector2i mFrameSize);
+		void					setFrameSize(sf::IntRect frameSize);
 		sf::Vector2i		 	getFrameSize() const;
 
 		void 					setNumFrames(std::size_t numFrames);
@@ -34,6 +35,8 @@ class Animation : public sf::Drawable, public sf::Transformable
 
 		void 					update(sf::Time dt);
 
+		void setTextureRect();
+		sf::Sprite getSprite();
 
 	private:
 		void 					draw(sf::RenderTarget& target, sf::RenderStates states) const;

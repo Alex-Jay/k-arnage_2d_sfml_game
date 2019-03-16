@@ -14,16 +14,16 @@ namespace
 }
 
 Pickup::Pickup(Type type, const TextureHolder& textures)
-: Entity(1)
-, mType(type)
-, mSprite(textures.get(Table[type].texture), Table[type].textureRect)
+	: Entity(1)
+	, mType(type)
+	, mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
 {
-	centerOrigin(mSprite);
+	centreOrigin(mSprite);
 }
 
 unsigned int Pickup::getCategory() const
 {
-	return Category::Pickup;
+	return static_cast<int>(Category::Pickup);
 }
 
 sf::FloatRect Pickup::getBoundingRect() const
@@ -31,13 +31,12 @@ sf::FloatRect Pickup::getBoundingRect() const
 	return getWorldTransform().transformRect(mSprite.getGlobalBounds());
 }
 
-void Pickup::apply(Aircraft& player) const
+void Pickup::apply(Character& player) const
 {
-	Table[mType].action(player);
+	//Table[static_cast<int>(mType)].action(player); //TOFIX
 }
 
 void Pickup::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(mSprite, states);
 }
-

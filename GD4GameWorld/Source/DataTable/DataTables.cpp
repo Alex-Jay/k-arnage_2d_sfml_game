@@ -1,4 +1,4 @@
-//#include "DataTable/DataTables.hpp"
+#include "Entity/Character.hpp"
 #include "Entity/Aircraft.hpp"
 #include "Entity/Projectile.hpp"
 #include "Entity/Pickup.hpp"
@@ -51,45 +51,48 @@ std::vector<AircraftData> initializeAircraftData()
 
 std::vector<ProjectileData> initializeProjectileData()
 {
-	std::vector<ProjectileData> data(Projectile::TypeCount);
+	std::vector<ProjectileData> data(static_cast<int>(Projectile::ProjectileIDs::TypeCount));
 
-	data[Projectile::AlliedBullet].damage = 10;
-	data[Projectile::AlliedBullet].speed = 300.f;
-	data[Projectile::AlliedBullet].texture = Textures::Entities;
-	data[Projectile::AlliedBullet].textureRect = sf::IntRect(175, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].damage = BULLETDAMAGE;
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].speed = BULLETSPEED;
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].texture = Textures::ID::Entities;
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureRect = sf::IntRect(175, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::AlliedBullet)].textureScale = 1;
 
-	data[Projectile::EnemyBullet].damage = 10;
-	data[Projectile::EnemyBullet].speed = 300.f;
-	data[Projectile::EnemyBullet].texture = Textures::Entities;
-	data[Projectile::EnemyBullet].textureRect = sf::IntRect(178, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].damage = BULLETDAMAGE;
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].speed = BULLETSPEED;
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].texture = Textures::ID::Entities;
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].textureRect = sf::IntRect(178, 64, 3, 14);
+	data[static_cast<int>(Projectile::ProjectileIDs::EnemyBullet)].textureScale = 1;
 
-	data[Projectile::Missile].damage = 200;
-	data[Projectile::Missile].speed = 150.f;
-	data[Projectile::Missile].texture = Textures::Entities;
-	data[Projectile::Missile].textureRect = sf::IntRect(160, 64, 15, 32);
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].damage = GRENADEDAMAGE;
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].speed = GRENADESPEED;
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].texture = Textures::ID::Grenade;
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureRect = sf::IntRect(0, 0, 718, 800);
+	data[static_cast<int>(Projectile::ProjectileIDs::Grenade)].textureScale = 0.03f;
 
 	return data;
 }
 
 std::vector<PickupData> initializePickupData()
 {
-	std::vector<PickupData> data(static_cast<int>(Pickup::TypeCount));
+	std::vector<PickupData> data(static_cast<int>(Pickup::Type::TypeCount));
 
-	data[static_cast<int>(Pickup::HealthRefill)].texture = Textures::Entities;
-	data[static_cast<int>(Pickup::HealthRefill)].textureRect = sf::IntRect(0, 64, 40, 40);
+	data[static_cast<int>(Pickup::Type::HealthRefill)].texture = Textures::Entities;
+	data[static_cast<int>(Pickup::Type::HealthRefill)].textureRect = sf::IntRect(0, 64, 40, 40);
 	//data[static_cast<int>(Pickup::HealthRefill)].action = [](Character& a)
 	//{
 	//	a.repair(HEALTHPICKUPREPAIRVALUE);
 	//};
 
-	//data[static_cast<int>(Pickup::GrenadeRefill)].texture = TextureIDs::Entities;
-	//data[static_cast<int>(Pickup::GrenadeRefill)].textureRect = sf::IntRect(40, 64, 40, 40);
-	//data[static_cast<int>(Pickup::GrenadeRefill)].action = std::bind(
+	data[static_cast<int>(Pickup::Type::GrenadeRefill)].texture = Textures::ID::Entities;
+	data[static_cast<int>(Pickup::Type::GrenadeRefill)].textureRect = sf::IntRect(40, 64, 40, 40);
+	//data[static_cast<int>(Pickup::Type::GrenadeRefill)].action = std::bind(
 	//	&Character::collectGrenades, _1, GRENADEPICKUPAMMOVALUE);
 
-	data[static_cast<int>(Pickup::FireRate)].texture = Textures::Entities;
-	data[static_cast<int>(Pickup::FireRate)].textureRect = sf::IntRect(120, 64, 40, 40);
-	//data[static_cast<int>(Pickup::FireRate)].action = std::bind(&Character::increaseFireRate, _1);
+	data[static_cast<int>(Pickup::Type::FireRate)].texture = Textures::Entities;
+	data[static_cast<int>(Pickup::Type::FireRate)].textureRect = sf::IntRect(120, 64, 40, 40);
+	//data[static_cast<int>(Pickup::Type::FireRate)].action = std::bind(&Character::increaseFireRate, _1);
 
 	return data;
 }
@@ -120,53 +123,53 @@ std::vector<MapTileData> initializeMapTileData()
 }
 
 //Mike
-//std::vector<CharacterData> initializeCharacterData()
-//{
-//	std::vector<CharacterData> data(static_cast<int>(Character::Type::TypeCount));
-//	data[static_cast<int>(Character::Type::Player)].hitpoints = PLAYERHITPOINTS;
-//	data[static_cast<int>(Character::Type::Player)].speed = PLAYERSPEED;
-//	data[static_cast<int>(Character::Type::Player)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
-//	data[static_cast<int>(Character::Type::Player)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
-//	data[static_cast<int>(Character::Type::Player)].texture = TextureIDs::PlayerMove;
-//	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(
-//		0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
-//	data[static_cast<int>(Character::Type::Player)].moveScale = 0.5f;
-//	data[static_cast<int>(Character::Type::Player)].deathScale = 0.5f;
-//	data[static_cast<int>(Character::Type::Player)].moveFrames = 18;
-//	data[static_cast<int>(Character::Type::Player)].deathFrames = 6;
-//	data[static_cast<int>(Character::Type::Player)].moveAnimation = TextureIDs::PlayerMove;
-//	data[static_cast<int>(Character::Type::Player)].moveRect = sf::IntRect(
-//		0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
-//	data[static_cast<int>(Character::Type::Player)].deathAnimation = TextureIDs::PlayerDeath;
-//	data[static_cast<int>(Character::Type::Player)].deathRect = sf::IntRect(
-//		0, 0, PLAYER_DEATH_ANIMATION_WIDTH, PLAYER_DEATH_ANIMATION_HEIGHT);
-//
-//	data[static_cast<int>(Character::Type::Zombie)].hitpoints = ZOMBIEHITPOINTS;
-//	data[static_cast<int>(Character::Type::Zombie)].speed = ZOMBIESPEED;
-//	data[static_cast<int>(Character::Type::Zombie)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
-//	data[static_cast<int>(Character::Type::Zombie)].texture = TextureIDs::Entities;
-//	data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(
-//		144, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
-//	data[static_cast<int>(Character::Type::Zombie)].fireInterval = sf::Time::Zero;
-//	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
-//	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(-45.f, 160.f));
-//	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
-//
-//	data[static_cast<int>(Character::Type::Zombie)].moveAnimation = TextureIDs::ZombieMove;
-//	data[static_cast<int>(Character::Type::Zombie)].moveRect = sf::IntRect(
-//		0, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
-//
-//	data[static_cast<int>(Character::Type::Zombie)].deathAnimation = TextureIDs::ZombieDeath;
-//	data[static_cast<int>(Character::Type::Zombie)].deathRect = sf::IntRect(
-//		0, 0, ZOMBIE_DEATH_ANIMATION_WIDTH, ZOMBIE_DEATH_ANIMATION_HEIGHT);
-//
-//	data[static_cast<int>(Character::Type::Zombie)].moveScale = 2.f;
-//	data[static_cast<int>(Character::Type::Zombie)].deathScale = 2.f;
-//	data[static_cast<int>(Character::Type::Zombie)].moveFrames = 27;
-//	data[static_cast<int>(Character::Type::Zombie)].deathFrames = 17;
-//
-//	return data;
-//}
+std::vector<CharacterData> initializeCharacterData()
+{
+	std::vector<CharacterData> data(static_cast<int>(Character::Type::TypeCount));
+	data[static_cast<int>(Character::Type::Player)].hitpoints = PLAYERHITPOINTS;
+	data[static_cast<int>(Character::Type::Player)].speed = PLAYERSPEED;
+	data[static_cast<int>(Character::Type::Player)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
+	data[static_cast<int>(Character::Type::Player)].fireInterval = sf::seconds(PLAYERFIREINTERVAL);
+	data[static_cast<int>(Character::Type::Player)].texture = Textures::ID::PlayerMove;
+	data[static_cast<int>(Character::Type::Player)].textureRect = sf::IntRect(
+		0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Player)].moveScale = 0.5f;
+	data[static_cast<int>(Character::Type::Player)].deathScale = 0.5f;
+	data[static_cast<int>(Character::Type::Player)].moveFrames = 18;
+	data[static_cast<int>(Character::Type::Player)].deathFrames = 6;
+	data[static_cast<int>(Character::Type::Player)].moveAnimation = Textures::ID::PlayerMove;
+	data[static_cast<int>(Character::Type::Player)].moveRect = sf::IntRect(
+		0, 0, PLAYER_MOVE_ANIMATION_WIDTH, PLAYER_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Player)].deathAnimation = Textures::ID::PlayerDeath;
+	data[static_cast<int>(Character::Type::Player)].deathRect = sf::IntRect(
+		0, 0, PLAYER_DEATH_ANIMATION_WIDTH, PLAYER_DEATH_ANIMATION_HEIGHT);
+
+	data[static_cast<int>(Character::Type::Zombie)].hitpoints = ZOMBIEHITPOINTS;
+	data[static_cast<int>(Character::Type::Zombie)].speed = ZOMBIESPEED;
+	data[static_cast<int>(Character::Type::Zombie)].rotationSpeed = ROTATION_SPEED; // Alex - Add rotation speed
+	data[static_cast<int>(Character::Type::Zombie)].texture = Textures::ID::Entities;
+	data[static_cast<int>(Character::Type::Zombie)].textureRect = sf::IntRect(
+		144, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
+	data[static_cast<int>(Character::Type::Zombie)].fireInterval = sf::Time::Zero;
+	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
+	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(-45.f, 160.f));
+	data[static_cast<int>(Character::Type::Zombie)].directions.push_back(Direction(+45.f, 80.f));
+
+	data[static_cast<int>(Character::Type::Zombie)].moveAnimation = Textures::ID::ZombieMove;
+	data[static_cast<int>(Character::Type::Zombie)].moveRect = sf::IntRect(
+		0, 0, ZOMBIE_MOVE_ANIMATION_WIDTH, ZOMBIE_MOVE_ANIMATION_HEIGHT);
+
+	data[static_cast<int>(Character::Type::Zombie)].deathAnimation = Textures::ID::ZombieDeath;
+	data[static_cast<int>(Character::Type::Zombie)].deathRect = sf::IntRect(
+		0, 0, ZOMBIE_DEATH_ANIMATION_WIDTH, ZOMBIE_DEATH_ANIMATION_HEIGHT);
+
+	data[static_cast<int>(Character::Type::Zombie)].moveScale = 2.f;
+	data[static_cast<int>(Character::Type::Zombie)].deathScale = 2.f;
+	data[static_cast<int>(Character::Type::Zombie)].moveFrames = 27;
+	data[static_cast<int>(Character::Type::Zombie)].deathFrames = 17;
+
+	return data;
+}
 
 //Mike
 std::vector<ExplosionData> initializeExplosionData()

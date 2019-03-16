@@ -44,7 +44,7 @@ class SceneNode : public sf::Transformable, public sf::Drawable, private sf::Non
 		virtual sf::FloatRect	getBoundingRect() const;
 		virtual bool			isMarkedForRemoval() const;
 		virtual bool			isDestroyed() const;
-
+		void					drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	private:
 		virtual void			updateCurrent(sf::Time dt, CommandQueue& commands);
@@ -53,7 +53,7 @@ class SceneNode : public sf::Transformable, public sf::Drawable, private sf::Non
 		virtual void			draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		virtual void			drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 		void					drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
-		void					drawBoundingRect(sf::RenderTarget& target, sf::RenderStates states) const;
+
 
 
 	private:

@@ -1,6 +1,4 @@
-#ifndef BOOK_PICKUP_HPP
-#define BOOK_PICKUP_HPP
-
+#pragma once
 #include "Entity/Entity.hpp"
 #include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
@@ -8,37 +6,35 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 
-class Aircraft;
+class Character;
 
 class Pickup : public Entity
 {
-	public:
-		enum Type
-		{
-			HealthRefill,
-			MissileRefill,
-			FireSpread,
-			FireRate,
-			TypeCount
-		};
+public:
+	enum class Type
+	{
+		HealthRefill,
+		GrenadeRefill,
+		FireSpread,
+		FireRate,
+		TypeCount
+	};
 
 
-	public:
-								Pickup(Type type, const TextureHolder& textures);
+public:
+	Pickup(Type type, const TextureHolder& textures);
 
-		virtual unsigned int	getCategory() const;
-		virtual sf::FloatRect	getBoundingRect() const;
+	virtual unsigned int getCategory() const;
+	virtual sf::FloatRect getBoundingRect() const;
 
-		void 					apply(Aircraft& player) const;
-
-
-	protected:
-		virtual void			drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	void apply(Character& player) const;
 
 
-	private:
-		Type 					mType;
-		sf::Sprite				mSprite;
+protected:
+	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+
+
+private:
+	Type mType;
+	sf::Sprite mSprite;
 };
-
-#endif // BOOK_PICKUP_HPP

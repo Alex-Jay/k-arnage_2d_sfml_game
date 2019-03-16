@@ -228,9 +228,6 @@
     <ClInclude Include="Include\Book\Entity\Explosion.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="ShapeNode.hpp">
-      <Filter>Header Files\Node</Filter>
-    </ClInclude>
     <ClInclude Include="Xbox360Controller.hpp">
       <Filter>Header Files\Structural</Filter>
     </ClInclude>
@@ -253,6 +250,12 @@
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
     <ClInclude Include="Include\Book\Node\SoundNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Character.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\ShapeNode.hpp">
       <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
@@ -388,9 +391,6 @@
     <ClCompile Include="Source\Entity\Explosion.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="ShapeNode.cpp">
-      <Filter>Source Files\Node</Filter>
-    </ClCompile>
     <ClCompile Include="Xbox360Controller.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
@@ -405,6 +405,12 @@
     </ClCompile>
     <ClCompile Include="Source\Effect\DistortionEffect.cpp">
       <Filter>Source Files\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity\Character.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Node\ShapeNode.cpp">
+      <Filter>Source Files\Node</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -75,7 +75,7 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 
 	// Assign all categories to player's aircraft
 	FOREACH(auto& pair, mActionBinding)
-		pair.second.category = Category::PlayerAircraft;
+		pair.second.category = Category::PlayerCharacter;
 }
 
 void Player::handleEvent(const sf::Event& event, CommandQueue& commands)

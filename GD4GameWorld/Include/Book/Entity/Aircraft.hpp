@@ -55,7 +55,7 @@ class Aircraft : public Entity
 		void					checkProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 		void					createBullets(SceneNode& node, const TextureHolder& textures) const;
-		void					createProjectile(SceneNode& node, Projectile::Type type, float xOffset, float yOffset, const TextureHolder& textures) const;
+		void					createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset, const TextureHolder& textures) const;
 		void					createPickup(SceneNode& node, const TextureHolder& textures) const;
 
 		void					updateTexts();
