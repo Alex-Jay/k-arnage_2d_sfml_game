@@ -69,7 +69,9 @@
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
     <ClInclude Include="Obstacle.hpp" />
+    <ClInclude Include="ScoreBoardState.hpp" />
     <ClInclude Include="ShapeNode.hpp" />
+    <ClInclude Include="Xbox360Controller.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl" />
@@ -78,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="DistortionEffect.cpp" />
     <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="ScoreBoardState.cpp" />
     <ClCompile Include="ShapeNode.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
     <ClCompile Include="Source\Audio\MusicPlayer.cpp" />
@@ -120,6 +123,7 @@
     <ClCompile Include="Source\Structural\KeyBinding.cpp" />
     <ClCompile Include="Source\Structural\MapTiler.cpp" />
     <ClCompile Include="Source\Structural\Utility.cpp" />
+    <ClCompile Include="Xbox360Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source\CMakeLists.txt" />
