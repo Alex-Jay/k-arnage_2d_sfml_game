@@ -1,5 +1,5 @@
-#include <Book/GameState.hpp>
-#include <Book/MusicPlayer.hpp>
+#include "State/GameState.hpp"
+#include "Audio/MusicPlayer.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 

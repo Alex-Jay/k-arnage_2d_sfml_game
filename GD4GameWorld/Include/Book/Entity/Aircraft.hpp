@@ -1,12 +1,12 @@
 #ifndef BOOK_AIRCRAFT_HPP
 #define BOOK_AIRCRAFT_HPP
 
-#include <Book/Entity.hpp>
+#include "Entity/Entity.hpp"
 #include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Entity/Projectile.hpp"
 #include "Node/TextNode.hpp"
-#include <Book/Animation.hpp>
+#include "Animation/Animation.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 

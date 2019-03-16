@@ -1,4 +1,4 @@
-#include <Book/GameServer.hpp>
+#include "Networking/GameServer.hpp"
 #include "Networking/NetworkProtocol.hpp"
 #include "Structural/Foreach.hpp"
 #include "Structural/Utility.hpp"

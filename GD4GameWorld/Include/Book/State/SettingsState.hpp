@@ -1,11 +1,11 @@
 #ifndef BOOK_SETTINGSSTATE_HPP
 #define BOOK_SETTINGSSTATE_HPP
 
-#include <Book/State.hpp>
-#include <Book/KeyBinding.hpp>
-#include <Book/Container.hpp>
-#include <Book/Button.hpp>
-#include <Book/Label.hpp>
+#include "State/State.hpp"
+#include "Structural/KeyBinding.hpp"
+#include "Component/Container.hpp"
+#include "Component/Button.hpp"
+#include "Component/Label.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>

@@ -1,10 +1,10 @@
 #ifndef BOOK_MULTIPLAYERGAMESTATE_HPP
 #define BOOK_MULTIPLAYERGAMESTATE_HPP
 
-#include <Book/State.hpp>
+#include "State/State.hpp"
 #include "Core/World.hpp"
-#include <Book/Player.hpp>
-#include <Book/GameServer.hpp>
+#include "Entity/Player.hpp"
+#include "Networking/GameServer.hpp"
 #include "Networking/NetworkProtocol.hpp"
 
 #include <SFML/System/Clock.hpp>

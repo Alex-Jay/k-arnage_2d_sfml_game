@@ -1,7 +1,7 @@
 #ifndef BOOK_PICKUP_HPP
 #define BOOK_PICKUP_HPP
 
-#include <Book/Entity.hpp>
+#include "Entity/Entity.hpp"
 #include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 

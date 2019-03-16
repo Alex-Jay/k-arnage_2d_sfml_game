@@ -1,7 +1,7 @@
 #ifndef BOOK_BLOOMEFFECT_HPP
 #define BOOK_BLOOMEFFECT_HPP
 
-#include <Book/PostEffect.hpp>
+#include "Effect/PostEffect.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Structural/ResourceHolder.hpp"
 

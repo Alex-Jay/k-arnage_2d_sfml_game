@@ -18,6 +18,8 @@ namespace Category
 		ParticleSystem		= 1 << 7,
 		SoundEffect			= 1 << 8,
 		Network				= 1 << 9,
+		Explosion			= 1 << 10,
+		Obstacle			= 1 << 11,
 
 		Aircraft = PlayerAircraft | AlliedAircraft | EnemyAircraft,
 		Projectile = AlliedProjectile | EnemyProjectile,

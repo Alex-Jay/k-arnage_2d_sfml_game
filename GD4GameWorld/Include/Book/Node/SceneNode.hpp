@@ -1,7 +1,7 @@
 #ifndef BOOK_SCENENODE_HPP
 #define BOOK_SCENENODE_HPP
 
-#include <Book/Category.hpp>
+#include "Structural/Category.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>

@@ -1,6 +1,6 @@
 #include "Entity/Pickup.hpp"
-#include <Book/DataTables.hpp>
-#include <Book/Category.hpp>
+#include "DataTable/DataTables.hpp"
+#include "Structural/Category.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"

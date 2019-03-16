@@ -1,7 +1,7 @@
-#include <Book/PauseState.hpp>
-#include <Book/Button.hpp>
+#include "State/PauseState.hpp"
+#include "Component/Button.hpp"
 #include "Structural/Utility.hpp"
-#include <Book/MusicPlayer.hpp>
+#include "Audio/MusicPlayer.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>

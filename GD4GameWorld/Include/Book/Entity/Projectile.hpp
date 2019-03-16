@@ -1,7 +1,7 @@
 #ifndef BOOK_PROJECTILE_HPP
 #define BOOK_PROJECTILE_HPP
 
-#include <Book/Entity.hpp>
+#include "Entity/Entity.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>

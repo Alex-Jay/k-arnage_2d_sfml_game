@@ -1,4 +1,4 @@
-#include <Book/Label.hpp>
+#include "Component/Label.hpp"
 #include "Structural/Utility.hpp"
 
 #include <SFML/Graphics/RenderStates.hpp>

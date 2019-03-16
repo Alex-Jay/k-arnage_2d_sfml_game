@@ -2,7 +2,7 @@
 #define BOOK_PLAYER_HPP
 
 #include "Command/Command.hpp"
-#include <Book/KeyBinding.hpp>
+#include "Structural/KeyBinding.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Window/Event.hpp>

@@ -1,8 +1,8 @@
 #pragma once
-#include <Book/Entity.hpp>
+#include "Entity/Entity.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Node/SoundNode.hpp"
-#include <Book/Animation.hpp>
+#include "Animation/Animation.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Time.hpp"
 

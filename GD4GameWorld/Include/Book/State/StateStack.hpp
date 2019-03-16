@@ -1,8 +1,8 @@
 #ifndef BOOK_STATESTACK_HPP
 #define BOOK_STATESTACK_HPP
 
-#include <Book/State.hpp>
-#include <Book/StateIdentifiers.hpp>
+#include "State/State.hpp"
+#include "State/StateIdentifiers.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 
 #include <SFML/System/NonCopyable.hpp>

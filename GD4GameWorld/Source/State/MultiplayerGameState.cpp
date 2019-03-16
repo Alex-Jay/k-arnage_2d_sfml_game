@@ -1,5 +1,5 @@
-#include <Book/MultiplayerGameState.hpp>
-#include <Book/MusicPlayer.hpp>
+#include "State/MultiplayerGameState.hpp"
+#include "Audio/MusicPlayer.hpp"
 #include "Structural/Foreach.hpp"
 #include "Structural/Utility.hpp"
 

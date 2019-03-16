@@ -1,11 +1,11 @@
 #include "Entity/Explosion.hpp"
 #include "DataTable/DataTables.hpp"
-#include <Book/Entity.hpp>
+#include "Entity/Entity.hpp"
 #include "Command/Command.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Structural/Utility.hpp"
 #include "Command/CommandQueue.hpp"
-#include <Book/EmitterNode.hpp>
+#include "Node/EmitterNode.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>

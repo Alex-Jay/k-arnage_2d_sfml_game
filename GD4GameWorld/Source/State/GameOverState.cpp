@@ -1,6 +1,6 @@
-#include <Book/GameOverState.hpp>
+#include "State/GameOverState.hpp"
 #include "Structural/Utility.hpp"
-#include <Book/Player.hpp>
+#include "Entity/Player.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>

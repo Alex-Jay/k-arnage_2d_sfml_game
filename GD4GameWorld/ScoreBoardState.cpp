@@ -1,8 +1,8 @@
 #include "ScoreBoardState.hpp"
-#include <Book/Button.hpp>
+#include "Component/Button.hpp"
 #include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"
-#include <Book/MusicPlayer.hpp>
+#include "Audio/MusicPlayer.hpp"
 #include "Constant/Constants.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>

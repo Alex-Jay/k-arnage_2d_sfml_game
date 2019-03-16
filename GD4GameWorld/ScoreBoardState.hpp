@@ -1,7 +1,7 @@
 #pragma once
-#include <Book/State.hpp>
-#include <Book/Player.hpp>
-#include <Book/Container.hpp>
+#include "State/State.hpp"
+#include "Entity/Player.hpp"
+#include "Component/Container.hpp"
 
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"

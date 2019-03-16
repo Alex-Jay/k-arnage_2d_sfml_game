@@ -1,4 +1,4 @@
-#include <Book/Animation.hpp>
+#include "Animation/Animation.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>

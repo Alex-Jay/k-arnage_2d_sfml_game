@@ -1,6 +1,6 @@
 #include "Node/ParticleNode.hpp"
 #include "Structural/Foreach.hpp"
-#include <Book/DataTables.hpp>
+#include "DataTable/DataTables.hpp"
 #include "Structural/ResourceHolder.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>

@@ -1,4 +1,4 @@
-#include <Book/EmitterNode.hpp>
+#include "Node/EmitterNode.hpp"
 #include "Node/ParticleNode.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Command/Command.hpp"

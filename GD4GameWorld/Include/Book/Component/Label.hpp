@@ -1,7 +1,7 @@
 #ifndef BOOK_LABEL_HPP
 #define BOOK_LABEL_HPP
 
-#include <Book/Component.hpp>
+#include "Component/Component.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
 #include "Structural/ResourceHolder.hpp"
 

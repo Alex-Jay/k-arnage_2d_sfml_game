@@ -3,9 +3,9 @@
 
 #include "Structural/ResourceHolder.hpp"
 #include "Structural/ResourceIdentifiers.hpp"
-#include <Book/KeyBinding.hpp>
-#include <Book/StateStack.hpp>
-#include <Book/MusicPlayer.hpp>
+#include "Structural/KeyBinding.hpp"
+#include "State/StateStack.hpp"
+#include "Audio/MusicPlayer.hpp"
 #include "Audio/SoundPlayer.hpp"
 
 #include <SFML/System/Time.hpp>

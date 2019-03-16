@@ -179,7 +179,7 @@ private:
 		sf::Time mZombieHitDelay;
 		sf::Time mZombieHitElapsedTime;
 
-		//sf::Texture mWaterTexture;
+		sf::Texture mWaterTexture;
 		//SpriteNode mWaterSprite;
 
 		int mWorldBoundsBuffer;

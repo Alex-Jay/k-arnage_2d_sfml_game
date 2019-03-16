@@ -1,6 +1,6 @@
 #include "Entity/Projectile.hpp"
-#include <Book/EmitterNode.hpp>
-#include <Book/DataTables.hpp>
+#include "Node/EmitterNode.hpp"
+#include "DataTable/DataTables.hpp"
 #include "Structural/Utility.hpp"
 #include "Structural/ResourceHolder.hpp"
 

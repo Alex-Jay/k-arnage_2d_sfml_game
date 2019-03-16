@@ -1,5 +1,5 @@
 #include "Structural/Utility.hpp"
-#include <Book/Animation.hpp>
+#include "Animation/Animation.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>

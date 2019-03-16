@@ -2,7 +2,7 @@
 #define BOOK_EMITTERNODE_HPP
 
 #include "Node/SceneNode.hpp"
-#include <Book/Particle.hpp>
+#include "Entity/Particle.hpp"
 
 
 class ParticleNode;
