@@ -186,8 +186,8 @@ std::vector<ExplosionData> initializeExplosionData()
 
 
 //Mike
-//std::vector<ObstacleData> initializeObstacleData()
-//{
-//	return std::vector<ObstacleData>();
-//}
+std::vector<ObstacleData> initializeObstacleData()
+{
+	return std::vector<ObstacleData>();
+}
 

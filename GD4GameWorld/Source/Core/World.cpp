@@ -309,7 +309,7 @@ void World::buildScene()
 	// Initialize the different layers
 	for (std::size_t i = 0; i < LayerCount; ++i)
 	{
-		Category::Type category = (i == LowerAir) ? Category::SceneAirLayer : Category::None;
+		Category::Type category = (i == LowerAir) ? Category::SceneLayer : Category::None;
 
 		SceneNode::Ptr layer(new SceneNode(category));
 		mSceneLayers[i] = layer.get();

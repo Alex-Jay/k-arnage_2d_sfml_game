@@ -107,7 +107,7 @@ std::vector<MapTileData> initializeMapTileData();
 std::vector<ExplosionData> initializeExplosionData();
 //std::vector<ProjectileData> initializeProjectileData();
 //std::vector<PickupData> initializePickupData();
-//std::vector<ObstacleData> initializeObstacleData();
+std::vector<ObstacleData> initializeObstacleData();
 
 
 #endif // BOOK_DATATABLES_HPP

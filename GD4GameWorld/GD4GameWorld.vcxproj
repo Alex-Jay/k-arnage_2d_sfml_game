@@ -67,6 +67,7 @@
     <ClInclude Include="Include\Book\Structural\ResourceHolder.hpp" />
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
+    <ClInclude Include="Obstacle.hpp" />
     <ClInclude Include="ShapeNode.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +75,7 @@
     <None Include="Include\Book\Structural\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="ShapeNode.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
     <ClCompile Include="Source\Audio\MusicPlayer.cpp" />

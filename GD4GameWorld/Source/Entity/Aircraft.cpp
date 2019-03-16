@@ -50,19 +50,19 @@ Aircraft::Aircraft(Type type, const TextureHolder& textures, const FontHolder& f
 	centerOrigin(mSprite);
 	centerOrigin(mExplosion);
 
-	mFireCommand.category = Category::SceneAirLayer;
+	mFireCommand.category = Category::SceneLayer;
 	mFireCommand.action   = [this, &textures] (SceneNode& node, sf::Time)
 	{
 		createBullets(node, textures);
 	};
 
-	mMissileCommand.category = Category::SceneAirLayer;
+	mMissileCommand.category = Category::SceneLayer;
 	mMissileCommand.action   = [this, &textures] (SceneNode& node, sf::Time)
 	{
 		createProjectile(node, Projectile::Missile, 0.f, 0.5f, textures);
 	};
 
-	mDropPickupCommand.category = Category::SceneAirLayer;
+	mDropPickupCommand.category = Category::SceneLayer;
 	mDropPickupCommand.action   = [this, &textures] (SceneNode& node, sf::Time)
 	{
 		createPickup(node, textures);

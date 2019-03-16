@@ -240,6 +240,9 @@
     <ClInclude Include="ShapeNode.hpp">
       <Filter>Header Files\Node</Filter>
     </ClInclude>
+    <ClInclude Include="Obstacle.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl">
@@ -375,6 +378,9 @@
     </ClCompile>
     <ClCompile Include="ShapeNode.cpp">
       <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
+      <Filter>Source Files\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
