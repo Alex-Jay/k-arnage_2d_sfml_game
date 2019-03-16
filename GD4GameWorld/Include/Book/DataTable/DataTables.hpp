@@ -13,7 +13,6 @@
 class Character;
 class Explosion;
 class Aircraft;
-class MapTileData;
 
 struct Direction
 {
@@ -105,7 +104,7 @@ std::vector<ParticleData>	initializeParticleData();
 std::vector<MapTileData> initializeMapTileData();
 
 //std::vector<CharacterData> initializeCharacterData();
-//std::vector<ExplosionData> initializeExplosionData();
+std::vector<ExplosionData> initializeExplosionData();
 //std::vector<ProjectileData> initializeProjectileData();
 //std::vector<PickupData> initializePickupData();
 //std::vector<ObstacleData> initializeObstacleData();

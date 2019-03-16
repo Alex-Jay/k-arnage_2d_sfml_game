@@ -4,6 +4,7 @@
 #include <Book/Pickup.hpp>
 #include <Book/Particle.hpp>
 #include "Structural/MapTiler.hpp"
+#include "Entity/Explosion.hpp"
 
 #include "DataTable/DataTables.hpp"
 #include "Constant/Constants.hpp"
@@ -112,7 +113,7 @@ std::vector<MapTileData> initializeMapTileData()
 	std::vector<MapTileData> data(static_cast<int>(MapTiler::MapID::TypeCount));
 
 	data[static_cast<int>(MapTiler::MapID::Dessert)].mapFile = "Media/map.txt";
-	//data[static_cast<int>(MapTiler::MapID::Dessert)].texture = TextureIDs::MapTiles;
+	data[static_cast<int>(MapTiler::MapID::Dessert)].texture = Textures::MapTiles;
 	data[static_cast<int>(MapTiler::MapID::Dessert)].tileSize = sf::Vector2u(DESSERT_TILE_WIDTH, DESSERT_TILE_HEIGHT);
 
 	return data;
@@ -168,18 +169,18 @@ std::vector<MapTileData> initializeMapTileData()
 //}
 
 //Mike
-//std::vector<ExplosionData> initializeExplosionData()
-//{
-//	std::vector<ExplosionData> data(static_cast<int>(Explosion::ExplosionIDs::TypeCount));
-//
-//	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].damage = GRENADEDAMAGE;
-//	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].radius = 80;
-//	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].lifeTimeSeconds = 1;
-//	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].texture = TextureIDs::Entities;
-//	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].textureRect = sf::IntRect(0, 0, 150, 150);
-//
-//	return data;
-//}
+std::vector<ExplosionData> initializeExplosionData()
+{
+	std::vector<ExplosionData> data(static_cast<int>(Explosion::ExplosionIDs::TypeCount));
+
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].damage = GRENADEDAMAGE;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].radius = 80;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].lifeTimeSeconds = 1;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].texture = Textures::ID::Entities;
+	data[static_cast<int>(Explosion::ExplosionIDs::GrenadeExplosion)].textureRect = sf::IntRect(0, 0, 150, 150);
+
+	return data;
+}
 
 //Mike
 
