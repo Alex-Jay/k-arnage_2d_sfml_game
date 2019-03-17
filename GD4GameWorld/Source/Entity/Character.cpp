@@ -6,6 +6,7 @@
 #include "Structural/ResourceHolder.hpp"
 #include "Node/SoundNode.hpp"
 #include "Constant/Constants.hpp"
+#include "Node/NetworkNode.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -133,6 +134,23 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 
 	if (!isMarkedForRemoval()) {
 		move(dt, commands);
+	}
+
+
+	// Emit network game action for enemy explosions
+	if (isZombie() && isDestroyed() && !networkNotified)
+	{
+		networkNotified = true;
+		sf::Vector2f position = getWorldPosition();
+
+		Command command;
+		command.category = Category::Network;
+		command.action = derivedAction<NetworkNode>([position](NetworkNode& node, sf::Time)
+		{
+			node.notifyGameAction(GameActions::EnemyExplode, position);
+		});
+
+		commands.push(command);
 	}
 
 	updateTexts();

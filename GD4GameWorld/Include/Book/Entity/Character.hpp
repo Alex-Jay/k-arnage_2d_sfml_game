@@ -99,5 +99,7 @@ private:
 
 	int mLocalIdentifier;
 
+	bool networkNotified{};
+
 };
 
