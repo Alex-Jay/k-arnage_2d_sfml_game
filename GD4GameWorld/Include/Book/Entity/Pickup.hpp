@@ -27,6 +27,8 @@ public:
 	virtual unsigned int getCategory() const;
 	virtual sf::FloatRect getBoundingRect() const;
 
+
+
 	void apply(Character& player) const;
 
 

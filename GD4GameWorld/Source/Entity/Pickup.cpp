@@ -33,7 +33,7 @@ sf::FloatRect Pickup::getBoundingRect() const
 
 void Pickup::apply(Character& player) const
 {
-	//Table[static_cast<int>(mType)].action(player); //TOFIX
+	Table[static_cast<int>(mType)].action(player); 
 }
 
 void Pickup::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const

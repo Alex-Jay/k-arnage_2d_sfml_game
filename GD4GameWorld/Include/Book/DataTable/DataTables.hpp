@@ -67,7 +67,7 @@ struct ProjectileData
 
 struct PickupData
 {
-	std::function<void(Aircraft&)>	action;
+	std::function<void(Character&)>	action;
 	Textures::ID					texture;
 	sf::IntRect						textureRect;
 };

@@ -16,47 +16,54 @@
 #include <cmath>
 #include <iostream>
 
-namespace
-{
+namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
 }
 
-//Mike Character Class, Modified From Aircraft
-Character::Character(Type type, const TextureHolder& textures, const FontHolder& fonts)
+// Mike Character Class, Modified From Aircraft
+Character::Character(Type type, const TextureHolder& textures,
+	const FontHolder& fonts)
 	: Entity(Table[static_cast<int>(type)].hitpoints)
-	  , mType(type)
-	  , mCharacterMoveAnimation(textures.get(Table[static_cast<int>(type)].moveAnimation))
-	  , mCharacterDeathAnimation(textures.get(Table[static_cast<int>(type)].deathAnimation))
-	  , mHealthDisplay(nullptr)
-	  , mGrenadeDisplay(nullptr)
-	  , mGrenadePower(nullptr)
-	  , mSprite(textures.get(Table[static_cast<int>(type)].texture), Table[static_cast<int>(type)].textureRect)
-	  , mFireCountdown(sf::Time::Zero)
-	  , mIsFiring(false)
-	  , mIsLaunchingGrenade(false)
-	  , mShowDeath(true)
-	  , mPlayedScreamSound(false)
-	  , mFireRateLevel(1)
-	  , mSpreadLevel(1)
-	  , mGrenadeAmmo(2)
-	  , mTravelledDistance(0.f)
-	  , mDirectionIndex(0)
-	  , mLocalIdentifier(0)
+	, mType(type)
+	, mCharacterMoveAnimation(
+		textures.get(Table[static_cast<int>(type)].moveAnimation))
+	, mCharacterDeathAnimation(
+		textures.get(Table[static_cast<int>(type)].deathAnimation))
+	, mHealthDisplay(nullptr)
+	, mGrenadeDisplay(nullptr)
+	, mGrenadePower(nullptr)
+	, mSprite(textures.get(Table[static_cast<int>(type)].texture),
+		Table[static_cast<int>(type)].textureRect)
+	, mFireCountdown(sf::Time::Zero)
+	, mIsFiring(false)
+	, mIsLaunchingGrenade(false)
+	, mShowDeath(true)
+	, mPlayedScreamSound(false)
+	, mFireRateLevel(1)
+	, mSpreadLevel(1)
+	, mGrenadeAmmo(2)
+	, mTravelledDistance(0.f)
+	, mDirectionIndex(0)
+	, mLocalIdentifier(0)
 {
 	// Alex - Optimize texture rect size for collision detection
 	mSprite.setTextureRect(sf::IntRect(0, 0, 80, 70));
 
 	mCharacterMoveAnimation.setFrameSize(Table[static_cast<int>(type)].moveRect);
-	mCharacterMoveAnimation.setNumFrames(Table[static_cast<int>(type)].moveFrames);
-	mCharacterMoveAnimation.setScale(Table[static_cast<int>(type)].moveScale, Table[static_cast<int>(type)].moveScale);
+	mCharacterMoveAnimation.setNumFrames(
+		Table[static_cast<int>(type)].moveFrames);
+	mCharacterMoveAnimation.setScale(Table[static_cast<int>(type)].moveScale,
+		Table[static_cast<int>(type)].moveScale);
 	mCharacterMoveAnimation.setDuration(sf::seconds(1));
 	mCharacterMoveAnimation.setRepeating(true);
 	mCharacterMoveAnimation.setTextureRect();
 
-	mCharacterDeathAnimation.setFrameSize(Table[static_cast<int>(type)].deathRect);
-	mCharacterDeathAnimation.setNumFrames(Table[static_cast<int>(type)].deathFrames);
+	mCharacterDeathAnimation.setFrameSize(
+		Table[static_cast<int>(type)].deathRect);
+	mCharacterDeathAnimation.setNumFrames(
+		Table[static_cast<int>(type)].deathFrames);
 	mCharacterDeathAnimation.setScale(Table[static_cast<int>(type)].deathScale,
-	                                  Table[static_cast<int>(type)].deathScale);
+		Table[static_cast<int>(type)].deathScale);
 	mCharacterDeathAnimation.setDuration(sf::seconds(1));
 
 	centreOrigin(mSprite);
@@ -64,25 +71,22 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	centreOrigin(mCharacterDeathAnimation);
 
 	mFireCommand.category = static_cast<int>(Category::SceneLayer);
-	mFireCommand.action = [this, &textures](SceneNode& node, sf::Time)
-	{
+	mFireCommand.action = [this, &textures](SceneNode& node, sf::Time) {
 		createBullets(node, textures);
 	};
 
 	mGrenadeCommand.category = static_cast<int>(Category::SceneLayer);
-	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time)
-	{
-		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f, textures, getLocalIdentifier());
+	mGrenadeCommand.action = [this, &textures](SceneNode& node, sf::Time) {
+		createProjectile(node, Projectile::ProjectileIDs::Grenade, 0.f, 0.5f,
+			textures, getLocalIdentifier());
 		mGrenadeVelocity = 0.f;
 	};
-
 
 	std::unique_ptr<ShapeNode> healthDisplay(new ShapeNode(sf::Color::Green));
 	mHealthDisplay = healthDisplay.get();
 	attachChild(std::move(healthDisplay));
 
-	if (getCategory() == static_cast<int>(Category::PlayerCharacter))
-	{
+	if (getCategory() == static_cast<int>(Category::PlayerCharacter)) {
 		std::unique_ptr<TextNode> grenadeDisplay(new TextNode(fonts, ""));
 		grenadeDisplay->setPosition(0, 70);
 		mGrenadeDisplay = grenadeDisplay.get();
@@ -97,17 +101,16 @@ Character::Character(Type type, const TextureHolder& textures, const FontHolder&
 	updateTexts();
 }
 
-void Character::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void Character::drawCurrent(sf::RenderTarget& target,
+	sf::RenderStates states) const
 {
-	// Alex - Debug Bounding Rectangle	
-	//drawBoundingRect(target, states);
+	// Alex - Debug Bounding Rectangle
+	// drawBoundingRect(target, states);
 
-	if (isDestroyed() && mShowDeath)
-	{
+	if (isDestroyed() && mShowDeath) {
 		target.draw(mCharacterDeathAnimation, states);
 	}
-	else
-	{
+	else {
 		target.draw(mCharacterMoveAnimation, states);
 	}
 }
@@ -123,14 +126,13 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Get players position
 	mLastPosition = getPosition();
 
-	//Update Player Animations
+	// Update Player Animations
 	updateAnimations(dt, commands);
 
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
 
-	if(!isDestroyed())
-	{
+	if (!isDestroyed()) {
 		move(dt, commands);
 	}
 
@@ -138,9 +140,8 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 }
 
 void Character::move(sf::Time dt, CommandQueue& commands)
-{ 
-	if (mType == Type::Zombie)
-	{
+{
+	if (mType == Type::Zombie) {
 		sf::Vector2f newVelocity = mTargetDirection * dt.asSeconds();
 		newVelocity *= getMaxSpeed() * 50;
 
@@ -148,29 +149,28 @@ void Character::move(sf::Time dt, CommandQueue& commands)
 		setRotation(toDegrees(angle));
 		setVelocity(newVelocity);
 	}
-	else if (mType == Type::Player)
-	{
-		//setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed()); // Alex - update players current rotation
+	else if (mType == Type::Player) {
+		// setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed());
+		// // Alex - update players current rotation
 		updateVelocity(dt);
 	}
 
 	Entity::updateCurrent(dt, commands);
 }
 
-void Character::updateVelocity(sf::Time dt) //TO DELETE//TODO
+void Character::updateVelocity(sf::Time dt) // TO DELETE//TODO
 {
 	rotate(getVelocity().x * dt.asSeconds());
-	setVelocity(cos(getRotation() * M_PI / 180) * -getVelocity().y, sin(getRotation() * M_PI / 180) * -getVelocity().y);
+	setVelocity(cos(getRotation() * M_PI / 180) * -getVelocity().y,
+		sin(getRotation() * M_PI / 180) * -getVelocity().y);
 }
 
 void Character::updateAnimations(sf::Time dt, CommandQueue& commands)
 {
-	if (isDestroyed())
-	{
+	if (isDestroyed()) {
 		mCharacterDeathAnimation.update(dt);
 
-		if (!mPlayedScreamSound && isPlayer())
-		{
+		if (!mPlayedScreamSound && isPlayer()) {
 			SoundEffect::ID soundEffect = SoundEffect::ID::Scream;
 			playLocalSound(commands, soundEffect);
 
@@ -178,8 +178,7 @@ void Character::updateAnimations(sf::Time dt, CommandQueue& commands)
 		}
 		return;
 	}
-	if (getVelocity().x != 0.f || getVelocity().y != 0.f)
-	{
+	if (getVelocity().x != 0.f || getVelocity().y != 0.f) {
 		mCharacterMoveAnimation.update(dt);
 	}
 }
@@ -207,15 +206,9 @@ void Character::remove()
 	mShowDeath = false;
 }
 
-bool Character::isPlayer() const
-{
-	return mType == Type::Player;
-}
+bool Character::isPlayer() const { return mType == Type::Player; }
 
-bool Character::isZombie() const
-{
-	return mType == Type::Zombie;
-}
+bool Character::isZombie() const { return mType == Type::Zombie; }
 
 float Character::getMaxSpeed() const
 {
@@ -228,10 +221,7 @@ void Character::increaseFireRate()
 		++mFireRateLevel;
 }
 
-void Character::collectGrenades(unsigned int count)
-{
-	mGrenadeAmmo += count;
-}
+void Character::collectGrenades(unsigned int count) { mGrenadeAmmo += count; }
 
 void Character::fire()
 {
@@ -242,8 +232,7 @@ void Character::fire()
 
 void Character::startGrenade()
 {
-	if (mGrenadeAmmo > 0)
-	{
+	if (mGrenadeAmmo > 0) {
 		mGrenadeVelocity = 0;
 		mGrenadeStarted = true;
 	}
@@ -251,8 +240,7 @@ void Character::startGrenade()
 
 void Character::launchGrenade()
 {
-	if (mGrenadeStarted)
-	{
+	if (mGrenadeStarted) {
 		mIsLaunchingGrenade = true;
 		--mGrenadeAmmo;
 	}
@@ -262,11 +250,9 @@ void Character::updateMovementPattern(sf::Time dt)
 {
 	// Enemy airplane: Movement pattern
 	const std::vector<Direction>& directions = Table[static_cast<int>(mType)].directions;
-	if (!directions.empty())
-	{
+	if (!directions.empty()) {
 		// Moved long enough in current direction: Change direction
-		if (mTravelledDistance > directions[mDirectionIndex].distance)
-		{
+		if (mTravelledDistance > directions[mDirectionIndex].distance) {
 			mDirectionIndex = (mDirectionIndex + 1) % directions.size();
 			mTravelledDistance = 0.f;
 		}
@@ -284,8 +270,7 @@ void Character::updateMovementPattern(sf::Time dt)
 
 void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 {
-	if (mGrenadeStarted)
-	{
+	if (mGrenadeStarted) {
 		clamp(mGrenadeVelocity += dt.asMilliseconds(), 0, 500.f);
 	}
 
@@ -294,42 +279,44 @@ void Character::checkProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		fire();
 
 	// Check for automatic gunfire, allow only in intervals
-	if (mIsFiring && mFireCountdown <= sf::Time::Zero)
-	{
+	if (mIsFiring && mFireCountdown <= sf::Time::Zero) {
 		// Interval expired: We can fire a new bullet
 		commands.push(mFireCommand);
-		playLocalSound(commands,  SoundEffect::ID::AlliedGunfire);
+		playLocalSound(commands, SoundEffect::ID::AlliedGunfire);
 		mFireCountdown += Table[static_cast<int>(mType)].fireInterval / (mFireRateLevel + 1.f);
 		mIsFiring = false;
 	}
-	else if (mFireCountdown > sf::Time::Zero)
-	{
+	else if (mFireCountdown > sf::Time::Zero) {
 		// Interval not expired: Decrease it further
 		mFireCountdown -= dt;
 		mIsFiring = false;
 	}
 
 	// Check for grenade launch
-	if (mIsLaunchingGrenade)
-	{
+	if (mIsLaunchingGrenade) {
 		commands.push(mGrenadeCommand);
-		//playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
+		// playLocalSound(commands, SoundEffectIDs::LaunchGrenade);
 		mIsLaunchingGrenade = false;
 		mGrenadeStarted = false;
 	}
 }
 
-void Character::createBullets(SceneNode& node, const TextureHolder& textures) const
-{ 
-	//TODO ALL Bullets Damage Everybody, NO Enemy or Allied Bullets
-	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.09f, 0.5f, textures, getLocalIdentifier());
+void Character::createBullets(SceneNode& node,
+	const TextureHolder& textures) const
+{
+	// TODO ALL Bullets Damage Everybody, NO Enemy or Allied Bullets
+	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.228f, 1,
+		textures, getLocalIdentifier());
 }
 
-void Character::createProjectile(SceneNode& node, Projectile::ProjectileIDs type, float xOffset, float yOffset,
-                                 const TextureHolder& textures, unsigned int projectileId) const
+void Character::createProjectile(SceneNode& node,
+	Projectile::ProjectileIDs type, float xOffset,
+	float yOffset, const TextureHolder& textures,
+	unsigned int projectileId) const
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width, yOffset * mSprite.getGlobalBounds().height);
+	sf::Vector2f offset(xOffset * mSprite.getGlobalBounds().width,
+		yOffset * mSprite.getGlobalBounds().height);
 
 	projectile->setProjectileId(projectileId);
 	projectile->setOrigin(offset);
@@ -353,16 +340,17 @@ void Character::updateTexts()
 	mHealthDisplay->setRotation(-getRotation());
 	mHealthDisplay->setOrigin(30.0f, -90.f);
 
-	//Sets dimensions of health display to 0x 0y if health is depleted
-	mHealthDisplay->setSize(getHitpoints() != 0 ? getHitpoints()  : 0, getHitpoints() != 0 ? 5.f : 0);
+	// Sets dimensions of health display to 0x 0y if health is depleted
+	mHealthDisplay->setSize(getHitpoints() != 0 ? getHitpoints() : 0,
+		getHitpoints() != 0 ? 5.f : 0);
 
-	if (mGrenadeDisplay)
-	{
+	if (mGrenadeDisplay) {
 		mGrenadePower->setPosition(0.f, 0.f);
 		mGrenadePower->setRotation(-getRotation());
 		mGrenadePower->setOrigin(30.0f, -100.f);
 
-		mGrenadePower->setSize(mGrenadeVelocity != 0 ? mGrenadeVelocity / 5 : 0, mGrenadeVelocity != 0 ? 5.f : 0);
+		mGrenadePower->setSize(mGrenadeVelocity != 0 ? mGrenadeVelocity / 5 : 0,
+			mGrenadeVelocity != 0 ? 5.f : 0);
 
 		mGrenadeDisplay->setPosition(0.f, 0.f);
 		mGrenadeDisplay->setRotation(-getRotation());
@@ -370,16 +358,13 @@ void Character::updateTexts()
 		mGrenadeDisplay->setString(std::to_string(mGrenadeAmmo));
 	}
 
-	if (getHitpoints() <= 20)
-	{
+	if (getHitpoints() <= 20) {
 		mHealthDisplay->setFillColor(sf::Color(RED));
 	}
-	else if (getHitpoints() > 20 && getHitpoints() <= 70)
-	{
+	else if (getHitpoints() > 20 && getHitpoints() <= 70) {
 		mHealthDisplay->setFillColor(sf::Color(ORANGE));
 	}
-	else if (getHitpoints() > 70)
-	{
+	else if (getHitpoints() > 70) {
 		mHealthDisplay->setFillColor(sf::Color(GREEN));
 	}
 }
@@ -390,22 +375,14 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
 
 	Command command;
 	command.category = static_cast<int>(Category::SoundEffect);
-	command.action = derivedAction<SoundNode>([effect, worldPosition](SoundNode& node, sf::Time)
-	{
-		node.playSound(effect, worldPosition);
-	});
+	command.action = derivedAction<SoundNode>([effect, worldPosition](
+		SoundNode& node, sf::Time) { node.playSound(effect, worldPosition); });
 	commands.push(command);
 }
 
-void Character::setGrenadeAmmo(sf::Int32 ammo)
-{
-	mGrenadeAmmo = ammo;
-}
+void Character::setGrenadeAmmo(sf::Int32 ammo) { mGrenadeAmmo = ammo; }
 
-unsigned int Character::getGrenadeAmmo()
-{
-	return mGrenadeAmmo;
-}
+unsigned int Character::getGrenadeAmmo() { return mGrenadeAmmo; }
 
 // Alex - Get maximum rotation speed (Set in Constants.hpp & DataTables.cpp)
 float Character::getMaxRotationSpeed() const
@@ -418,17 +395,12 @@ unsigned int const Character::getLocalIdentifier() const
 	return mLocalIdentifier;
 }
 
-
 void Character::setLocalIdentifier(unsigned int localID)
 {
 	mLocalIdentifier = localID;
 }
 
-sf::Vector2f Character::getLastPosition()
-{
-	return mLastPosition;
-
-}
+sf::Vector2f Character::getLastPosition() { return mLastPosition; }
 
 void Character::setLastPosition(sf::Vector2f position)
 {

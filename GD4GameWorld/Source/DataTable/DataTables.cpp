@@ -80,19 +80,19 @@ std::vector<PickupData> initializePickupData()
 
 	data[static_cast<int>(Pickup::Type::HealthRefill)].texture = Textures::Entities;
 	data[static_cast<int>(Pickup::Type::HealthRefill)].textureRect = sf::IntRect(0, 64, 40, 40);
-	//data[static_cast<int>(Pickup::HealthRefill)].action = [](Character& a)
-	//{
-	//	a.repair(HEALTHPICKUPREPAIRVALUE);
-	//};
+	data[static_cast<int>(Pickup::Type::HealthRefill)].action = [](Character& a)
+	{
+		a.repair(HEALTHPICKUPREPAIRVALUE);
+	};
 
 	data[static_cast<int>(Pickup::Type::GrenadeRefill)].texture = Textures::ID::Entities;
 	data[static_cast<int>(Pickup::Type::GrenadeRefill)].textureRect = sf::IntRect(40, 64, 40, 40);
-	//data[static_cast<int>(Pickup::Type::GrenadeRefill)].action = std::bind(
-	//	&Character::collectGrenades, _1, GRENADEPICKUPAMMOVALUE);
+	data[static_cast<int>(Pickup::Type::GrenadeRefill)].action = std::bind(
+		&Character::collectGrenades, _1, GRENADEPICKUPAMMOVALUE);
 
 	data[static_cast<int>(Pickup::Type::FireRate)].texture = Textures::Entities;
 	data[static_cast<int>(Pickup::Type::FireRate)].textureRect = sf::IntRect(120, 64, 40, 40);
-	//data[static_cast<int>(Pickup::Type::FireRate)].action = std::bind(&Character::increaseFireRate, _1);
+	data[static_cast<int>(Pickup::Type::FireRate)].action = std::bind(&Character::increaseFireRate, _1);
 
 	return data;
 }
