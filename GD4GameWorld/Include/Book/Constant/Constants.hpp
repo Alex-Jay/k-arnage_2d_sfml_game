@@ -39,6 +39,8 @@ const float ZOMBIEHITPOINTS = 100.f;
 const float ZOMBIESPEED = 160.f;
 const float ZOMBIEATTACKDAMAGE = 19.5f;
 const float ZOMBIEATTACKDELAY = 600.f; // In miliseconds
+
+const float LAVA_DAMAGE = 2.f;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++

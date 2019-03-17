@@ -1,4 +1,4 @@
-#include "ShapeNode.hpp"
+#include "Node/ShapeNode.hpp"
 #include "Structural/Utility.hpp"
 
 #include "SFML/Graphics/RenderTarget.hpp"

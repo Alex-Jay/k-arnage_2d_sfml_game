@@ -341,8 +341,8 @@ void Character::updateTexts()
 	mHealthDisplay->setOrigin(30.0f, -90.f);
 
 	// Sets dimensions of health display to 0x 0y if health is depleted
-	mHealthDisplay->setSize(getHitpoints() != 0 ? getHitpoints() : 0,
-		getHitpoints() != 0 ? 5.f : 0);
+	mHealthDisplay->setSize(getHitpoints() > 0 ? getHitpoints() : 0,
+		getHitpoints() > 0 ? 5.f : 0);
 
 	if (mGrenadeDisplay) {
 		mGrenadePower->setPosition(0.f, 0.f);

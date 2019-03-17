@@ -57,6 +57,7 @@ void World::loadTextures()
 	//TODO PLACE SEPARATE TEXTURES INTO SPRITE SHEETS, REMOVE unused ASSETS
 	mTextures.load(Textures::ID::Entities, "Media/Textures/Entities.png");
 	mTextures.load(Textures::ID::Water, "Media/Textures/Water.jpg");
+	mTextures.load(Textures::ID::Lava, "Media/Textures/Lava.png");
 	mTextures.load(Textures::ID::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(Textures::ID::Particle, "Media/Textures/Particle.png");
 	mTextures.load(Textures::ID::PlayerMove, "Media/Textures/PlayerMove.png");
@@ -498,7 +499,7 @@ void World::buildScene()
 	mWorldBounds = map->getMapBounds();
 	mWorldBoundsBuffer = map->getTileSize().x;
 
-	mWaterTexture = mTextures.get(Textures::ID::Water);
+	mWaterTexture = mTextures.get(Textures::ID::Lava);
 	mWaterTexture.setRepeated(true);
 
 	float viewHeight = mWorldBounds.height;
@@ -608,8 +609,8 @@ void World::handlePlayerCollision()
 	mPlayerOneCharacter = getCharacter(1); //TODo FIX HOW Local Character is Got
 	// Map bound collision TOFIX
 
-	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
-		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+	if (!mWorldBounds.contains(mPlayerOneCharacter->getPosition()))
+		mPlayerOneCharacter->damage(LAVA_DAMAGE);
 }
 
 //Mike

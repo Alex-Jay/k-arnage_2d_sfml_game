@@ -10,7 +10,7 @@
 
 DistortionEffect::DistortionEffect()
 	: mDistortionFactor(0.05f)
-	, mDistortionSpeed(0.1f)
+	, mDistortionSpeed(0.05f)
 {
 	//Had trouble loading shader from mShaders, due to second parameter of (shaderType) required
 	//mShaders.load(Shaders::Distortion, "Media/Shaders/Distortion.frag", sf::Shader::Fragment);

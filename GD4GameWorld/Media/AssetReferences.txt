@@ -13,6 +13,7 @@ CRATE : https://opengameart.org/content/2d-wooden-box
 GRENADE : https://vignette.wikia.nocookie.net/object-torworts/images/f/fb/Grenade.png/revision/latest?cb=20170423020528
 Zombie : https://opengameart.org/content/top-down-animated-zombie-set
 Player : https://opengameart.org/content/animated-top-down-survivor-player
+LAVA : https://creativemarket.com/MarabuDesign/308827-Lava-Seamless-Background-Texture
 
 ++++++++++++++++ SHADER ++++++++++++
 Distortion Shader && Distortion Map : https://www.lucidarme.me/sfml-distorsion-shader/
