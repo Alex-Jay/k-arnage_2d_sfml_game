@@ -10,29 +10,28 @@
 #include "State/SettingsState.hpp"
 #include "State/GameOverState.hpp"
 
-
-const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-: mWindow(sf::VideoMode(1024, 768), "Network", sf::Style::Close)
-, mTextures()
-, mFonts()
-, mMusic()
-, mSounds()
-, mKeyBinding1(1)
-, mKeyBinding2(2)
-, mStateStack(State::Context(mWindow, mTextures, mFonts, mMusic, mSounds, mKeyBinding1, mKeyBinding2))
-, mStatisticsText()
-, mStatisticsUpdateTime()
-, mStatisticsNumFrames(0)
+	: mWindow(sf::VideoMode(1024, 768), "Network", sf::Style::Close)
+	, mTextures()
+	, mFonts()
+	, mMusic()
+	, mSounds()
+	, mKeyBinding1(1)
+	, mKeyBinding2(2)
+	, mStateStack(State::Context(mWindow, mTextures, mFonts, mMusic, mSounds, mKeyBinding1, mKeyBinding2))
+	, mStatisticsText()
+	, mStatisticsUpdateTime()
+	, mStatisticsNumFrames(0)
 {
 	mWindow.setKeyRepeatEnabled(false);
 	mWindow.setVerticalSyncEnabled(true);
 
-	mFonts.load(Fonts::Main, 	"Media/Fonts/Sansation.ttf");
+	mFonts.load(Fonts::Main, "Media/Fonts/Sansation.ttf");
 
-	mTextures.load(Textures::TitleScreen,	"Media/Textures/TitleScreen.png");
-	mTextures.load(Textures::Buttons,		"Media/Textures/Buttons.png");
+	mTextures.load(Textures::TitleScreen, "Media/Textures/TitleScreen.png");
+	mTextures.load(Textures::Buttons, "Media/Textures/Buttons.png");
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
 	mStatisticsText.setPosition(5.f, 5.f);
@@ -49,12 +48,10 @@ void Application::run()
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-	while (mWindow.isOpen())
-	{
+	while (mWindow.isOpen()) {
 		sf::Time dt = clock.restart();
 		timeSinceLastUpdate += dt;
-		while (timeSinceLastUpdate > TimePerFrame)
-		{
+		while (timeSinceLastUpdate > TimePerFrame) {
 			timeSinceLastUpdate -= TimePerFrame;
 
 			processInput();
@@ -73,8 +70,7 @@ void Application::run()
 void Application::processInput()
 {
 	sf::Event event;
-	while (mWindow.pollEvent(event))
-	{
+	while (mWindow.pollEvent(event)) {
 		mStateStack.handleEvent(event);
 
 		if (event.type == sf::Event::Closed)
@@ -103,8 +99,7 @@ void Application::updateStatistics(sf::Time dt)
 {
 	mStatisticsUpdateTime += dt;
 	mStatisticsNumFrames += 1;
-	if (mStatisticsUpdateTime >= sf::seconds(1.0f))
-	{
+	if (mStatisticsUpdateTime >= sf::seconds(1.0f)) {
 		mStatisticsText.setString("FPS: " + mStatisticsNumFrames);
 
 		mStatisticsUpdateTime -= sf::seconds(1.0f);

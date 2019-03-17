@@ -8,7 +8,6 @@
 
 #include <fstream>
 
-
 sf::IpAddress getAddressFromFile()
 {
 	{ // Try to open existing file (RAII block)
@@ -22,22 +21,23 @@ sf::IpAddress getAddressFromFile()
 	std::ofstream outputFile("ip.txt");
 	std::string localAddress = "127.0.0.1";
 	outputFile << localAddress;
+
 	return localAddress;
 }
 
 MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
-: State(stack, context)
-, mWorld(*context.window, *context.fonts, *context.sounds, true)
-, mWindow(*context.window)
-, mTextureHolder(*context.textures)
-, mConnected(false)
-, mGameServer(nullptr)
-, mActiveState(true)
-, mHasFocus(true)
-, mHost(isHost)
-, mGameStarted(false)
-, mClientTimeout(sf::seconds(2.f))
-, mTimeSinceLastPacket(sf::seconds(0.f))
+	: State(stack, context)
+	, mWorld(*context.window, *context.fonts, *context.sounds, true)
+	, mWindow(*context.window)
+	, mTextureHolder(*context.textures)
+	, mConnected(false)
+	, mGameServer(nullptr)
+	, mActiveState(true)
+	, mHasFocus(true)
+	, mHost(isHost)
+	, mGameStarted(false)
+	, mClientTimeout(sf::seconds(2.f))
+	, mTimeSinceLastPacket(sf::seconds(0.f))
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
@@ -64,16 +64,14 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	centerOrigin(mFailedConnectionText);
 
 	sf::IpAddress ip;
-	if (isHost)
-	{
+	if (isHost) {
 		mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
 		ip = "127.0.0.1";
 	}
-	else
-	{
+	else {
 		ip = getAddressFromFile();
 	}
-	
+
 	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
 		mConnected = true;
 	else
@@ -87,8 +85,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 void MultiplayerGameState::draw()
 {
-	if (mConnected)
-	{
+	if (mConnected) {
 		mWorld.draw();
 
 		// Broadcast messages in default view
@@ -100,8 +97,7 @@ void MultiplayerGameState::draw()
 		if (mLocalPlayerIdentifiers.size() < 2 && mPlayerInvitationTime < sf::seconds(0.5f))
 			mWindow.draw(mPlayerInvitationText);
 	}
-	else
-	{
+	else {
 		mWindow.draw(mFailedConnectionText);
 	}
 }
@@ -113,8 +109,7 @@ void MultiplayerGameState::onActivate()
 
 void MultiplayerGameState::onDestroy()
 {
-	if (!mHost && mConnected)
-	{
+	if (!mHost && mConnected) {
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
@@ -125,43 +120,38 @@ void MultiplayerGameState::onDestroy()
 bool MultiplayerGameState::update(sf::Time dt)
 {
 	// Connected to server: Handle all the network logic
-	if (mConnected)
-	{
-		mWorld.update(dt);
-
+	if (mConnected) {
+	
 		// Remove players whose characters were destroyed
 		bool foundLocalPlane = false;
-		for (auto itr = mPlayers.begin(); itr != mPlayers.end(); )
-		{
+		for (auto itr = mPlayers.begin(); itr != mPlayers.end();) {
 			// Check if there are no more local planes for remote clients
-			if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end())
-			{
+			if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end()) {
 				foundLocalPlane = true;
 			}
 
-			if (!mWorld.getCharacter(itr->first))
-			{
+			if (!mWorld.getCharacter(itr->first)) {
 				itr = mPlayers.erase(itr);
 
 				// No more players left: Mission failed
 				if (mPlayers.empty())
 					requestStackPush(States::GameOver);
 			}
-			else
-			{
+			else {
 				++itr;
 			}
+
+			mWorld.update(dt);
 		}
 
-		if (!foundLocalPlane && mGameStarted)
-		{
+		if (!foundLocalPlane && mGameStarted) {
 			requestStackPush(States::GameOver);
 		}
 
 		// Only handle the realtime input if the window has focus and the game is unpaused
-		if (mActiveState && mHasFocus)
-		{
+		if (mActiveState && mHasFocus) {
 			CommandQueue& commands = mWorld.getCommandQueue();
+
 			FOREACH(auto& pair, mPlayers)
 				pair.second->handleRealtimeInput(commands);
 		}
@@ -173,18 +163,15 @@ bool MultiplayerGameState::update(sf::Time dt)
 
 		// Handle messages from server that may have arrived
 		sf::Packet packet;
-		if (mSocket.receive(packet) == sf::Socket::Done)
-		{
+		if (mSocket.receive(packet) == sf::Socket::Done) {
 			mTimeSinceLastPacket = sf::seconds(0.f);
-			sf::Int32 packetType;	
+			sf::Int32 packetType;
 			packet >> packetType;
-			handlePacket(packetType, packet);	
+			handlePacket(packetType, packet);
 		}
-		else
-		{
+		else {
 			// Check for timeout with the server
-			if (mTimeSinceLastPacket > mClientTimeout)
-			{
+			if (mTimeSinceLastPacket > mClientTimeout) {
 				mConnected = false;
 
 				mFailedConnectionText.setString("Lost connection to server");
@@ -203,8 +190,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 
 		// Events occurring in the game
 		GameActions::Action gameAction;
-		while (mWorld.pollGameAction(gameAction))
-		{
+		while (mWorld.pollGameAction(gameAction)) {
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Client::GameEvent);
 			packet << static_cast<sf::Int32>(gameAction.type);
@@ -215,14 +201,13 @@ bool MultiplayerGameState::update(sf::Time dt)
 		}
 
 		// Regular position updates
-		if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f))
-		{
+		if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
 			sf::Packet positionUpdatePacket;
 			positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
 			positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
-			
+
 			FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
-			{			
+			{
 				if (Character* character = mWorld.getCharacter(identifier))
 					positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
 			}
@@ -235,8 +220,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 	}
 
 	// Failed to connect and waited for more than 5 seconds: Back to menu
-	else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f))
-	{
+	else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
 		requestStateClear();
 		requestStackPush(States::Menu);
 	}
@@ -259,13 +243,11 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 
 	// Forward event to all players
 	FOREACH(auto& pair, mPlayers)
-		pair.second->handleEvent(event, commands);	
+		pair.second->handleEvent(event, commands);
 
-	if (event.type == sf::Event::KeyPressed)
-	{
+	if (event.type == sf::Event::KeyPressed) {
 		// Enter pressed, add second player co-op (only if we are one player)
-		if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1)
-		{
+		if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
 
@@ -273,18 +255,15 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 		}
 
 		// Escape pressed, trigger the pause screen
-		else if (event.key.code == sf::Keyboard::Escape)
-		{
+		else if (event.key.code == sf::Keyboard::Escape) {
 			disableAllRealtimeActions();
 			requestStackPush(States::NetworkPause);
 		}
 	}
-	else if (event.type == sf::Event::GainedFocus)
-	{
+	else if (event.type == sf::Event::GainedFocus) {
 		mHasFocus = true;
 	}
-	else if (event.type == sf::Event::LostFocus)
-	{
+	else if (event.type == sf::Event::LostFocus) {
 		mHasFocus = false;
 	}
 
@@ -298,14 +277,12 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 
 	// Update broadcast timer
 	mBroadcastElapsedTime += elapsedTime;
-	if (mBroadcastElapsedTime > sf::seconds(2.5f))
-	{
+	if (mBroadcastElapsedTime > sf::seconds(2.5f)) {
 		// If message has expired, remove it
 		mBroadcasts.erase(mBroadcasts.begin());
 
 		// Continue to display next broadcast message
-		if (!mBroadcasts.empty())
-		{
+		if (!mBroadcasts.empty()) {
 			mBroadcastText.setString(mBroadcasts.front());
 			centerOrigin(mBroadcastText);
 			mBroadcastElapsedTime = sf::Time::Zero;
@@ -315,181 +292,165 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
-	switch (packetType)
-	{
+	switch (packetType) {
 		// Send message to all clients
-		case Server::BroadcastMessage:
-		{
-			std::string message;
-			packet >> message;
-			mBroadcasts.push_back(message);	
+	case Server::BroadcastMessage: {
+		std::string message;
+		packet >> message;
+		mBroadcasts.push_back(message);
 
-			// Just added first message, display immediately
-			if (mBroadcasts.size() == 1)
-			{
-				mBroadcastText.setString(mBroadcasts.front());
-				centerOrigin(mBroadcastText);
-				mBroadcastElapsedTime = sf::Time::Zero;
-			}
-		} break;
+		// Just added first message, display immediately
+		if (mBroadcasts.size() == 1) {
+			mBroadcastText.setString(mBroadcasts.front());
+			centerOrigin(mBroadcastText);
+			mBroadcastElapsedTime = sf::Time::Zero;
+		}
+	} break;
 
 		// Sent by the server to order to spawn player 1 airplane on connect
-		case Server::SpawnSelf:
-		{
+	case Server::SpawnSelf: {
+		sf::Int32 characterIdentifier;
+		sf::Vector2f characterPosition;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+
+		//Character* character = mWorld.addCharacter(characterIdentifier);
+		//character->setPosition(characterPosition);
+		mWorld.addCharacter(1); // TOFIX IDENTIFEIER SSTUUF
+
+		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys1));
+		mLocalPlayerIdentifiers.push_back(characterIdentifier);
+
+		mGameStarted = true;
+	} break;
+
+		//
+	case Server::PlayerConnect: {
+		sf::Int32 characterIdentifier;
+		sf::Vector2f characterPosition;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+
+		Character* character = mWorld.addCharacter(characterIdentifier);
+		character->setPosition(characterPosition);
+
+		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+	} break;
+
+		//
+	case Server::PlayerDisconnect: {
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier;
+
+		mWorld.removeCharacter(characterIdentifier);
+		mPlayers.erase(characterIdentifier);
+	} break;
+
+		//
+	case Server::InitialState: {
+		sf::Int32 characterCount;
+		float worldHeight, currentScroll;
+		packet >> worldHeight >> currentScroll;
+
+		//mWorld.setWorldHeight(worldHeight);
+		//mWorld.setCurrentBattleFieldPosition(currentScroll);
+
+		packet >> characterCount;
+		for (sf::Int32 i = 0; i < characterCount; ++i) {
 			sf::Int32 characterIdentifier;
+			sf::Int32 hitpoints;
+			sf::Int32 grenadeAmmo;
 			sf::Vector2f characterPosition;
-			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
 
 			Character* character = mWorld.addCharacter(characterIdentifier);
 			character->setPosition(characterPosition);
-			
-			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys1));
-			mLocalPlayerIdentifiers.push_back(characterIdentifier);
-
-			mGameStarted = true;
-		} break;
-
-		// 
-		case Server::PlayerConnect:
-		{
-			sf::Int32 characterIdentifier;
-			sf::Vector2f characterPosition;
-			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
-			Character* character = mWorld.addCharacter(characterIdentifier);
-			character->setPosition(characterPosition);
+			//character->setHitpoints(hitpoints);
+			character->setGrenadeAmmo(grenadeAmmo);
 
 			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-		} break;
-
-		// 
-		case Server::PlayerDisconnect:
-		{
-			sf::Int32 characterIdentifier;
-			packet >> characterIdentifier;
-
-			mWorld.removeCharacter(characterIdentifier);
-			mPlayers.erase(characterIdentifier);
-		} break;
-
-		// 
-		case Server::InitialState:
-		{
-			sf::Int32 characterCount;
-			float worldHeight, currentScroll;
-			packet >> worldHeight >> currentScroll;
-
-			//mWorld.setWorldHeight(worldHeight);
-			//mWorld.setCurrentBattleFieldPosition(currentScroll);
-
-			packet >> characterCount;
-			for (sf::Int32 i = 0; i < characterCount; ++i)
-			{
-				sf::Int32 characterIdentifier;
-				sf::Int32 hitpoints;
-				sf::Int32 grenadeAmmo;
-				sf::Vector2f characterPosition;
-				packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
-
-				Character* character = mWorld.addCharacter(characterIdentifier);
-				character->setPosition(characterPosition);
-				//character->setHitpoints(hitpoints);
-				character->setGrenadeAmmo(grenadeAmmo);
-
-				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-			}
-		} break;
+		}
+	} break;
 
 		//
-		case Server::AcceptCoopPartner:
-		{
-			sf::Int32 characterIdentifier;
-			packet >> characterIdentifier;
+	case Server::AcceptCoopPartner: {
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier;
 
-			mWorld.addCharacter(characterIdentifier);
-			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys2));
-			mLocalPlayerIdentifiers.push_back(characterIdentifier);
-		} break;
+		mWorld.addCharacter(characterIdentifier);
+		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys2));
+		mLocalPlayerIdentifiers.push_back(characterIdentifier);
+	} break;
 
-		// Player event (like grenade fired) occurs
-		case Server::PlayerEvent:
-		{
-			sf::Int32 characterIdentifier;
-			sf::Int32 action;
-			packet >> characterIdentifier >> action;
+		// Player event occurs
+	case Server::PlayerEvent: {
+		sf::Int32 characterIdentifier;
+		sf::Int32 action;
+		packet >> characterIdentifier >> action;
 
-			auto itr = mPlayers.find(characterIdentifier);
-			if (itr != mPlayers.end())
-				itr->second->handleNetworkEvent(static_cast<Player::Action>(action), mWorld.getCommandQueue());
-		} break;
+		auto itr = mPlayers.find(characterIdentifier);
+		if (itr != mPlayers.end())
+			itr->second->handleNetworkEvent(static_cast<Player::Action>(action), mWorld.getCommandQueue());
+	} break;
 
 		// Player's movement or fire keyboard state changes
-		case Server::PlayerRealtimeChange:
-		{
-			sf::Int32 characterIdentifier;
-			sf::Int32 action;
-			bool actionEnabled;
-			packet >> characterIdentifier >> action >> actionEnabled;
+	case Server::PlayerRealtimeChange: {
+		sf::Int32 characterIdentifier;
+		sf::Int32 action;
+		bool actionEnabled;
+		packet >> characterIdentifier >> action >> actionEnabled;
 
-			auto itr = mPlayers.find(characterIdentifier);
-			if (itr != mPlayers.end())
-				itr->second->handleNetworkRealtimeChange(static_cast<Player::Action>(action), actionEnabled);
-		} break;
+		auto itr = mPlayers.find(characterIdentifier);
+		if (itr != mPlayers.end())
+			itr->second->handleNetworkRealtimeChange(static_cast<Player::Action>(action), actionEnabled);
+	} break;
 
 		// New enemy to be created
-		case Server::SpawnEnemy:
-		{
-			float height;
-			sf::Int32 type;
-			float relativeX;
-			packet >> type >> height >> relativeX;
+	case Server::SpawnEnemy: {
+		float height;
+		sf::Int32 type;
+		float relativeX;
+		packet >> type >> height >> relativeX;
 
-			mWorld.addEnemy(static_cast<Character::Type>(type), relativeX, height);
-			mWorld.sortEnemies();
-		} break;
+		mWorld.addEnemy(static_cast<Character::Type>(type), relativeX, height);
+		mWorld.sortEnemies();
+	} break;
 
 		// Mission successfully completed
-		case Server::MissionSuccess:
-		{
-			requestStackPush(States::MissionSuccess);
-		} break;
+	case Server::MissionSuccess: {
+		requestStackPush(States::MissionSuccess);
+	} break;
 
 		// Pickup created
-		case Server::SpawnPickup:
-		{
-			sf::Int32 type;
-			sf::Vector2f position;
-			packet >> type >> position.x >> position.y;
+	case Server::SpawnPickup: {
+		sf::Int32 type;
+		sf::Vector2f position;
+		packet >> type >> position.x >> position.y;
 
-			mWorld.createPickup(position, static_cast<Pickup::Type>(type));
-		} break;
+		mWorld.createPickup(position, static_cast<Pickup::Type>(type));
+	} break;
 
 		//
-		case Server::UpdateClientState:
-		{
-			float currentWorldPosition;
-			sf::Int32 characterCount;
-			packet >> currentWorldPosition >> characterCount;
+	case Server::UpdateClientState: {
+		float currentWorldPosition;
+		sf::Int32 characterCount;
+		packet >> currentWorldPosition >> characterCount;
 
-			float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+		float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
 
-			// Set the world's scroll compensation according to whether the view is behind or too advanced
-			// mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
+		// Set the world's scroll compensation according to whether the view is behind or too advanced
+		// mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
 
-			for (sf::Int32 i = 0; i < characterCount; ++i)
-			{
-				sf::Vector2f characterPosition;
-				sf::Int32 characterIdentifier;
-				packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+		for (sf::Int32 i = 0; i < characterCount; ++i) {
+			sf::Vector2f characterPosition;
+			sf::Int32 characterIdentifier;
+			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-				Character* character = mWorld.getCharacter(characterIdentifier);
-				bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
-				if (character && !isLocalPlane)
-				{
-					sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
-					character->setPosition(interpolatedPosition);
-				}
+			Character* character = mWorld.getCharacter(characterIdentifier);
+			bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
+			if (character && !isLocalPlane) {
+				sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
+				character->setPosition(interpolatedPosition);
 			}
-		} break;
+		}
+	} break;
 	}
 }

@@ -78,6 +78,8 @@
 
 			void createPickup(sf::Vector2f position, Pickup::Type type);
 
+			
+
 			void addEnemy(Character::Type type, float relX, float relY);
 
 			void sortEnemies();
@@ -102,7 +104,7 @@
 
 			void spawnZombies(sf::Time dt);
 
-
+			sf::Vector2f assignCharacterSpawn(int Identifier);
 
 			void StartZombieSpawnTimer(sf::Time dt);
 

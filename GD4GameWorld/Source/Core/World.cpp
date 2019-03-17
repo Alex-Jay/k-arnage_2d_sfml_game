@@ -140,6 +140,7 @@ void World::incrementPlayerTwoScore(unsigned int incBy)
 void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
+
 	mWorldView.setCenter(getCharacter(1)->getPosition());
 
 	handlePlayerCollision();
@@ -164,13 +165,13 @@ void World::update(sf::Time dt)
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
+	spawnZombies(dt);
 
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
 
 	adaptPlayerPosition();
 	updateSounds();
-	spawnZombies(dt);
 
 }
 
@@ -259,7 +260,8 @@ void World::removeCharacter(int localIdentifier)
 Character * World::addCharacter(int localIdentifier)
 {
 	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	player->setPosition(mWorldView.getCenter());
+	sf::Vector2f sp = mWorldView.getCenter();
+	player->setPosition(sp);
 	player->setLocalIdentifier(localIdentifier);
 
 	mPlayerCharacters.push_back(player.get());
@@ -833,6 +835,30 @@ void World::createPickup(sf::Vector2f position, Pickup::Type type)
 	pickup->setPosition(position);
 	pickup->setVelocity(0.f, 1.f);
 	mSceneLayers[UpperLayer]->attachChild(std::move(pickup));
+}
+
+sf::Vector2f World::assignCharacterSpawn(int Identifier)
+{
+	sf::Vector2f spawnPosition = sf::Vector2f(0,0);
+
+	if (Identifier == 0)
+	{
+		spawnPosition = sf::Vector2f(0, 0);
+	}
+	else if (Identifier == 1)
+	{
+		spawnPosition = sf::Vector2f(0, 0);
+	}
+	else if (Identifier == 2)
+	{
+		spawnPosition = sf::Vector2f(0, 0);
+	}
+	else if (Identifier == 3)
+	{
+		spawnPosition = sf::Vector2f(0, 0);
+	}
+
+	return sf::Vector2f(3000.f, -3000.f);
 }
 
 #pragma endregion
