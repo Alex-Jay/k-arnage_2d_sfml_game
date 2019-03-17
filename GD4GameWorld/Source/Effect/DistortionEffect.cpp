@@ -36,7 +36,7 @@ void DistortionEffect::apply(const sf::RenderTexture& input, sf::RenderTarget& o
 
 	//Set Sprites texture to the input, this will be the water background
 	mSprite.setTexture(input.getTexture());
-	//centreOrigin(mSprite);
+	centreOrigin(mSprite);
 
 	//Set Properties of the Distortion shader
 	//Time controls the movement of the distortion effect

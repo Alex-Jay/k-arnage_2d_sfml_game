@@ -53,7 +53,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mDistortionEffect.setTextureMap(mTextures);
 
 	// Add Local Player on Start
-	//mPlayerOneCharacter = addCharacter(0);
+	//mPlayerOneCharacter =;
 	//mPlayerTwoCharacter = addCharacter(1);
 }
 
@@ -575,6 +575,8 @@ void World::buildScene()
 
 	// Add the background sprite to the scene
 	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(mWaterTexture, textureRect));
+	//waterSprite->setPosition(-viewWidth / 2, -viewHeight);
+
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 
 	if (PostEffect::isSupported())
@@ -678,15 +680,11 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 //Mike
 void World::handlePlayerCollision()
 {
+	mPlayerOneCharacter = getCharacter(1); //TODo FIX HOW Local Character is Got
 	// Map bound collision TOFIX
-	//if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
-	//{
-	//	mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
-	//}
-	//else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
-	//{
-	//	mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
-	//}
+	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
+		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+
 }
 
 //Mike

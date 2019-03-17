@@ -16,9 +16,9 @@ namespace PlayerAction
 		MoveUp,
 		MoveDown,
 		Fire,
-		LaunchGrenade,
 		StartGrenade,
-		Count
+		Count,
+		LaunchGrenade,
 	};
 }
 
@@ -36,6 +36,7 @@ class KeyBinding
 		sf::Keyboard::Key		getAssignedKey(Action action) const;
 
 		bool					checkAction(sf::Keyboard::Key key, Action& out) const;
+		bool					checkReleaseAction(sf::Keyboard::Key key, Action & out) const;
 		std::vector<Action>		getRealtimeActions() const;
 
 
