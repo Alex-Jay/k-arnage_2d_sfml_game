@@ -53,8 +53,8 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mDistortionEffect.setTextureMap(mTextures);
 
 	// Add Local Player on Start
-	mPlayerOneCharacter = addCharacter(0);
-	mPlayerTwoCharacter = addCharacter(1);
+	//mPlayerOneCharacter = addCharacter(0);
+	//mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::loadTextures()
@@ -352,15 +352,15 @@ void World::adaptPlayerVelocity()
 
 bool World::hasAlivePlayer() const
 {
-	return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
-	/*return mPlayerCharacters.size() > 0;*/
+	//return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
+	return true;
 }
 
 bool World::hasPlayerReachedEnd() const
 {
-	if (Character* character = getCharacter(1))
-		return !mWorldBounds.contains(character->getPosition());
-	else
+	//if (Character* character = getCharacter(1))
+	//	return !mWorldBounds.contains(character->getPosition());
+	//else
 		return false;
 }
 
@@ -678,15 +678,15 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 //Mike
 void World::handlePlayerCollision()
 {
-	// Map bound collision
-	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
-	{
-		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
-	}
-	else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
-	{
-		mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
-	}
+	// Map bound collision TOFIX
+	//if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
+	//{
+	//	mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
+	//}
+	//else if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerTwoCharacter->getPosition()))
+	//{
+	//	mPlayerTwoCharacter->setPosition(mPlayerTwoCharacter->getLastPosition());
+	//}
 }
 
 //Mike
