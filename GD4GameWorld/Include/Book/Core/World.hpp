@@ -72,9 +72,9 @@
 
 			void createPickup(sf::Vector2f position, Pickup::Type type);
 
-			
+			void addZombie(float x, float y, float a);
 
-			void addEnemy(Character::Type type, float relX, float relY);
+			void spawnZombies();
 
 			void sortEnemies();
 
@@ -83,8 +83,6 @@
 			void loadTextures();
 			void buildScene();
 			void SpawnObstacles();
-			void adaptPlayerPosition();
-			void adaptPlayerVelocity();
 			void handlePlayerCollision();
 			void handleCollisions(sf::Time dt);
 			void handleCharacterCollisions(SceneNode::Pair& pair);
@@ -94,9 +92,8 @@
 			void handleExplosionCollisions(SceneNode::Pair& pair);
 			CollisionType GetCollisionType(SceneNode::Pair& pair);
 			
+			void addZombies(sf::Time dt);
 			void updateSounds();
-
-			void spawnZombies(sf::Time dt);
 
 			void StartZombieSpawnTimer(sf::Time dt);
 
@@ -110,16 +107,18 @@
 
 			struct SpawnPoint
 			{
-				SpawnPoint(Character::Type type, float x, float y)
+				SpawnPoint(Character::Type type, float x, float y, float a)
 					: type(type)
 					, x(x)
 					, y(y)
+					, a(a)//Angle
 				{
 				}
 
 				Character::Type type;
 				float x;
 				float y;
+				float a;
 			};
 
 		private:
@@ -141,7 +140,7 @@
 			CommandQueue mCommandQueue;
 
 			sf::FloatRect mWorldBounds;
-			sf::Vector2f mSpawnPosition;
+
 			float mScrollSpeed;
 
 			//Character* mPlayerLocalCharacter;

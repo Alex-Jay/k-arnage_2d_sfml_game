@@ -13,73 +13,63 @@
 #include <functional>
 #include <map>
 
-
-namespace sf
-{
+namespace sf {
 	class Event;
 	class RenderWindow;
 }
 
-class StateStack : private sf::NonCopyable
-{
-	public:
-		enum Action
-		{
-			Push,
-			Pop,
-			Clear,
-		};
+class StateStack : private sf::NonCopyable {
+public:
+	enum Action {
+		Push,
+		Pop,
+		Clear,
+	};
 
+public:
+	explicit StateStack(State::Context context);
 
-	public:		
-		explicit			StateStack(State::Context context);
+	template <typename T>
+	void registerState(States::ID stateID);
+	template <typename T, typename Param1>
+	void registerState(States::ID stateID, Param1 arg1);
 
-		template <typename T>
-		void				registerState(States::ID stateID);
-		template <typename T, typename Param1>
-		void				registerState(States::ID stateID, Param1 arg1);
+	void update(sf::Time dt);
+	void draw();
+	void handleEvent(const sf::Event& event);
 
-		void				update(sf::Time dt);
-		void				draw();
-		void				handleEvent(const sf::Event& event);
+	void pushState(States::ID stateID);
+	void popState();
+	void clearStates();
 
-		void				pushState(States::ID stateID);
-		void				popState();
-		void				clearStates();
-		
+	bool isEmpty() const;
 
-		bool				isEmpty() const;
+	//bool				getCurrentState();
 
+private:
+	State::Ptr createState(States::ID stateID);
+	void applyPendingChanges();
 
-	private:
-		State::Ptr			createState(States::ID stateID);
-		void				applyPendingChanges();
+private:
+	struct PendingChange {
+		explicit PendingChange(Action action, States::ID stateID = States::None);
 
+		Action action;
+		States::ID stateID;
+	};
 
-	private:
-		struct PendingChange
-		{
-			explicit			PendingChange(Action action, States::ID stateID = States::None);
+private:
+	std::vector<State::Ptr> mStack;
+	std::vector<PendingChange> mPendingList;
 
-			Action				action;
-			States::ID			stateID;
-		};
-
-
-	private:
-		std::vector<State::Ptr>								mStack;
-		std::vector<PendingChange>							mPendingList;
-
-		State::Context										mContext;
-		std::map<States::ID, std::function<State::Ptr()>>	mFactories;
+	State::Context mContext;
+	std::map<States::ID, std::function<State::Ptr()> > mFactories;
 };
-
 
 template <typename T>
 void StateStack::registerState(States::ID stateID)
 {
-	mFactories[stateID] = [this] ()
-	{
+	mFactories[stateID] = [this]() {
 		return State::Ptr(new T(*this, mContext));
 	};
 }
@@ -87,8 +77,7 @@ void StateStack::registerState(States::ID stateID)
 template <typename T, typename Param1>
 void StateStack::registerState(States::ID stateID, Param1 arg1)
 {
-	mFactories[stateID] = [this, arg1] ()
-	{
+	mFactories[stateID] = [this, arg1]() {
 		return State::Ptr(new T(*this, mContext, arg1));
 	};
 }

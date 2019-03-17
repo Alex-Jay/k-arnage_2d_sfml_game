@@ -17,6 +17,8 @@ class MenuState : public State
 		virtual bool			update(sf::Time dt);
 		virtual bool			handleEvent(const sf::Event& event);
 
+		int getButtonFromXY(int x, int y);
+
 
 	private:
 		sf::Sprite				mBackgroundSprite;

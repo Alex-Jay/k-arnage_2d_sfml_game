@@ -27,7 +27,6 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mFonts(fonts)
 	, mSounds(sounds)
 	, mSceneLayers()
-	, mSpawnPosition(mWorldView.getCenter())
 	, mScrollSpeed(0.f)
 	, mZombieSpawnTime(-1)
 	, mNumZombiesSpawn(2)
@@ -146,12 +145,14 @@ void World::update(sf::Time dt)
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
-	spawnZombies(dt);
+
+
+	addZombies(dt);
+	spawnZombies();
 
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
 
-	adaptPlayerPosition();
 	updateSounds();
 
 }
@@ -256,35 +257,6 @@ Character * World::addCharacter(int identifier, bool isLocal)
 	return mPlayerCharacters.back();
 }
 
-void World::adaptPlayerPosition()
-{
-	// Keep player's position inside the screen bounds, at least borderDistance units from the border
-	sf::FloatRect viewBounds = getViewBounds();
-	const float borderDistance = 40.f;
-
-	for (Character* character : mPlayerCharacters)
-	{
-		sf::Vector2f position = character->getPosition();
-		position.x = std::max(position.x, viewBounds.left + borderDistance);
-		position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-		position.y = std::max(position.y, viewBounds.top + borderDistance);
-		position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-		character->setPosition(position);
-	}
-}
-
-void World::adaptPlayerVelocity()
-{
-	for (Character* character : mPlayerCharacters)
-	{
-		sf::Vector2f velocity = character->getVelocity();
-
-		// If moving diagonally, reduce velocity (to have always same velocity)
-		if (velocity.x != 0.f && velocity.y != 0.f)
-			character->setVelocity(velocity / std::sqrt(2.f));
-	}
-}
-
 bool World::hasAlivePlayer() const
 {
 	return mPlayerCharacters.size() > 0;
@@ -318,7 +290,7 @@ void World::updateSounds()
 }
 
 //Mike
-void World::spawnZombies(sf::Time dt)
+void World::addZombies(sf::Time dt)
 {
 	if (mNetworkedWorld)
 		return;
@@ -351,13 +323,16 @@ void World::spawnZombies(sf::Time dt)
 				int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
 				int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
 
+				float angle = -mPlayerCharacters[localCharacterID]->getAngle();
+
 				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 				enemy->setPosition(xPos, yPos);
-				enemy->setRotation(-mPlayerCharacters[localCharacterID]->getAngle());
+				enemy->setRotation(angle);
 
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
-					mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+					//mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+					addZombie(xPos, yPos, angle);
 					++mNumZombiesAlive;
 				}
 			}
@@ -367,10 +342,30 @@ void World::spawnZombies(sf::Time dt)
 	}
 }
 
-void World::addEnemy(Character::Type type, float relX, float relY)
+void World::addZombie(float x, float y, float a)
 {
-	SpawnPoint spawn(type, mSpawnPosition.x + relX, mSpawnPosition.y - relY);
+	SpawnPoint spawn(Character::Type::Zombie, x, y, a);
 	mEnemySpawnPoints.push_back(spawn);
+}
+
+void World::spawnZombies()
+{
+	// Spawn all enemies entering the view area (including distance) this frame
+	while (!mEnemySpawnPoints.empty()
+		&& mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	{
+		SpawnPoint spawn = mEnemySpawnPoints.back();
+
+		std::unique_ptr<Character> enemy(new Character(spawn.type, mTextures, mFonts));
+		enemy->setPosition(spawn.x, spawn.y);
+		enemy->setRotation(180.f);
+		//if (mNetworkedWorld) enemy->disablePickups();
+
+		mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+
+		// Enemy is spawned, remove from the list to spawn
+		mEnemySpawnPoints.pop_back();
+	}
 }
 
 void World::sortEnemies()
@@ -524,6 +519,7 @@ void World::buildScene()
 	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
 	mSceneGraph.attachChild(std::move(soundNode));
 
+
 	SpawnObstacles();
 
 	//spawnZombies(sf::Time::Zero);
@@ -541,6 +537,9 @@ void World::buildScene()
 //Mike
 void World::SpawnObstacles()
 {
+	if (mNetworkedWorld)
+		return;
+
 	//Random Number of Obstacles to spawn
 	int rand = randomInt(20);
 

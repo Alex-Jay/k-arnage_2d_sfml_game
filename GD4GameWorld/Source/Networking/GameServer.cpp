@@ -177,8 +177,8 @@ void GameServer::tick()
 		// No more enemies are spawned near the end
 		if (mBattleFieldRect.top > 600.f)
 		{
-			std::size_t enemyCount = 1u + randomInt(2);
-			float spawnCenter = static_cast<float>(randomInt(500) - 250);
+ 			std::size_t enemyCount = 1u + randomInt(2);
+ 			float spawnCenter = static_cast<float>(randomInt(500) - 250);
 
 			// In case only one enemy is being spawned, it appears directly at the spawnCenter
 			float planeDistance = 0.f;

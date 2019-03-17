@@ -411,7 +411,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		float relativeX;
 		packet >> type >> height >> relativeX;
 		
-		mWorld.addEnemy(static_cast<Character::Type>(type), relativeX, height);
+		mWorld.addZombie(relativeX, height, 0);
 		mWorld.sortEnemies();
 	} break;
 
