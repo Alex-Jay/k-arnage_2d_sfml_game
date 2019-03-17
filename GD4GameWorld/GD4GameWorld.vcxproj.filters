@@ -14,338 +14,408 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Header Files\Animation">
-      <UniqueIdentifier>{da0303c4-c51e-4c4f-85cd-8a1f65632f83}</UniqueIdentifier>
+      <UniqueIdentifier>{a4bcb9b4-1e5e-4707-a4d6-1c9747160899}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Audio">
-      <UniqueIdentifier>{5bca801f-7e37-40d4-8367-a222d8bbb107}</UniqueIdentifier>
+      <UniqueIdentifier>{909b2f5b-8c5c-4eb8-8b42-5824f3fe1806}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Command">
-      <UniqueIdentifier>{4acba2fa-3d8a-4313-b24a-9c623b47b14f}</UniqueIdentifier>
+      <UniqueIdentifier>{67bcb531-9b76-430a-9274-ff0afc1d591c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Component">
-      <UniqueIdentifier>{3d10f9ff-ca97-46b8-8bd1-a80ac7c03868}</UniqueIdentifier>
+    <Filter Include="Header Files\Componant">
+      <UniqueIdentifier>{01fb97c8-acbf-4f1f-8700-0e52e0b2552a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Constant">
-      <UniqueIdentifier>{97d692ef-347c-44c3-aa73-6d65276609d6}</UniqueIdentifier>
+      <UniqueIdentifier>{03571f12-0912-45e0-83df-b237e3e4a169}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{81b81d69-4e15-4b3d-b4f9-a82badb7ae04}</UniqueIdentifier>
+      <UniqueIdentifier>{4270f462-11dc-4b6e-bea4-0c32a8ecd646}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\DataTable">
-      <UniqueIdentifier>{edee03cb-cc05-4b08-a4ff-30f4b8de0fb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Entity">
-      <UniqueIdentifier>{d219510c-4c1a-4297-b39d-4fd95529cb62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\SceneNode">
-      <UniqueIdentifier>{ac83fba3-2f18-4fc0-8503-b5f13924851e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\State">
-      <UniqueIdentifier>{28f88c74-c4a9-4617-ab26-505ea43825dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Structural">
-      <UniqueIdentifier>{dd87f757-950a-499b-9b15-4da5ac887d29}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Animation">
-      <UniqueIdentifier>{5d109a2f-75f6-4996-ba4f-f1b6775174cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Audio">
-      <UniqueIdentifier>{37b92dc9-fa1f-4b5f-81ae-cc78e8b317a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Command">
-      <UniqueIdentifier>{82d5b9de-ffb7-497b-893f-2b6801dfedf8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Component">
-      <UniqueIdentifier>{c5adcb04-0d26-4e68-81ec-27f13e7856b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{62c86bf1-f823-4451-a314-89d6f2d23b8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\DataTable">
-      <UniqueIdentifier>{7a930e78-ef9f-4d11-a025-a816881f6183}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Entity">
-      <UniqueIdentifier>{4ccb5668-8590-45de-84b3-5bd5e8b97798}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Effect">
-      <UniqueIdentifier>{1518e7a5-22f0-4979-954a-8f9d528dc0fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Node">
-      <UniqueIdentifier>{44cf0c12-1a65-48b4-9e5f-bd630034bef9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Structural">
-      <UniqueIdentifier>{ee895e11-dc2d-4535-9cc9-336f3ce688a5}</UniqueIdentifier>
+      <UniqueIdentifier>{bb5630bb-1dab-4937-b0e0-c452a3c172c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Effect">
-      <UniqueIdentifier>{5c8a5a9e-ce43-43c7-9441-8f023f016338}</UniqueIdentifier>
+      <UniqueIdentifier>{0144f3e1-dd77-4e68-bcf2-2c8b19527db4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{1591fa0e-819c-4283-9773-0d5cb2a8e953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Networking">
+      <UniqueIdentifier>{b5493ccb-e3f8-4f34-9534-015e0a82477f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\State">
+      <UniqueIdentifier>{154899b2-c5ea-4c06-932b-dcf03b3d54d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Structural">
+      <UniqueIdentifier>{d5baa82b-ff68-43ea-99ac-60eef6504dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Node">
+      <UniqueIdentifier>{a7d0e560-6c8f-4ccf-93a6-54449c93ac90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{532214e5-8eb8-4d2e-b8b7-360b20508ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{a4cf70d4-b5c2-4860-91e3-7ab61bd895aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command">
+      <UniqueIdentifier>{5e2949e1-eda9-476d-80e0-a6cb0147d1ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Componant">
+      <UniqueIdentifier>{88fc0be6-9c42-4143-9683-751518671a13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Constant">
+      <UniqueIdentifier>{3536ca32-f18b-4634-a8fe-caa6625514f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{dd6aaba0-ec84-476c-ab11-ab8ebe557215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataTable">
+      <UniqueIdentifier>{f28573b5-ac0f-43f3-99a2-af1b86657d5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Effect">
+      <UniqueIdentifier>{caebe241-9974-47cd-93a5-bc3b8b821250}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity">
+      <UniqueIdentifier>{aed15a6e-a19c-4142-8370-5927d3f5843d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Networking">
+      <UniqueIdentifier>{ac7e6747-6edf-4160-bf08-8983769b8378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node">
+      <UniqueIdentifier>{bee4f70b-bca1-4300-9fc6-200346b31cbb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\State">
-      <UniqueIdentifier>{537e3505-ff2d-49ac-8d81-43faff49f552}</UniqueIdentifier>
+      <UniqueIdentifier>{35333a04-4a63-4029-8c3c-b469e1b5cbc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Structural">
+      <UniqueIdentifier>{c2284bb5-f458-482a-98a0-86e32c9bd2cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Animation\Animation.cpp">
+    <ClInclude Include="Include\Book\Animation\Animation.hpp">
+      <Filter>Header Files\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Audio\MusicPlayer.hpp">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Audio\SoundPlayer.hpp">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Command\Command.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Command\CommandQueue.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Component\Button.hpp">
+      <Filter>Header Files\Componant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Component\Component.hpp">
+      <Filter>Header Files\Componant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Component\Container.hpp">
+      <Filter>Header Files\Componant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Component\Label.hpp">
+      <Filter>Header Files\Componant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Core\Application.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Core\World.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\DataTable\DataTables.hpp">
+      <Filter>Header Files\DataTable</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Effect\BloomEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Effect\PostEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Entity.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Particle.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Pickup.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Player.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Networking\GameServer.hpp">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Networking\NetworkProtocol.hpp">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\EmitterNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\NetworkNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\ParticleNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\SceneNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\SpriteNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\TextNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\GameOverState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\GameState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\MenuState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\MultiplayerGameState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\PauseState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\SettingsState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\State.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\StateIdentifiers.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\StateStack.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\State\TitleState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\Category.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\Foreach.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\KeyBinding.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\ResourceHolder.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\Utility.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\MapTiler.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Constant\Constants.hpp">
+      <Filter>Header Files\Constant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Explosion.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Xbox360Controller.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreBoardState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger.hpp">
+      <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Obstacle.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Effect\DistortionEffect.hpp">
+      <Filter>Header Files\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Aircraft.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Projectile.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\SoundNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Entity\Character.hpp">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Node\ShapeNode.hpp">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\Book\Structural\ResourceHolder.inl">
+      <Filter>Header Files\Structural</Filter>
+    </None>
+    <None Include="Include\Book\Structural\Utility.inl">
+      <Filter>Header Files\Structural</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Animation\Animation.cpp">
       <Filter>Source Files\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Command\Command.cpp">
+    <ClCompile Include="Source\Audio\MusicPlayer.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Audio\SoundPlayer.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Command\Command.cpp">
       <Filter>Source Files\Command</Filter>
     </ClCompile>
-    <ClCompile Include="src\Command\CommandQueue.cpp">
+    <ClCompile Include="Source\Command\CommandQueue.cpp">
       <Filter>Source Files\Command</Filter>
     </ClCompile>
-    <ClCompile Include="src\Component\Button.cpp">
-      <Filter>Source Files\Component</Filter>
+    <ClCompile Include="Source\Component\Button.cpp">
+      <Filter>Source Files\Componant</Filter>
     </ClCompile>
-    <ClCompile Include="src\Component\Component.cpp">
-      <Filter>Source Files\Component</Filter>
+    <ClCompile Include="Source\Component\Component.cpp">
+      <Filter>Source Files\Componant</Filter>
     </ClCompile>
-    <ClCompile Include="src\Component\Container.cpp">
-      <Filter>Source Files\Component</Filter>
+    <ClCompile Include="Source\Component\Container.cpp">
+      <Filter>Source Files\Componant</Filter>
     </ClCompile>
-    <ClCompile Include="src\Component\Label.cpp">
-      <Filter>Source Files\Component</Filter>
+    <ClCompile Include="Source\Component\Label.cpp">
+      <Filter>Source Files\Componant</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\Application.cpp">
+    <ClCompile Include="Source\Core\Application.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\World.cpp">
+    <ClCompile Include="Source\Core\Main.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\DataTable\DataTables.cpp">
+    <ClCompile Include="Source\Core\World.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DataTable\DataTables.cpp">
       <Filter>Source Files\DataTable</Filter>
     </ClCompile>
-    <ClCompile Include="src\Effect\BloomEffect.cpp">
+    <ClCompile Include="Source\Effect\BloomEffect.cpp">
       <Filter>Source Files\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\Effect\PostEffect.cpp">
+    <ClCompile Include="Source\Effect\PostEffect.cpp">
       <Filter>Source Files\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Character.cpp">
+    <ClCompile Include="Source\Entity\Aircraft.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Entity.cpp">
+    <ClCompile Include="Source\Entity\Entity.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Explosion.cpp">
+    <ClCompile Include="Source\Entity\Pickup.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Pickup.cpp">
+    <ClCompile Include="Source\Entity\Player.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Projectile.cpp">
+    <ClCompile Include="Source\Entity\Projectile.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\EmitterNode.cpp">
+    <ClCompile Include="Source\Networking\GameServer.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Node\EmitterNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\ParticleNode.cpp">
+    <ClCompile Include="Source\Node\NetworkNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\SceneNode.cpp">
+    <ClCompile Include="Source\Node\ParticleNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\ShapeNode.cpp">
+    <ClCompile Include="Source\Node\SceneNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\SoundNode.cpp">
+    <ClCompile Include="Source\Node\SoundNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\SpriteNode.cpp">
+    <ClCompile Include="Source\Node\SpriteNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Node\TextNode.cpp">
+    <ClCompile Include="Source\Node\TextNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
-    <ClCompile Include="src\Structural\Player.cpp">
+    <ClCompile Include="Source\State\GameOverState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\GameState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\MenuState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\MultiplayerGameState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\PauseState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\SettingsState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\State.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\StateStack.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\TitleState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Structural\KeyBinding.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="src\Structural\Utility.cpp">
+    <ClCompile Include="Source\Structural\Utility.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="src\Structural\MapTiler.cpp">
+    <ClCompile Include="Source\Structural\MapTiler.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="src\Audio\MusicPlayer.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\SoundPlayer.cpp">
-      <Filter>Source Files\Audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Entity\Obstacle.cpp">
+    <ClCompile Include="Source\Entity\Explosion.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Structural\Debugger.cpp">
+    <ClCompile Include="Xbox360Controller.cpp">
       <Filter>Source Files\Structural</Filter>
     </ClCompile>
-    <ClCompile Include="src\Effect\DistortionEffect.cpp">
+    <ClCompile Include="ScoreBoardState.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity\Obstacle.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect\DistortionEffect.cpp">
       <Filter>Source Files\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\State\GameOverState.cpp">
-      <Filter>Source Files\State</Filter>
+    <ClCompile Include="Source\Entity\Character.cpp">
+      <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\State\GameState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\MenuState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\PauseState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\SettingsState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\State.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\StateStack.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\TitleState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\State\ScoreBoardState.cpp">
-      <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Structural\Xbox360Controller.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Structural\KeyBinding.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Main.cpp">
-      <Filter>Source Files\Core</Filter>
+    <ClCompile Include="Source\Node\ShapeNode.cpp">
+      <Filter>Source Files\Node</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include/Animation/Animation.hpp">
-      <Filter>Header Files\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Audio/MusicPlayer.hpp">
-      <Filter>Header Files\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Audio/SoundPlayer.hpp">
-      <Filter>Header Files\Audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Command/Command.hpp">
-      <Filter>Header Files\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Command/CommandQueue.hpp">
-      <Filter>Header Files\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Component/Button.hpp">
-      <Filter>Header Files\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Component/Component.hpp">
-      <Filter>Header Files\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Component/Container.hpp">
-      <Filter>Header Files\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Component/Label.hpp">
-      <Filter>Header Files\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Constant/Constants.hpp">
-      <Filter>Header Files\Constant</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Core/Application.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Core/World.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include/DataTable/DataTables.hpp">
-      <Filter>Header Files\DataTable</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Entity/Entity.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Entity/Pickup.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Entity/Projectile.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include/PostEffect/BloomEffect.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="include/PostEffect/PostEffect.hpp">
-      <Filter>Header Files\Effect</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/EmitterNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/ParticleNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/SceneNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/SoundNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/SpriteNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/SceneNode/TextNode.hpp">
-      <Filter>Header Files\SceneNode</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/GameOverState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/GameState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/MenuState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/SettingsState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/State.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/StateIdentifiers.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/StateStack.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/TitleState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/Category.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/Particle.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/Player.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/ResourceHolder.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/ResourceIdentifiers.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/Structural/Utility.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
-    <ClInclude Include="include/State/PauseState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include\State\ScoreBoardState.hpp">
-      <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Entity\Character.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Entity\Explosion.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Entity\Obstacle.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
+    <Text Include="Source\CMakeLists.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
