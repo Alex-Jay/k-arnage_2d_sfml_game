@@ -46,15 +46,10 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	mWorldView.zoom(LEVEL_ZOOM_FACTOR);
 
 	loadTextures();
-
 	buildScene();
 
 	//Sets the Distortion shaders texture
 	mDistortionEffect.setTextureMap(mTextures);
-
-	// Add Local Player on Start
-	//mPlayerOneCharacter =;
-	//mPlayerTwoCharacter = addCharacter(1);
 }
 
 void World::loadTextures()
@@ -64,18 +59,13 @@ void World::loadTextures()
 	mTextures.load(Textures::ID::Water, "Media/Textures/Water.jpg");
 	mTextures.load(Textures::ID::Explosion, "Media/Textures/Explosion.png");
 	mTextures.load(Textures::ID::Particle, "Media/Textures/Particle.png");
-
 	mTextures.load(Textures::ID::PlayerMove, "Media/Textures/PlayerMove.png");
 	mTextures.load(Textures::ID::PlayerDeath, "Media/Textures/Blood.png");
-
 	mTextures.load(Textures::ID::ZombieMove, "Media/Textures/ZombieWalk.png");
 	mTextures.load(Textures::ID::ZombieDeath, "Media/Textures/ZombieDeath.png");
-
 	mTextures.load(Textures::ID::Grenade, "Media/Textures/Grenade.png");
 	mTextures.load(Textures::ID::MapTiles, "Media/Textures/Tiles.png");
-
 	mTextures.load(Textures::ID::Crate, "Media/Textures/Crate.png");
-
 	mTextures.load(Textures::ID::DistortionMap, "Media/Textures/distortion_map.png");
 }
 
@@ -152,20 +142,10 @@ void World::update(sf::Time dt)
 	// Alex - Stick view to player position
 	mWorldView.setCenter(getCharacter(1)->getPosition());
 
-	/*
-	Quick Alternative To:
-	mWorldView.move(playerVelocity.x * dt.asSeconds(), playerVelocity.y * dt.asSeconds());
-	*/
-
-	// Alex - Handle player collisions (e.g. prevent leaving battlefield)
 	handlePlayerCollision();
 
-	for (Character* c : mPlayerCharacters)
-	{
+	FOREACH(Character* c, mPlayerCharacters)
 		c->setVelocity(0.f, 0.f);
-	}
-
-	//mPlayerCharacter->setVelocity(0.f, 0.f);
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
@@ -175,10 +155,12 @@ void World::update(sf::Time dt)
 	while (!mCommandQueue.isEmpty())
 		mSceneGraph.onCommand(mCommandQueue.pop(), dt);
 
-	//adaptPlayerVelocity();
-
 	// Collision detection and response (may destroy entities)
 	handleCollisions(dt);
+
+	// Remove aircrafts that were destroyed (World::removeWrecks() only destroys the entities, not the pointers in mPlayerAircraft)
+	auto firstToRemove = std::remove_if(mPlayerCharacters.begin(), mPlayerCharacters.end(), std::mem_fn(&Character::isMarkedForRemoval));
+	mPlayerCharacters.erase(firstToRemove, mPlayerCharacters.end());
 
 	// Remove all destroyed entities, create new ones
 	mSceneGraph.removeWrecks();
@@ -200,28 +182,15 @@ void World::draw()
 	{
 
 		mWaterSceneTexture.clear();
-		//mSceneTexture.clear();
-
-		//Apply distortion Shader to SpriteNode(Water) Background, this is seperated from the sceneGraph
 		mWaterSceneTexture.setView(mWorldView);
 		mWaterSceneTexture.draw(mWaterSprite);
 		mWaterSceneTexture.display();
 		mDistortionEffect.apply(mWaterSceneTexture, mTarget);
-
-		//Apply BloomEffect to the sceneGraph that does not contain the water background.
-		//mSceneTexture.setView(mWorldView);
-		//mSceneTexture.draw(mSceneGraph);
-		//mSceneTexture.display();
-		//mBloomEffect.apply(mSceneTexture, mTarget);
-
-
-		//Draw Scenegraph on top of water background with no bloom effect.
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
 	else
 	{
-
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
 	}
@@ -301,17 +270,6 @@ Character * World::addCharacter(int localIdentifier)
 void World::adaptPlayerPosition()
 {
 	// Keep player's position inside the screen bounds, at least borderDistance units from the border
-	//sf::FloatRect viewBounds = getViewBounds();
-	//const float borderDistance = 40.f;
-
-	//sf::Vector2f position = mPlayerCharacter->getPosition();
-	//position.x = std::max(position.x, viewBounds.left + borderDistance);
-	//position.x = std::min(position.x, viewBounds.left + viewBounds.width - borderDistance);
-	//position.y = std::max(position.y, viewBounds.top + borderDistance);
-	//position.y = std::min(position.y, viewBounds.top + viewBounds.height - borderDistance);
-	//mPlayerCharacter->setPosition(position);
-
-	// Keep player's position inside the screen bounds, at least borderDistance units from the border
 	sf::FloatRect viewBounds = getViewBounds();
 	const float borderDistance = 40.f;
 
@@ -328,15 +286,6 @@ void World::adaptPlayerPosition()
 
 void World::adaptPlayerVelocity()
 {
-	//sf::Vector2f velocity = mPlayerCharacter->getVelocity();
-
-	//// If moving diagonally, reduce velocity (to have always same velocity)
-	//if (velocity.x != 0.f && velocity.y != 0.f)
-	//	mPlayerCharacter->setVelocity(velocity / std::sqrt(2.f));
-
-	//// Add scrolling velocity
-	//mPlayerCharacter->accelerate(0.f, mScrollSpeed);
-
 	for (Character* character : mPlayerCharacters)
 	{
 		sf::Vector2f velocity = character->getVelocity();
@@ -344,24 +293,12 @@ void World::adaptPlayerVelocity()
 		// If moving diagonally, reduce velocity (to have always same velocity)
 		if (velocity.x != 0.f && velocity.y != 0.f)
 			character->setVelocity(velocity / std::sqrt(2.f));
-
-		// Add scrolling velocity
-		//character->accelerate(0.f, mScrollSpeed);
 	}
 }
 
 bool World::hasAlivePlayer() const
 {
-	//return !mPlayerOneCharacter->isMarkedForRemoval() && !mPlayerTwoCharacter->isMarkedForRemoval();
-	return true;
-}
-
-bool World::hasPlayerReachedEnd() const
-{
-	//if (Character* character = getCharacter(1))
-	//	return !mWorldBounds.contains(character->getPosition());
-	//else
-		return false;
+	return mPlayerCharacters.size() > 0;
 }
 
 void World::updateSounds()
@@ -369,16 +306,11 @@ void World::updateSounds()
 	//// Set listener's position to player position
 	//mSounds.setListenerPosition(mPlayerCharacter->getWorldPosition());
 
-	//// Remove unused sounds
-	//mSounds.removeStoppedSounds();
-
 	sf::Vector2f listenerPosition;
 
 	// 0 players (multiplayer mode, until server is connected) -> view center
 	if (mPlayerCharacters.empty())
-	{
 		listenerPosition = mWorldView.getCenter();
-	}
 
 	// 1 or more players -> mean position between all aircrafts
 	else
@@ -399,7 +331,7 @@ void World::updateSounds()
 //Mike
 void World::spawnZombies(sf::Time dt)
 {
-	if (mNetworkedWorld)  
+	if (mNetworkedWorld)
 		return;
 
 	if (!mZombieSpawnTimerStarted)
@@ -575,7 +507,6 @@ void World::buildScene()
 
 	// Add the background sprite to the scene
 	std::unique_ptr<SpriteNode> waterSprite(new SpriteNode(mWaterTexture, textureRect));
-	//waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 
@@ -604,21 +535,13 @@ void World::buildScene()
 	std::unique_ptr<SoundNode> soundNode(new SoundNode(mSounds));
 	mSceneGraph.attachChild(std::move(soundNode));
 
-	// Add player's Character
-	//std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	//mPlayerCharacter = player.get();
-
-
-	//mPlayerCharacter->setPosition(getCenter(mWorldBounds));
-	//mSceneLayers[UpperLayer]->attachChild(std::move(player));
-
 	SpawnObstacles();
 
 	//spawnZombies(sf::Time::Zero);
 	mZombieSpawnTime = 10;//Spawn Every 10 seconds
 
-		// Add network node, if necessary
-	if (mNetworkedWorld)  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	// Add network node, if necessary
+	if (mNetworkedWorld) 
 	{
 		std::unique_ptr<NetworkNode> networkNode(new NetworkNode());
 		mNetworkNode = networkNode.get();
@@ -682,9 +605,9 @@ void World::handlePlayerCollision()
 {
 	mPlayerOneCharacter = getCharacter(1); //TODo FIX HOW Local Character is Got
 	// Map bound collision TOFIX
+
 	if (!shrink(mWorldBoundsBuffer, mWorldBounds).contains(mPlayerOneCharacter->getPosition()))
 		mPlayerOneCharacter->setPosition(mPlayerOneCharacter->getLastPosition());
-
 }
 
 //Mike
@@ -734,7 +657,6 @@ void World::handleCharacterCollisions(SceneNode::Pair& pair)
 	// Get collision intersection FloatRect
 	if (r1.intersects(r2, intersection))
 	{
-
 		// Get distance between two characters
 		sf::Vector2f diff = character1.getWorldPosition() - character2.getWorldPosition();
 
@@ -793,9 +715,7 @@ void World::handleObstacleCollisions(SceneNode::Pair& pair)
 	if (r1.intersects(r2, intersection))
 	{
 		sf::Vector2f diff = character.getWorldPosition() - obstacle.getWorldPosition();
-
 		sf::Vector3f mainfold = getMainfold(intersection, diff);
-
 		sf::Vector2f normal(mainfold.x, mainfold.y);
 
 		assert(dynamic_cast<Entity*>(&character) != nullptr);
@@ -862,10 +782,7 @@ void World::handleExplosionCollisions(SceneNode::Pair& pair)
 	auto& entity = static_cast<Entity&>(*pair.first);
 	auto& explosion = static_cast<Explosion&>(*pair.second);
 
-	// Distance between characters and explosions center-points
-	//float dV = vectorDistance(entity.getWorldPosition(), explosion.getWorldPosition());
-
-	entity.damage(1);
+	entity.damage(10);
 }
 
 //Mike

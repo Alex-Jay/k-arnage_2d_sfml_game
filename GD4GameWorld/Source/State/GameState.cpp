@@ -25,19 +25,16 @@ bool GameState::update(sf::Time dt)
 {
 	mWorld.update(dt);
 
+	CommandQueue& commands = mWorld.getCommandQueue();
+	mPlayer.handleRealtimeInput(commands);
+
 	if (!mWorld.hasAlivePlayer())
 	{
 		mPlayer.setMissionStatus(Player::MissionFailure);
 		requestStackPush(States::GameOver);
 	}
-	else if (mWorld.hasPlayerReachedEnd())
-	{
-		mPlayer.setMissionStatus(Player::MissionSuccess);
-		requestStackPush(States::MissionSuccess);
-	}
 
-	CommandQueue& commands = mWorld.getCommandQueue();
-	mPlayer.handleRealtimeInput(commands);
+	//TODO HANDLE WIN CONDITION
 
 	return true;
 }

@@ -26,12 +26,12 @@ Explosion::Explosion(ExplosionIDs type, const TextureHolder& textures)
 	  explosionTimerStarted(false)
 {
 	// Alex - Center explosion sprite
-	//centreOrigin(mSprite);
+	centreOrigin(mSprite);
 	mAnimation.setTexture(textures.get(Textures::Explosion));
 	mAnimation.setFrameSize(sf::Vector2i(256, 256));
 	mAnimation.setNumFrames(16);
 	mAnimation.setDuration(sf::seconds(1));
-	//centreOrigin(mAnimation);
+	centreOrigin(mAnimation);
 	mShowExplosion = true;
 
 	std::unique_ptr<EmitterNode> smoke(new EmitterNode(Particle::Type::Smoke));

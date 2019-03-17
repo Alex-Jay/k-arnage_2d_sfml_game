@@ -150,8 +150,8 @@ void Character::move(sf::Time dt, CommandQueue& commands)
 	}
 	else if (mType == Type::Player)
 	{
-		setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed()); // Alex - update players current rotation
-		//updateVelocity(dt);
+		//setRotation(Entity::getAngle() * dt.asSeconds() * getMaxRotationSpeed()); // Alex - update players current rotation
+		updateVelocity(dt);
 	}
 
 	Entity::updateCurrent(dt, commands);
