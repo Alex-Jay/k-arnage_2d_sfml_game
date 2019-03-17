@@ -5,7 +5,6 @@
 #include "Command/CommandQueue.hpp"
 #include "Structural/ResourceHolder.hpp"
 #include "Node/SoundNode.hpp"
-
 #include "Constant/Constants.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -132,7 +131,7 @@ void Character::updateCurrent(sf::Time dt, CommandQueue& commands)
 	// Check if bullets or grenades are fired
 	checkProjectileLaunch(dt, commands);
 
-	if (!isDestroyed()) {
+	if (!isMarkedForRemoval()) {
 		move(dt, commands);
 	}
 
@@ -178,6 +177,7 @@ void Character::updateAnimations(sf::Time dt, CommandQueue& commands)
 		}
 		return;
 	}
+
 	if (getVelocity().x != 0.f || getVelocity().y != 0.f) {
 		mCharacterMoveAnimation.update(dt);
 	}

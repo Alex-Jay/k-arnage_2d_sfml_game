@@ -9,7 +9,6 @@
 #include "DataTable/DataTables.hpp"
 #include "Constant/Constants.hpp"
 
-
 // For std::bind() placeholders _1, _2, ...
 using namespace std::placeholders;
 
@@ -38,11 +37,11 @@ std::vector<AircraftData> initializeAircraftData()
 	data[Aircraft::Avenger].speed = 50.f;
 	data[Aircraft::Avenger].texture = Textures::Entities;
 	data[Aircraft::Avenger].textureRect = sf::IntRect(228, 0, 60, 59);
-	data[Aircraft::Avenger].directions.push_back(Direction(+45.f,  50.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(  0.f,  50.f));
+	data[Aircraft::Avenger].directions.push_back(Direction(+45.f, 50.f));
+	data[Aircraft::Avenger].directions.push_back(Direction(0.f, 50.f));
 	data[Aircraft::Avenger].directions.push_back(Direction(-45.f, 100.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(  0.f,  50.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(+45.f,  50.f));
+	data[Aircraft::Avenger].directions.push_back(Direction(0.f, 50.f));
+	data[Aircraft::Avenger].directions.push_back(Direction(+45.f, 50.f));
 	data[Aircraft::Avenger].fireInterval = sf::seconds(2);
 	data[Aircraft::Avenger].hasRollAnimation = false;
 
@@ -80,8 +79,7 @@ std::vector<PickupData> initializePickupData()
 
 	data[static_cast<int>(Pickup::Type::HealthRefill)].texture = Textures::Entities;
 	data[static_cast<int>(Pickup::Type::HealthRefill)].textureRect = sf::IntRect(0, 64, 40, 40);
-	data[static_cast<int>(Pickup::Type::HealthRefill)].action = [](Character& a)
-	{
+	data[static_cast<int>(Pickup::Type::HealthRefill)].action = [](Character& a) {
 		a.repair(HEALTHPICKUPREPAIRVALUE);
 	};
 
@@ -96,7 +94,6 @@ std::vector<PickupData> initializePickupData()
 
 	return data;
 }
-
 
 std::vector<ParticleData> initializeParticleData()
 {
@@ -187,10 +184,8 @@ std::vector<ExplosionData> initializeExplosionData()
 
 //Mike
 
-
 //Mike
 std::vector<ObstacleData> initializeObstacleData()
 {
 	return std::vector<ObstacleData>();
 }
-

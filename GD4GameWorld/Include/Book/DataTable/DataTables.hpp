@@ -14,20 +14,16 @@ class Character;
 class Explosion;
 class Aircraft;
 
-struct Direction
-{
+struct Direction {
 	Direction(float angle, float distance)
-	: angle(angle)
-	, distance(distance)
-	{
-	}
+		: angle(angle)
+		, distance(distance){}
 
 	float angle;
 	float distance;
 };
 
-struct CharacterData
-{
+struct CharacterData {
 	int hitpoints;
 	float speed;
 	float rotationSpeed;
@@ -45,19 +41,17 @@ struct CharacterData
 	std::vector<Direction> directions;
 };
 
-struct AircraftData
-{
-	int								hitpoints;
-	float							speed;
-	Textures::ID					texture;
-	sf::IntRect						textureRect;
-	sf::Time						fireInterval;
-	std::vector<Direction>			directions;
-	bool							hasRollAnimation;
+struct AircraftData {
+	int hitpoints;
+	float speed;
+	Textures::ID texture;
+	sf::IntRect textureRect;
+	sf::Time fireInterval;
+	std::vector<Direction> directions;
+	bool hasRollAnimation;
 };
 
-struct ProjectileData
-{
+struct ProjectileData {
 	int damage;
 	float speed;
 	float textureScale;
@@ -65,28 +59,24 @@ struct ProjectileData
 	sf::IntRect textureRect;
 };
 
-struct PickupData
-{
-	std::function<void(Character&)>	action;
-	Textures::ID					texture;
-	sf::IntRect						textureRect;
+struct PickupData {
+	std::function<void(Character&)> action;
+	Textures::ID texture;
+	sf::IntRect textureRect;
 };
 
-struct ParticleData
-{
-	sf::Color						color;
-	sf::Time						lifetime;
+struct ParticleData {
+	sf::Color color;
+	sf::Time lifetime;
 };
 
-struct MapTileData
-{
+struct MapTileData {
 	std::string mapFile;
 	sf::Vector2u tileSize;
 	Textures::ID texture;
 };
 
-struct ExplosionData
-{
+struct ExplosionData {
 	int damage;
 	float radius;
 	int lifeTimeSeconds;
@@ -94,19 +84,17 @@ struct ExplosionData
 	sf::IntRect textureRect;
 };
 
-struct ObstacleData
-{
+struct ObstacleData {
 };
 
-std::vector<AircraftData>	initializeAircraftData();
-std::vector<ProjectileData>	initializeProjectileData();
-std::vector<PickupData>		initializePickupData();
-std::vector<ParticleData>	initializeParticleData();
+std::vector<AircraftData> initializeAircraftData();
+std::vector<ProjectileData> initializeProjectileData();
+std::vector<PickupData> initializePickupData();
+std::vector<ParticleData> initializeParticleData();
 std::vector<MapTileData> initializeMapTileData();
 
 std::vector<CharacterData> initializeCharacterData();
 std::vector<ExplosionData> initializeExplosionData();
 std::vector<ObstacleData> initializeObstacleData();
-
 
 #endif // BOOK_DATATABLES_HPP

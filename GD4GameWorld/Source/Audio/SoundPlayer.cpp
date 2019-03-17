@@ -4,29 +4,27 @@
 
 #include <cmath>
 
-
-namespace
-{
+namespace {
 	// Sound coordinate system, point of view of a player in front of the screen:
 	// X = left; Y = up; Z = back (out of the screen)
 	const float ListenerZ = 300.f;
 	const float Attenuation = 8.f;
 	const float MinDistance2D = 200.f;
-	const float MinDistance3D = std::sqrt(MinDistance2D*MinDistance2D + ListenerZ*ListenerZ);
+	const float MinDistance3D = std::sqrt(MinDistance2D * MinDistance2D + ListenerZ * ListenerZ);
 }
 
 SoundPlayer::SoundPlayer()
-: mSoundBuffers()
-, mSounds()
+	: mSoundBuffers()
+	, mSounds()
 {
-	mSoundBuffers.load(SoundEffect::AlliedGunfire,	"Media/Sound/AlliedGunfire.wav");
-	mSoundBuffers.load(SoundEffect::EnemyGunfire,	"Media/Sound/EnemyGunfire.wav");
-	mSoundBuffers.load(SoundEffect::Explosion1,		"Media/Sound/Explosion1.wav");
-	mSoundBuffers.load(SoundEffect::Explosion2,		"Media/Sound/Explosion2.wav");
-	mSoundBuffers.load(SoundEffect::LaunchMissile,	"Media/Sound/LaunchMissile.wav");
-	mSoundBuffers.load(SoundEffect::CollectPickup,	"Media/Sound/CollectPickup.wav");
-	mSoundBuffers.load(SoundEffect::Button,			"Media/Sound/Button.wav");
-
+	mSoundBuffers.load(SoundEffect::AlliedGunfire, "Media/Sound/AlliedGunfire.wav");
+	mSoundBuffers.load(SoundEffect::EnemyGunfire, "Media/Sound/EnemyGunfire.wav");
+	mSoundBuffers.load(SoundEffect::Explosion1, "Media/Sound/Explosion1.wav");
+	mSoundBuffers.load(SoundEffect::Explosion2, "Media/Sound/Explosion2.wav");
+	mSoundBuffers.load(SoundEffect::LaunchMissile, "Media/Sound/LaunchMissile.wav");
+	mSoundBuffers.load(SoundEffect::CollectPickup, "Media/Sound/CollectPickup.wav");
+	mSoundBuffers.load(SoundEffect::Button, "Media/Sound/Button.wav");
+	mSoundBuffers.load(SoundEffect::Scream, "Media/Sound/WilhelmScream.wav");
 	// Listener points towards the screen (default in SFML)
 	sf::Listener::setDirection(0.f, 0.f, -1.f);
 }
@@ -51,8 +49,7 @@ void SoundPlayer::play(SoundEffect::ID effect, sf::Vector2f position)
 
 void SoundPlayer::removeStoppedSounds()
 {
-	mSounds.remove_if([] (const sf::Sound& s)
-	{
+	mSounds.remove_if([](const sf::Sound& s) {
 		return s.getStatus() == sf::Sound::Stopped;
 	});
 }
