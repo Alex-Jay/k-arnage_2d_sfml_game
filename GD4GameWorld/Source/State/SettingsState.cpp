@@ -19,7 +19,7 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 		addButtonLabel(PlayerAction::MoveUp,		x, 2, "Move Up", context);
 		addButtonLabel(PlayerAction::MoveDown,		x, 3, "Move Down", context);
 		addButtonLabel(PlayerAction::Fire,			x, 4, "Fire", context);
-		addButtonLabel(PlayerAction::LaunchMissile,	x, 5, "Missile", context);
+		addButtonLabel(PlayerAction::StartGrenade,	x, 5, "Granade", context);
 	}
 
 	updateLabels();
@@ -64,6 +64,9 @@ bool SettingsState::handleEvent(const sf::Event& event)
 				// Player 2
 				else
 					getContext().keys2->assignKey(static_cast<PlayerAction::Type>(i - PlayerAction::Count), event.key.code);
+
+				if (static_cast<PlayerAction::Type>(i) == PlayerAction::Type::StartGrenade)
+					getContext().keys1->assignReleaseKey(PlayerAction::Type::LaunchGrenade, event.key.code);
 
 				mBindingButtons[i]->deactivate();
 			}

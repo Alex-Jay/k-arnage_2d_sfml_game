@@ -83,7 +83,7 @@ void Entity::setAngle(float angle)
 
 float Entity::getAngle() const
 {
-	return mAngle;
+	return 0;// mAngle;
 }
 
 // da - Delta of angle

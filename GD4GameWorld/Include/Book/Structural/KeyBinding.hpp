@@ -16,7 +16,8 @@ namespace PlayerAction
 		MoveUp,
 		MoveDown,
 		Fire,
-		LaunchMissile,
+		LaunchGrenade,
+		StartGrenade,
 		Count
 	};
 }
@@ -31,6 +32,7 @@ class KeyBinding
 		explicit				KeyBinding(int controlPreconfiguration);
 
 		void					assignKey(Action action, sf::Keyboard::Key key);
+		void					assignReleaseKey(Action action, sf::Keyboard::Key key);
 		sf::Keyboard::Key		getAssignedKey(Action action) const;
 
 		bool					checkAction(sf::Keyboard::Key key, Action& out) const;
@@ -43,6 +45,7 @@ class KeyBinding
 
 	private:
 		std::map<sf::Keyboard::Key, Action>		mKeyMap;
+		std::map<sf::Keyboard::Key, Action>		mKeyBindingReleased;
 };
 
 bool					isRealtimeAction(PlayerAction::Type action);

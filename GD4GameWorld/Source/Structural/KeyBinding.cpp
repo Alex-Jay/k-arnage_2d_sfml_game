@@ -16,7 +16,8 @@ KeyBinding::KeyBinding(int controlPreconfiguration)
 		mKeyMap[sf::Keyboard::Up]    = PlayerAction::MoveUp;
 		mKeyMap[sf::Keyboard::Down]  = PlayerAction::MoveDown;
 		mKeyMap[sf::Keyboard::Space] = PlayerAction::Fire;
-		mKeyMap[sf::Keyboard::M]     = PlayerAction::LaunchMissile;
+		mKeyMap[sf::Keyboard::M]	 = PlayerAction::StartGrenade;
+		mKeyMap[sf::Keyboard::M]	 = PlayerAction::LaunchGrenade;
 	}
 	else if (controlPreconfiguration == 2)
 	{
@@ -26,7 +27,8 @@ KeyBinding::KeyBinding(int controlPreconfiguration)
 		mKeyMap[sf::Keyboard::W] = PlayerAction::MoveUp;
 		mKeyMap[sf::Keyboard::S] = PlayerAction::MoveDown;
 		mKeyMap[sf::Keyboard::F] = PlayerAction::Fire;
-		mKeyMap[sf::Keyboard::R] = PlayerAction::LaunchMissile;
+		mKeyMap[sf::Keyboard::R] = PlayerAction::StartGrenade;
+		mKeyMap[sf::Keyboard::R] = PlayerAction::LaunchGrenade;
 	}
 }
 
@@ -43,6 +45,25 @@ void KeyBinding::assignKey(Action action, sf::Keyboard::Key key)
 
 	// Insert new binding
 	mKeyMap[key] = action;
+}
+
+//Mike
+void KeyBinding::assignReleaseKey(Action action, sf::Keyboard::Key key) 
+{
+	//Remove all keys that are already mapped to an action
+	for (auto itr = mKeyBindingReleased.begin(); itr != mKeyBindingReleased.end();)
+	{
+		if (itr->second == action)
+		{
+			mKeyBindingReleased.erase(itr++);
+		}
+		else
+		{
+			++itr;
+		}
+		//insert new binding
+		mKeyBindingReleased[key] = action;
+	}
 }
 
 sf::Keyboard::Key KeyBinding::getAssignedKey(Action action) const

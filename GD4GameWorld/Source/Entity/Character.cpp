@@ -418,6 +418,7 @@ unsigned int const Character::getLocalIdentifier() const
 	return mLocalIdentifier;
 }
 
+
 void Character::setLocalIdentifier(unsigned int localID)
 {
 	mLocalIdentifier = localID;

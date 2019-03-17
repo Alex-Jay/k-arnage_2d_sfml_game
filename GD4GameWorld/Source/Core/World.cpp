@@ -150,7 +150,7 @@ void World::incrementPlayerTwoScore(unsigned int incBy)
 void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
-	mWorldView.setCenter(getCharacter(0)->getPosition());
+	mWorldView.setCenter(getCharacter(1)->getPosition());
 
 	/*
 	Quick Alternative To:

@@ -1,6 +1,6 @@
 #include "Entity/Player.hpp"
 #include "Command/CommandQueue.hpp"
-#include "Entity/Aircraft.hpp"
+#include "Entity/Character.hpp"
 #include "Structural/Foreach.hpp"
 #include "Networking/NetworkProtocol.hpp"
 
@@ -13,56 +13,74 @@
 
 using namespace std::placeholders;
 
-struct AircraftMover
+struct CharacterMover
 {
-	AircraftMover(float vx, float vy, int identifier)
-	: velocity(vx, vy)
-	, aircraftID(identifier)
+	CharacterMover(float vx, float vy, int identifier)
+		: velocity(vx, vy)
+		, characterID(identifier)
 	{
 	}
 
-	void operator() (Aircraft& aircraft, sf::Time) const
+	void operator() (Character& character, sf::Time) const
 	{
-		if (aircraft.getIdentifier() == aircraftID)
-			aircraft.accelerate(velocity * aircraft.getMaxSpeed());
+		if (character.getLocalIdentifier() == characterID)
+			character.accelerate(velocity * character.getMaxSpeed());
 	}
 
 	sf::Vector2f velocity;
-	int aircraftID;
+	int characterID;
 };
-
-struct AircraftFireTrigger
+struct CharacterFireTrigger
 {
-	AircraftFireTrigger(int identifier)
-	: aircraftID(identifier)
+	unsigned int localIdentifier;
+
+	CharacterFireTrigger(unsigned int id)
+		: localIdentifier(id)
 	{
 	}
 
-	void operator() (Aircraft& aircraft, sf::Time) const
+	void operator() (Character& Character, sf::Time) const
 	{
-		if (aircraft.getIdentifier() == aircraftID)
-			aircraft.fire();
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.fire();
+		}
 	}
-
-	int aircraftID;
 };
 
-struct AircraftMissileTrigger
+struct CharacterGrenadeStarter
 {
-	AircraftMissileTrigger(int identifier)
-	: aircraftID(identifier)
-	{
-	}
+	unsigned int localIdentifier;
 
-	void operator() (Aircraft& aircraft, sf::Time) const
-	{
-		if (aircraft.getIdentifier() == aircraftID)
-			aircraft.launchMissile();
-	}
+	CharacterGrenadeStarter(unsigned int id)
+		: localIdentifier(id)
+	{}
 
-	int aircraftID;
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.startGrenade();
+		}
+	}
 };
 
+struct CharacterGrenadeLauncher
+{
+	unsigned int localIdentifier;
+
+	CharacterGrenadeLauncher(unsigned int id)
+		: localIdentifier(id)
+	{}
+
+	void operator() (Character& Character, sf::Time) const
+	{
+		if (Character.getLocalIdentifier() == localIdentifier)
+		{
+			Character.launchGrenade();
+		}
+	}
+};
 
 Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 : mKeyBinding(binding)
@@ -187,10 +205,15 @@ Player::MissionStatus Player::getMissionStatus() const
 
 void Player::initializeActions()
 {
-	mActionBinding[PlayerAction::MoveLeft].action      = derivedAction<Aircraft>(AircraftMover(-1,  0, mIdentifier));	
-	mActionBinding[PlayerAction::MoveRight].action     = derivedAction<Aircraft>(AircraftMover(+1,  0, mIdentifier));
-	mActionBinding[PlayerAction::MoveUp].action        = derivedAction<Aircraft>(AircraftMover( 0, -1, mIdentifier));
-	mActionBinding[PlayerAction::MoveDown].action      = derivedAction<Aircraft>(AircraftMover( 0, +1, mIdentifier));
-	mActionBinding[PlayerAction::Fire].action          = derivedAction<Aircraft>(AircraftFireTrigger(mIdentifier));
-	mActionBinding[PlayerAction::LaunchMissile].action = derivedAction<Aircraft>(AircraftMissileTrigger(mIdentifier));
+	mActionBinding[Action::MoveLeft].action = derivedAction<Character>(CharacterMover(-1.f, 0.f,  mIdentifier));
+	mActionBinding[Action::MoveRight].action = derivedAction<Character>(CharacterMover(1.f, 0.f,  mIdentifier));
+	mActionBinding[Action::MoveUp].action = derivedAction<Character>(CharacterMover(0.f, -1.f,  mIdentifier));
+	mActionBinding[Action::MoveDown].action = derivedAction<Character>(CharacterMover(0.f, 1.f,  mIdentifier));
+	//mActionBinding[Action::RotateLeft].action = derivedAction<Character>(CharacterMover(0.f, 0.f, -1.f, mLocalIdentifier)); // Alex - Rotate left action
+	//mActionBinding[Action::RotateRight].action = derivedAction<Character>(CharacterMover(0.f, 0.f, 1.f, mLocalIdentifier)); // Alex - Rotate right action
+
+	mActionBinding[Action::StartGrenade].action = derivedAction<Character>(CharacterGrenadeStarter(mIdentifier));
+	mActionBinding[Action::LaunchGrenade].action = derivedAction<Character>(CharacterGrenadeLauncher(mIdentifier));
+
+	mActionBinding[Action::Fire].action = derivedAction<Character>(CharacterFireTrigger(mIdentifier));
 }
