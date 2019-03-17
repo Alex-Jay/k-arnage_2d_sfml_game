@@ -313,9 +313,8 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		sf::Vector2f characterPosition;
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-		//Character* character = mWorld.addCharacter(characterIdentifier);
-		//character->setPosition(characterPosition);
-		mWorld.addCharacter(1); // TOFIX IDENTIFEIER SSTUUF
+		Character* character = mWorld.addCharacter(characterIdentifier);
+		character->setPosition(assignCharacterSpawn(characterIdentifier));
 
 		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys1));
 		mLocalPlayerIdentifiers.push_back(characterIdentifier);
@@ -453,4 +452,28 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		}
 	} break;
 	}
+}
+
+sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
+{
+	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
+
+	if (Identifier == 0)
+	{
+		spawnPosition = sf::Vector2f(512.f, 315.f);
+	}
+	else if (Identifier == 1)
+	{
+		spawnPosition = sf::Vector2f(1536.f, 315.f);
+	}
+	else if (Identifier == 2)
+	{
+		spawnPosition = sf::Vector2f(2048.f, 315.f);
+	}
+	else if (Identifier == 3)
+	{
+		spawnPosition = sf::Vector2f(2048.f, 315.f);
+	}
+
+	return spawnPosition;
 }

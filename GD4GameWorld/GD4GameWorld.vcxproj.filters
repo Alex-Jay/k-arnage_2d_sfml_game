@@ -243,9 +243,6 @@
     <ClInclude Include="Include\Book\Effect\DistortionEffect.hpp">
       <Filter>Header Files\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Book\Entity\Aircraft.hpp">
-      <Filter>Header Files\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Book\Entity\Projectile.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
@@ -312,9 +309,6 @@
     </ClCompile>
     <ClCompile Include="Source\Effect\PostEffect.cpp">
       <Filter>Source Files\Effect</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Entity\Aircraft.cpp">
-      <Filter>Source Files\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Source\Entity\Entity.cpp">
       <Filter>Source Files\Entity</Filter>

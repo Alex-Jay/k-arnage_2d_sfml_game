@@ -160,7 +160,7 @@ void World::update(sf::Time dt)
 	// Collision detection and response (may destroy entities)
 	handleCollisions(dt);
 
-	// Remove aircrafts that were destroyed (World::removeWrecks() only destroys the entities, not the pointers in mPlayerAircraft)
+	// Remove characters that were destroyed (World::removeWrecks() only destroys the entities, not the pointers in mPlayerCharacter)
 	auto firstToRemove = std::remove_if(mPlayerCharacters.begin(), mPlayerCharacters.end(), std::mem_fn(&Character::isMarkedForRemoval));
 	mPlayerCharacters.erase(firstToRemove, mPlayerCharacters.end());
 
@@ -315,7 +315,7 @@ void World::updateSounds()
 	if (mPlayerCharacters.empty())
 		listenerPosition = mWorldView.getCenter();
 
-	// 1 or more players -> mean position between all aircrafts
+	// 1 or more players -> mean position between all characters
 	else
 	{
 		for (Character* character : mPlayerCharacters)
@@ -836,30 +836,6 @@ void World::createPickup(sf::Vector2f position, Pickup::Type type)
 	pickup->setPosition(position);
 	pickup->setVelocity(0.f, 1.f);
 	mSceneLayers[UpperLayer]->attachChild(std::move(pickup));
-}
-
-sf::Vector2f World::assignCharacterSpawn(int Identifier)
-{
-	sf::Vector2f spawnPosition = sf::Vector2f(0,0);
-
-	if (Identifier == 0)
-	{
-		spawnPosition = sf::Vector2f(0, 0);
-	}
-	else if (Identifier == 1)
-	{
-		spawnPosition = sf::Vector2f(0, 0);
-	}
-	else if (Identifier == 2)
-	{
-		spawnPosition = sf::Vector2f(0, 0);
-	}
-	else if (Identifier == 3)
-	{
-		spawnPosition = sf::Vector2f(0, 0);
-	}
-
-	return sf::Vector2f(3000.f, -3000.f);
 }
 
 #pragma endregion

@@ -1,7 +1,6 @@
 #pragma once
 #include "Structural/ResourceHolder.hpp"
 #include "Node/SceneNode.hpp"
-#include "Entity/Aircraft.hpp"
 #include "Command/CommandQueue.hpp"
 #include "Command/Command.hpp"
 #include "Entity/Pickup.hpp"
@@ -60,8 +59,6 @@
 			CommandQueue& getCommandQueue();
 
 			bool hasAlivePlayer() const;
-			bool hasPlayerReachedEnd() const;
-
 			sf::Vector3f getMainfold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
 			int getAliveZombieCount();
 			void setAliveZombieCount(int count);

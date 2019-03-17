@@ -90,7 +90,7 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier,
 	// Set initial action bindings
 	initializeActions();
 
-	// Assign all categories to player's aircraft
+	// Assign all categories to player's character
 	FOREACH(auto& pair, mActionBinding)
 		pair.second.category = Category::PlayerCharacter;
 }

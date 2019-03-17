@@ -20,9 +20,9 @@ class GameServer
 		explicit							GameServer(sf::Vector2f battlefieldSize);
 											~GameServer();
 
-		void								notifyPlayerSpawn(sf::Int32 aircraftIdentifier);
-		void								notifyPlayerRealtimeChange(sf::Int32 aircraftIdentifier, sf::Int32 action, bool actionEnabled);
-		void								notifyPlayerEvent(sf::Int32 aircraftIdentifier, sf::Int32 action);
+		void								notifyPlayerSpawn(sf::Int32 characterIdentifier);
+		void								notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
+		void								notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
 
 	private:
@@ -33,13 +33,13 @@ class GameServer
 
 			sf::TcpSocket			socket;
 			sf::Time				lastPacketTime;
-			std::vector<sf::Int32>	aircraftIdentifiers;
+			std::vector<sf::Int32>	characterIdentifiers;
 			bool					ready;
 			bool					timedOut;
 		};
 
-		// Structure to store information about current aircraft state
-		struct AircraftInfo
+		// Structure to store information about current character state
+		struct characterInfo
 		{
 			sf::Vector2f				position;
 			sf::Int32					hitpoints;
@@ -83,11 +83,11 @@ class GameServer
 		sf::FloatRect						mBattleFieldRect;
 		float								mBattleFieldScrollSpeed;
 
-		std::size_t							mAircraftCount;
-		std::map<sf::Int32, AircraftInfo>	mAircraftInfo;
+		std::size_t							mCharacterCount;
+		std::map<sf::Int32, characterInfo>	mCharacterInfo;
 
 		std::vector<PeerPtr>				mPeers;
-		sf::Int32							mAircraftIdentifierCounter;
+		sf::Int32							mCharacterIdentifierCounter;
 		bool								mWaitingThreadEnd;
 		
 		sf::Time							mLastSpawnTime;

@@ -12,7 +12,7 @@
 
 class Character;
 class Explosion;
-class Aircraft;
+class character;
 
 struct Direction {
 	Direction(float angle, float distance)
@@ -41,7 +41,7 @@ struct CharacterData {
 	std::vector<Direction> directions;
 };
 
-struct AircraftData {
+struct characterData {
 	int hitpoints;
 	float speed;
 	Textures::ID texture;
@@ -87,7 +87,7 @@ struct ExplosionData {
 struct ObstacleData {
 };
 
-std::vector<AircraftData> initializeAircraftData();
+std::vector<characterData> initializecharacterData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
 std::vector<ParticleData> initializeParticleData();

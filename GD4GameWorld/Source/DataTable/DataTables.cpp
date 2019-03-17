@@ -1,5 +1,5 @@
 #include "Entity/Character.hpp"
-#include "Entity/Aircraft.hpp"
+#include "Entity/character.hpp"
 #include "Entity/Projectile.hpp"
 #include "Entity/Pickup.hpp"
 #include "Entity/Particle.hpp"
@@ -12,41 +12,7 @@
 // For std::bind() placeholders _1, _2, ...
 using namespace std::placeholders;
 
-std::vector<AircraftData> initializeAircraftData()
-{
-	std::vector<AircraftData> data(Aircraft::TypeCount);
 
-	data[Aircraft::Eagle].hitpoints = 100;
-	data[Aircraft::Eagle].speed = 200.f;
-	data[Aircraft::Eagle].fireInterval = sf::seconds(1);
-	data[Aircraft::Eagle].texture = Textures::Entities;
-	data[Aircraft::Eagle].textureRect = sf::IntRect(0, 0, 48, 64);
-	data[Aircraft::Eagle].hasRollAnimation = true;
-
-	data[Aircraft::Raptor].hitpoints = 20;
-	data[Aircraft::Raptor].speed = 80.f;
-	data[Aircraft::Raptor].texture = Textures::Entities;
-	data[Aircraft::Raptor].textureRect = sf::IntRect(144, 0, 84, 64);
-	data[Aircraft::Raptor].directions.push_back(Direction(+45.f, 80.f));
-	data[Aircraft::Raptor].directions.push_back(Direction(-45.f, 160.f));
-	data[Aircraft::Raptor].directions.push_back(Direction(+45.f, 80.f));
-	data[Aircraft::Raptor].fireInterval = sf::Time::Zero;
-	data[Aircraft::Raptor].hasRollAnimation = false;
-
-	data[Aircraft::Avenger].hitpoints = 40;
-	data[Aircraft::Avenger].speed = 50.f;
-	data[Aircraft::Avenger].texture = Textures::Entities;
-	data[Aircraft::Avenger].textureRect = sf::IntRect(228, 0, 60, 59);
-	data[Aircraft::Avenger].directions.push_back(Direction(+45.f, 50.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(0.f, 50.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(-45.f, 100.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(0.f, 50.f));
-	data[Aircraft::Avenger].directions.push_back(Direction(+45.f, 50.f));
-	data[Aircraft::Avenger].fireInterval = sf::seconds(2);
-	data[Aircraft::Avenger].hasRollAnimation = false;
-
-	return data;
-}
 
 std::vector<ProjectileData> initializeProjectileData()
 {

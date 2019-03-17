@@ -31,6 +31,8 @@ class MultiplayerGameState : public State
 		void						updateBroadcastMessage(sf::Time elapsedTime);
 		void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
 
+		sf::Vector2f assignCharacterSpawn(int Identifier);
+
 
 	private:
 		typedef std::unique_ptr<Player> PlayerPtr;

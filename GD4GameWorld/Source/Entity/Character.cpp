@@ -19,7 +19,7 @@ namespace {
 	const std::vector<CharacterData> Table = initializeCharacterData();
 }
 
-// Mike Character Class, Modified From Aircraft
+// Mike Character Class, Modified From Character
 Character::Character(Type type, const TextureHolder& textures,
 	const FontHolder& fonts)
 	: Entity(Table[static_cast<int>(type)].hitpoints)

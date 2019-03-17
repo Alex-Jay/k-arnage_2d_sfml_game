@@ -1,6 +1,6 @@
 
 set (SRC
-	Aircraft.cpp
+	character.cpp
 	Animation.cpp
 	Application.cpp
 	Button.cpp
