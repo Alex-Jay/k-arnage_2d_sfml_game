@@ -13,85 +13,78 @@
 #include <memory>
 #include <map>
 
+class GameServer {
+public:
+	explicit GameServer(sf::Vector2f battlefieldSize);
+	~GameServer();
 
-class GameServer
-{
-	public:
-		explicit							GameServer(sf::Vector2f battlefieldSize);
-											~GameServer();
+	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
+	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
+	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
-		void								notifyPlayerSpawn(sf::Int32 characterIdentifier);
-		void								notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
-		void								notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
+private:
+	// A GameServerRemotePeer refers to one instance of the game, may it be local or from another computer
+	struct RemotePeer {
+		RemotePeer();
 
+		sf::TcpSocket socket;
+		sf::Time lastPacketTime;
+		std::vector<sf::Int32> characterIdentifiers;
+		bool ready;
+		bool timedOut;
+	};
 
-	private:
-		// A GameServerRemotePeer refers to one instance of the game, may it be local or from another computer
-		struct RemotePeer
-		{
-									RemotePeer();
+	// Structure to store information about current character state
+	struct characterInfo {
+		sf::Vector2f position;
+		sf::Int32 hitpoints;
+		sf::Int32 missileAmmo;
+		std::map<sf::Int32, bool> realtimeActions;
+	};
 
-			sf::TcpSocket			socket;
-			sf::Time				lastPacketTime;
-			std::vector<sf::Int32>	characterIdentifiers;
-			bool					ready;
-			bool					timedOut;
-		};
+	// Unique pointer to remote peers
+	typedef std::unique_ptr<RemotePeer> PeerPtr;
 
-		// Structure to store information about current character state
-		struct characterInfo
-		{
-			sf::Vector2f				position;
-			sf::Int32					hitpoints;
-			sf::Int32                   missileAmmo;
-			std::map<sf::Int32, bool>	realtimeActions;
-		};
+private:
+	void setListening(bool enable);
+	void executionThread();
+	void tick();
+	sf::Time now() const;
 
-		// Unique pointer to remote peers
-		typedef std::unique_ptr<RemotePeer> PeerPtr;
+	void handleIncomingPackets();
+	void handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout);
 
+	void handleIncomingConnections();
+	void handleDisconnections();
 
-	private:
-		void								setListening(bool enable);
-		void								executionThread();
-		void								tick();
-		sf::Time							now() const;
+	void informWorldState(sf::TcpSocket& socket);
+	void broadcastMessage(const std::string& message);
+	void sendToAll(sf::Packet& packet);
+	void updateClientState();
 
-		void								handleIncomingPackets();
-		void								handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout);
+private:
+	sf::Thread mThread;
+	sf::Clock mClock;
+	sf::TcpListener mListenerSocket;
+	bool mListeningState;
+	sf::Time mClientTimeoutTime;
 
-		void								handleIncomingConnections();
-		void								handleDisconnections();
+	std::size_t mMaxConnectedPlayers;
+	std::size_t mConnectedPlayers;
 
-		void								informWorldState(sf::TcpSocket& socket);
-		void								broadcastMessage(const std::string& message);
-		void								sendToAll(sf::Packet& packet);
-		void								updateClientState();
+	float mWorldHeight;
+	sf::FloatRect mBattleFieldRect;
+	float mBattleFieldScrollSpeed;
 
+	std::size_t mCharacterCount;
+	std::map<sf::Int32, characterInfo> mCharacterInfo;
 
-	private:
-		sf::Thread							mThread;
-		sf::Clock							mClock;
-		sf::TcpListener						mListenerSocket;
-		bool								mListeningState;
-		sf::Time							mClientTimeoutTime;
+	std::vector<PeerPtr> mPeers;
+	sf::Int32 mCharacterIdentifierCounter;
+	bool mWaitingThreadEnd;
 
-		std::size_t							mMaxConnectedPlayers;
-		std::size_t							mConnectedPlayers;
-
-		float								mWorldHeight;
-		sf::FloatRect						mBattleFieldRect;
-		float								mBattleFieldScrollSpeed;
-
-		std::size_t							mCharacterCount;
-		std::map<sf::Int32, characterInfo>	mCharacterInfo;
-
-		std::vector<PeerPtr>				mPeers;
-		sf::Int32							mCharacterIdentifierCounter;
-		bool								mWaitingThreadEnd;
-		
-		sf::Time							mLastSpawnTime;
-		sf::Time							mTimeForNextSpawn;
+	sf::Time mLastSpawnTime;
+	sf::Time mTimeForNextSpawn;
 };
 
 #endif // BOOK_GAMESERVER_HPP

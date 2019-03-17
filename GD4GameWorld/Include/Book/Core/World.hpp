@@ -65,12 +65,9 @@
 
 			Character* getCharacter(int localIdentifier) const;
 			void removeCharacter(int localIdentifier);
-			Character* addCharacter(int localIdentifier);
+			Character * addCharacter(int identifier, bool isLocal);
 
-			unsigned int const getPlayerOneScore() const;
-			void incrementPlayerOneScore(unsigned int incBy);
-			unsigned int const getPlayerTwoScore() const;
-			void incrementPlayerTwoScore(unsigned int incBy);
+
 			bool pollGameAction(GameActions::Action & out);
 
 			void createPickup(sf::Vector2f position, Pickup::Type type);
@@ -100,8 +97,6 @@
 			void updateSounds();
 
 			void spawnZombies(sf::Time dt);
-
-			sf::Vector2f assignCharacterSpawn(int Identifier);
 
 			void StartZombieSpawnTimer(sf::Time dt);
 
@@ -148,8 +143,9 @@
 			sf::FloatRect mWorldBounds;
 			sf::Vector2f mSpawnPosition;
 			float mScrollSpeed;
-			Character* mPlayerOneCharacter;
-			Character* mPlayerTwoCharacter;
+
+			//Character* mPlayerLocalCharacter;
+
 			std::vector<Character*> mPlayerCharacters;
 
 			std::vector<SpawnPoint> mEnemySpawnPoints;
@@ -172,8 +168,7 @@
 			int mNumZombiesSpawn;
 			int mNumZombiesAlive;
 
-			unsigned int mPlayerOneScore;
-			unsigned int mPlayerTwoScore;
+			int localCharacterID;
 
 			bool								mNetworkedWorld;
 			NetworkNode*						mNetworkNode;

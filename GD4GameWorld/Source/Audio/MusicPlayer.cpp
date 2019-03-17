@@ -29,7 +29,7 @@ void MusicPlayer::stop()
 
 void MusicPlayer::setVolume(float volume)
 {
-	mVolume = volume;
+	mVolume = 0;// volume;
 }
 
 void MusicPlayer::setPaused(bool paused)

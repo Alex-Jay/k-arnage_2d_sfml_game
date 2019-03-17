@@ -34,8 +34,7 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mNumZombiesAlive(0)
 	, mZombieHitDelay(sf::Time::Zero)
 	, mZombieHitElapsedTime(sf::Time::Zero)
-	, mPlayerOneCharacter(nullptr)
-	, mPlayerTwoCharacter(nullptr)
+	//, mPlayerLocalCharacter(nullptr)
 	, mNetworkedWorld(networked)
 	, mNetworkNode(nullptr)
 {
@@ -114,25 +113,6 @@ void World::resetZombieHitElapsedTime()
 	mZombieHitElapsedTime = sf::Time::Zero;
 }
 
-unsigned int const World::getPlayerOneScore() const
-{
-	return mPlayerOneScore;
-}
-
-void World::incrementPlayerOneScore(unsigned int incBy)
-{
-	mPlayerOneScore += incBy;
-}
-
-unsigned int const World::getPlayerTwoScore() const
-{
-	return mPlayerTwoScore;
-}
-
-void World::incrementPlayerTwoScore(unsigned int incBy)
-{
-	mPlayerTwoScore += incBy;
-}
 
 #pragma endregion
 
@@ -142,7 +122,7 @@ void World::update(sf::Time dt)
 {
 	// Alex - Stick view to player position
 
-	mWorldView.setCenter(getCharacter(1)->getPosition());
+	mWorldView.setCenter(mPlayerCharacters[localCharacterID]->getPosition());
 
 	handlePlayerCollision();
 
@@ -258,15 +238,21 @@ void World::removeCharacter(int localIdentifier)
 	}
 }
 
-Character * World::addCharacter(int localIdentifier)
+Character * World::addCharacter(int identifier, bool isLocal)
 {
+
 	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	sf::Vector2f sp = mWorldView.getCenter();
-	player->setPosition(sp);
-	player->setLocalIdentifier(localIdentifier);
+	player->setPosition(mWorldView.getCenter());
+	player->setLocalIdentifier(identifier);
 
 	mPlayerCharacters.push_back(player.get());
 	mSceneLayers[Layer::UpperLayer]->attachChild(std::move(player));
+
+	if (isLocal)
+	{
+		localCharacterID = (identifier -1);
+	}
+
 	return mPlayerCharacters.back();
 }
 
@@ -367,7 +353,7 @@ void World::spawnZombies(sf::Time dt)
 
 				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 				enemy->setPosition(xPos, yPos);
-				enemy->setRotation(-mPlayerOneCharacter->getAngle());
+				enemy->setRotation(-mPlayerCharacters[localCharacterID]->getAngle());
 
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
@@ -606,11 +592,8 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 //Mike
 void World::handlePlayerCollision()
 {
-	mPlayerOneCharacter = getCharacter(1); //TODo FIX HOW Local Character is Got
-	// Map bound collision TOFIX
-
-	if (!mWorldBounds.contains(mPlayerOneCharacter->getPosition()))
-		mPlayerOneCharacter->damage(LAVA_DAMAGE);
+	if (!mWorldBounds.contains(mPlayerCharacters[localCharacterID]->getPosition()))
+		mPlayerCharacters[localCharacterID]->damage(LAVA_DAMAGE);
 }
 
 //Mike
@@ -749,15 +732,16 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 				int currZombiesAlive = getAliveZombieCount();
 				setAliveZombieCount(--currZombiesAlive);
 
+				//TOD INcrement Player Score Based on Player ID From Bullet
 				// Increment Player 1 Score
 				if (projectile.getProjectileId() == 0)
 				{
-					incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
+					//incrementPlayerOneScore(ZOMBIE_KILL_MULTIPLIER);
 				}
 				// Increment Player 2 Score
 				else if (projectile.getProjectileId() == 1)
 				{
-					incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
+					//incrementPlayerTwoScore(ZOMBIE_KILL_MULTIPLIER);
 				}
 			}
 		}

@@ -70,6 +70,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	}
 	else {
 		ip = getAddressFromFile();
+		std::string s = ip.toString();
 	}
 
 	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
@@ -313,7 +314,8 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		sf::Vector2f characterPosition;
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-		Character* character = mWorld.addCharacter(characterIdentifier);
+		//characterIdentifier = 4;
+		Character* character = mWorld.addCharacter((characterIdentifier), true);
 		character->setPosition(assignCharacterSpawn(characterIdentifier));
 
 		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys1));
@@ -328,7 +330,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		sf::Vector2f characterPosition;
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-		Character* character = mWorld.addCharacter(characterIdentifier);
+		Character* character = mWorld.addCharacter(characterIdentifier, false);
 		character->setPosition(characterPosition);
 
 		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
@@ -360,7 +362,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 			sf::Vector2f characterPosition;
 			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
 
-			Character* character = mWorld.addCharacter(characterIdentifier);
+			Character* character = mWorld.addCharacter(characterIdentifier, false);
 			character->setPosition(characterPosition);
 			//character->setHitpoints(hitpoints);
 			character->setGrenadeAmmo(grenadeAmmo);
@@ -374,7 +376,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		sf::Int32 characterIdentifier;
 		packet >> characterIdentifier;
 
-		mWorld.addCharacter(characterIdentifier);
+		mWorld.addCharacter(characterIdentifier, false);
 		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys2));
 		mLocalPlayerIdentifiers.push_back(characterIdentifier);
 	} break;
@@ -408,7 +410,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		sf::Int32 type;
 		float relativeX;
 		packet >> type >> height >> relativeX;
-
+		
 		mWorld.addEnemy(static_cast<Character::Type>(type), relativeX, height);
 		mWorld.sortEnemies();
 	} break;
@@ -456,8 +458,8 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 {
-	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
-
+	sf::Vector2f spawnPosition = sf::Vector2f(0, 0); 
+	// TO FIX this Needs to be done by Modulas, so that it wraps around when more playes join
 	if (Identifier == 0)
 	{
 		spawnPosition = sf::Vector2f(512.f, 315.f);
