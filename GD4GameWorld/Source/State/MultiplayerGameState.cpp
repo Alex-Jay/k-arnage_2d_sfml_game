@@ -406,13 +406,14 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 		// New enemy to be created
 	case Server::SpawnEnemy: {
-		float height;
-		sf::Int32 type;
-		float relativeX;
-		packet >> type >> height >> relativeX;
+
+		//std::cout << "CLIENT RECIEVED SPAWN ZOMBIE COMMAND: " << std::endl;
+		int x;
+		int y;
+		packet >> x >> y;
 		
-		mWorld.addZombie(relativeX, height, 0);
-		mWorld.sortEnemies();
+		mWorld.addZombie(x, y, 0);
+		//mWorld.sortEnemies();
 	} break;
 
 	case Server::SpawnObstacle: {

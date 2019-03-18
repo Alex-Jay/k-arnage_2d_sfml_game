@@ -357,6 +357,7 @@ void World::addZombie(float x, float y, float a)
 {
 	SpawnPoint spawn(Character::Type::Zombie, x, y, a);
 	mEnemySpawnPoints.push_back(spawn);
+	//std::cout << "SPAWN POINT ADDED " << std::endl;
 }
 
 void World::addObstacle(Obstacle::ObstacleID type, float x, float y, float a)
@@ -368,8 +369,7 @@ void World::addObstacle(Obstacle::ObstacleID type, float x, float y, float a)
 void World::spawnZombies()
 {
 	// Spawn all enemies entering the view area (including distance) this frame
-	while (!mEnemySpawnPoints.empty()
-		&& mEnemySpawnPoints.back().y > getBattlefieldBounds().top)
+	while (!mEnemySpawnPoints.empty())
 	{
 		SpawnPoint spawn = mEnemySpawnPoints.back();
 
@@ -382,6 +382,11 @@ void World::spawnZombies()
 
 		// Enemy is spawned, remove from the list to spawn
 		mEnemySpawnPoints.pop_back();
+
+		++mNumZombiesAlive;
+
+		//std::cout << "Spawned Zombie at X: " << spawn.x << " Y: " << spawn.y << std::endl;
+		//std::cout << "Zombies Alive World: " << mNumZombiesAlive << std::endl;
 	}
 }
 
@@ -432,6 +437,10 @@ void World::destroyEntitiesOutsideView()
 		if (!getBattlefieldBounds().intersects(e.getBoundingRect()))
 			e.destroy();
 	});
+	mCommandQueue.push(destroyProjectiles);
+
+	if (mNetworkedWorld)
+		return;
 
 	//Destroy Zombies Outside of world Bounds
 	Command destroyZombies;
@@ -445,8 +454,6 @@ void World::destroyEntitiesOutsideView()
 			setAliveZombieCount(--currZombiesAlive);
 		}
 	});
-
-	mCommandQueue.push(destroyProjectiles);
 	mCommandQueue.push(destroyZombies);
 }
 

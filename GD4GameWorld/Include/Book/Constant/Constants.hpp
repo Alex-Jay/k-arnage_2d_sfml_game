@@ -40,7 +40,6 @@ const float ZOMBIESPEED = 100.f;
 const float ZOMBIEATTACKDAMAGE = 19.5f;
 const float ZOMBIEATTACKDELAY = 600.f; // In miliseconds
 
-const float LAVA_DAMAGE = 2.f;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
@@ -61,6 +60,11 @@ const float APPROACHRATE = 200;
 const float LEVEL_ZOOM_FACTOR = 1.5f;
 const unsigned int WORLD_WIDTH = 3328;
 const unsigned int WORLD_HEIGHT = 2688;
+const float LAVA_DAMAGE = 2.f;
+const int8_t MAX_ALIVE_ZOMBIES = 8;
+
+const unsigned short int MIN_ZOMBIE_SPAWN_TIME = 5000;
+const unsigned short int MAX_ZOMBIE_SPAWN_TIME = 15000;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ COLOUR CONSTANTS ++++++++++++++++++

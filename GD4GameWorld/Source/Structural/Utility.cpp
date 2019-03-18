@@ -81,12 +81,19 @@ int randomInt(int exclusiveMax)
 //Mike
 int randomIntExcluding(int lower, int upper)
 {
+	int isSigned = 1;
 	//Random number between 0 and total range
 	int rand = randomInt(lower + upper);
+	
+	if (lower <= 0)
+		isSigned = randomInt(3);
 
 	// if the random number is greater than the lowest and the range to push outside.
 	if (rand >= lower)
-		rand += upper;
+		if (isSigned == 1)
+			rand += upper;
+		else
+			rand -= upper;
 
 	return rand;
 }

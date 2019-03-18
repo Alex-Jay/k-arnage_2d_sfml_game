@@ -9,6 +9,8 @@
 
 #include <SFML/Network/Packet.hpp>
 
+#include <iostream>
+
 GameServer::RemotePeer::RemotePeer() 
 : ready(false)
 , timedOut(false)
@@ -31,6 +33,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 , mWaitingThreadEnd(false)
 , mLastSpawnTime(sf::Time::Zero)
 , mTimeForNextSpawn(sf::seconds(5.f))
+, mZombieCount(0)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -174,42 +177,21 @@ void GameServer::tick()
 	}
 
 	// Check if its time to attempt to spawn enemies
-	if (now() >= mTimeForNextSpawn + mLastSpawnTime)
+	if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
 	{	
-		// No more enemies are spawned near the end
-		if (mBattleFieldRect.top > 600.f)
-		{
- 			std::size_t enemyCount = 1u + randomInt(2);
- 			float spawnCenter = static_cast<float>(randomInt(500) - 250);
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::SpawnEnemy);
+			packet << randomIntExcluding(0, WORLD_WIDTH);
+			packet << randomIntExcluding(0, WORLD_HEIGHT);
 
-			// In case only one enemy is being spawned, it appears directly at the spawnCenter
-			float planeDistance = 0.f;
-			float nextSpawnPosition = spawnCenter;
-			
-			// In case there are two enemies being spawned together, each is spawned at each side of the spawnCenter, with a minimum distance
-			if (enemyCount == 2)
-			{
-				planeDistance = static_cast<float>(150 + randomInt(250));
-				nextSpawnPosition = spawnCenter - planeDistance / 2.f;
-			}
+			sendToAll(packet);
 
-			// Send the spawn orders to all clients
-			for (std::size_t i = 0; i < enemyCount; ++i)
-			{
-				sf::Packet packet;
-				packet << static_cast<sf::Int32>(Server::SpawnEnemy);
-				packet << static_cast<sf::Int32>(1 + randomInt(static_cast<sf::Int32>(Character::Type::TypeCount) -1));
-				packet << mWorldHeight - mBattleFieldRect.top + 500;
-				packet << nextSpawnPosition;
-
-				nextSpawnPosition += planeDistance / 2.f;
-
-				sendToAll(packet);
-			}
+			++mZombieCount;
 
 			mLastSpawnTime = now();
-			mTimeForNextSpawn = sf::milliseconds(2000 + randomInt(6000));
-		}
+			mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
+
+			//std::cout << "SERVER SENT SPAWN ZOMBIE PACKET COUNT: " << static_cast<int16_t>(mZombieCount) << std::endl;
 	}
 
 	if (!obstaclesSpawned)
@@ -258,7 +240,6 @@ std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
 		}
 		else
 			i--;
-
 	}
 
 	return spawnPoints;
@@ -405,6 +386,10 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 				sendToAll(packet);
 			}
+
+			if (action == GameActions::EnemyExplode)
+				mZombieCount--;
+
 		}
 	}
 }

@@ -88,6 +88,8 @@ private:
 	sf::Time mTimeForNextSpawn;
 
 	bool obstaclesSpawned{};
+
+	int8_t mZombieCount;
 };
 
 #endif // BOOK_GAMESERVER_HPP
