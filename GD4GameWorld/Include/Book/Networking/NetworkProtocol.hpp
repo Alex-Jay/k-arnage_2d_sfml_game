@@ -21,6 +21,7 @@ namespace Server
 		PlayerDisconnect,
 		AcceptCoopPartner,
 		SpawnEnemy,
+		SpawnObstacle,
 		SpawnPickup,
 		UpdateClientState,
 		MissionSuccess

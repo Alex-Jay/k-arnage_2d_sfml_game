@@ -4,6 +4,7 @@
 #include "Structural/Utility.hpp"
 #include "Entity/Pickup.hpp"
 #include "Entity/Character.hpp"
+#include "Entity/Obstacle.hpp"
 
 #include <SFML/Network/Packet.hpp>
 
@@ -209,6 +210,48 @@ void GameServer::tick()
 			mTimeForNextSpawn = sf::milliseconds(2000 + randomInt(6000));
 		}
 	}
+
+	if (!obstaclesSpawned)
+	{ 
+		obstaclesSpawned = true;
+		//TODO FIX Obstacle SPawn MAgic numbers and Make sure they dont spawn on top of each other
+		std::list<sf::FloatRect> objectRects;
+
+		//Random Position in the world 
+		int xPos = randomInt(500);
+		int yPos = randomInt(500);
+		int rot = randomInt(360);
+
+		sf::Vector2f position(xPos, yPos);
+		sf::Vector2f size(100, 100);
+
+		sf::FloatRect boundingRectangle = sf::FloatRect(position, size);
+
+		//If the list does not contain that rectangle spawn a new object
+		//if (!containsIntersection(objectRects, boundingRectangle)
+		//{
+		//	objectRects.push_back(boundingRectangle);
+		//	addObstacle(oType, xPos, yPos, type * 18);
+		//	//mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
+		//}
+		//packet >> type >> x >> y >> a;
+
+		std::size_t obstacleCount = 1u + randomInt(10);
+		// Send the spawn orders to all clients
+		for (std::size_t i = 0; i < obstacleCount; ++i)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
+			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
+			packet << xPos;
+			packet << yPos;
+			packet << rot;
+
+			sendToAll(packet);
+		}
+	}
+
+
 }
 
 sf::Time GameServer::now() const

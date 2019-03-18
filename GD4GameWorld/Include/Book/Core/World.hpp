@@ -13,7 +13,7 @@
 #include "Structural/MapTiler.hpp"
 #include "Effect/DistortionEffect.hpp"
 #include "Entity/Character.hpp"
-
+#include "Entity/Obstacle.hpp"
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -76,7 +76,11 @@
 
 			void addZombie(float x, float y, float a);
 
+			void addObstacle(Obstacle::ObstacleID type, float x, float y, float a);
+
 			void spawnZombies();
+
+			void spawnObstacles();
 
 			void sortEnemies();
 
@@ -84,7 +88,7 @@
 		private:
 			void loadTextures();
 			void buildScene();
-			void SpawnObstacles();
+			void addObstacles();
 			void handlePlayerCollision();
 			void handleCollisions(sf::Time dt);
 			void handleCharacterCollisions(SceneNode::Pair& pair);
@@ -124,6 +128,22 @@
 				float a;
 			};
 
+			struct obstacleSpawnPoint
+			{
+				obstacleSpawnPoint(Obstacle::ObstacleID type, float x, float y, float a)
+					: type(type)
+					, x(x)
+					, y(y)
+					, a(a)//Angle
+				{
+				}
+
+				Obstacle::ObstacleID type;
+				float x;
+				float y;
+				float a;
+			};
+
 		private:
 			sf::RenderTarget& mTarget;
 			sf::RenderTexture mSceneTexture;
@@ -151,6 +171,7 @@
 			std::vector<Character*> mPlayerCharacters;
 
 			std::vector<SpawnPoint> mEnemySpawnPoints;
+			std::vector<obstacleSpawnPoint> mObstacleSpawnPoints;
 			std::vector<Character*> mActiveEnemies;
 
 			DistortionEffect mDistortionEffect;

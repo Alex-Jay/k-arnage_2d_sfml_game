@@ -85,6 +85,8 @@ private:
 
 	sf::Time mLastSpawnTime;
 	sf::Time mTimeForNextSpawn;
+
+	bool obstaclesSpawned{};
 };
 
 #endif // BOOK_GAMESERVER_HPP

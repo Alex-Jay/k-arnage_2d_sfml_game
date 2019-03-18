@@ -415,6 +415,14 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		mWorld.sortEnemies();
 	} break;
 
+	case Server::SpawnObstacle: {
+		float x, y, a;
+		sf::Int32 type;
+		packet >> type >> x >> y >> a;
+
+		mWorld.addObstacle(static_cast<Obstacle::ObstacleID>(type), x, y, a);
+	} break;
+
 		// Mission successfully completed
 	case Server::MissionSuccess: {
 		requestStackPush(States::MissionSuccess);

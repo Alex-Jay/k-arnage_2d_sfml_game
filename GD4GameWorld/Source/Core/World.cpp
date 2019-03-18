@@ -147,6 +147,8 @@ void World::update(sf::Time dt)
 	addZombies(dt);
 	spawnZombies();
 
+	spawnObstacles();
+
 	// Regular update step, adapt position (correct if outside view)
 	mSceneGraph.update(dt, mCommandQueue);
 
@@ -357,6 +359,12 @@ void World::addZombie(float x, float y, float a)
 	mEnemySpawnPoints.push_back(spawn);
 }
 
+void World::addObstacle(Obstacle::ObstacleID type, float x, float y, float a)
+{
+	obstacleSpawnPoint spawn(type, x, y, a);
+	mObstacleSpawnPoints.push_back(spawn);
+}
+
 void World::spawnZombies()
 {
 	// Spawn all enemies entering the view area (including distance) this frame
@@ -374,6 +382,26 @@ void World::spawnZombies()
 
 		// Enemy is spawned, remove from the list to spawn
 		mEnemySpawnPoints.pop_back();
+	}
+}
+
+void World::spawnObstacles()
+{
+	// Spawn all enemies entering the view area (including distance) this frame
+	while (!mObstacleSpawnPoints.empty()
+		&& mObstacleSpawnPoints.back().y > getBattlefieldBounds().top)
+	{
+		obstacleSpawnPoint spawn = mObstacleSpawnPoints.back();
+
+		std::unique_ptr<Obstacle> enemy(new Obstacle(spawn.type, mTextures));
+		enemy->setPosition(spawn.x, spawn.y);
+		enemy->setRotation(spawn.a);
+		//if (mNetworkedWorld) enemy->disablePickups();
+
+		mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
+
+		// Enemy is spawned, remove from the list to spawn
+		mObstacleSpawnPoints.pop_back();
 	}
 }
 
@@ -529,7 +557,7 @@ void World::buildScene()
 	mSceneGraph.attachChild(std::move(soundNode));
 
 
-	SpawnObstacles();
+	addObstacles();
 
 	//spawnZombies(sf::Time::Zero);
 	mZombieSpawnTime = 10;//Spawn Every 10 seconds
@@ -544,7 +572,7 @@ void World::buildScene()
 }
 
 //Mike
-void World::SpawnObstacles()
+void World::addObstacles()
 {
 	if (mNetworkedWorld)
 		return;
@@ -578,7 +606,8 @@ void World::SpawnObstacles()
 			&& shrink((mWorldBoundsBuffer * 2), mWorldBounds).contains(sf::Vector2f(xPos, yPos)))
 		{
 			objectRects.push_back(boundingRectangle);
-			mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
+			addObstacle(oType, xPos, yPos, type * 18);
+			//mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
 		}
 	}
 }
@@ -744,6 +773,8 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 				projectile.setVelocity(-projectile.getVelocity() / 2.f);
 			}
 		}
+		else
+			projectile.setVelocity(-projectile.getVelocity() / 2.f);
 	}
 	else
 	{
