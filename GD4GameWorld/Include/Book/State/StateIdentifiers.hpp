@@ -18,6 +18,7 @@ namespace States
 		MissionSuccess,
 		HostGame,
 		JoinGame,
+		Lobby,
 	};
 }
 

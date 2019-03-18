@@ -56,6 +56,7 @@
     <ClInclude Include="Include\Book\Node\TextNode.hpp" />
     <ClInclude Include="Include\Book\State\GameOverState.hpp" />
     <ClInclude Include="Include\Book\State\GameState.hpp" />
+    <ClInclude Include="include\Book\State\LobbyState.hpp" />
     <ClInclude Include="Include\Book\State\MenuState.hpp" />
     <ClInclude Include="Include\Book\State\MultiplayerGameState.hpp" />
     <ClInclude Include="Include\Book\State\PauseState.hpp" />
@@ -115,6 +116,7 @@
     <ClCompile Include="Source\Node\TextNode.cpp" />
     <ClCompile Include="Source\State\GameOverState.cpp" />
     <ClCompile Include="Source\State\GameState.cpp" />
+    <ClCompile Include="Source\State\LobbyState.cpp" />
     <ClCompile Include="Source\State\MenuState.cpp" />
     <ClCompile Include="Source\State\MultiplayerGameState.cpp" />
     <ClCompile Include="Source\State\PauseState.cpp" />

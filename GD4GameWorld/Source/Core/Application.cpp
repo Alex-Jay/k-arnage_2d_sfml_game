@@ -9,6 +9,7 @@
 #include "State/PauseState.hpp"
 #include "State/SettingsState.hpp"
 #include "State/GameOverState.hpp"
+#include "State/LobbyState.hpp"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
@@ -31,6 +32,7 @@ Application::Application()
 	mFonts.load(Fonts::Main, "Media/Fonts/Sansation.ttf");
 
 	mTextures.load(Textures::TitleScreen, "Media/Textures/TitleScreen.png");
+	mTextures.load(Textures::LobbyScreen, "Media/Textures/LobbyScreen.png");
 	mTextures.load(Textures::Buttons, "Media/Textures/Buttons.png");
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
@@ -112,6 +114,7 @@ void Application::registerStates()
 	mStateStack.registerState<TitleState>(States::Title);
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
+	mStateStack.registerState<LobbyState>(States::Lobby);
 	mStateStack.registerState<MultiplayerGameState>(States::HostGame, true);
 	mStateStack.registerState<MultiplayerGameState>(States::JoinGame, false);
 	mStateStack.registerState<PauseState>(States::Pause);

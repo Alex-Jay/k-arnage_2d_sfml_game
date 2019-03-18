@@ -19,6 +19,7 @@ namespace Textures
 		Water,
 		Lava,
 		TitleScreen,
+		LobbyScreen,
 		Buttons,
 		Explosion,
 		Grenade,
