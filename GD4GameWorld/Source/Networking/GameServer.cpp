@@ -29,7 +29,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 , mBattleFieldScrollSpeed(-50.f)
 , mCharacterCount(0)
 , mPeers(1)
-, mCharacterIdentifierCounter(1)
+, mCharacterIdentifierCounter(0)
 , mWaitingThreadEnd(false)
 , mLastSpawnTime(sf::Time::Zero)
 , mTimeForNextSpawn(sf::seconds(5.f))
@@ -245,7 +245,6 @@ std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
 	return spawnPoints;
 }
 
-
 sf::Time GameServer::now() const
 {
 	return mClock.getElapsedTime();
@@ -419,6 +418,7 @@ void GameServer::handleIncomingConnections()
 		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
 		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
 
+		// SpawnSelf packet
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Server::SpawnSelf);
 		packet << mCharacterIdentifierCounter;

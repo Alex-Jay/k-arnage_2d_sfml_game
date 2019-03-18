@@ -118,8 +118,6 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
-	std::cout << "Local ID: " << mPlayerCharacters[localCharacterID]->getLocalIdentifier() << std::endl;
-
 	setView();
 
 	// Setup commands to destroy entities, and guide grenades
