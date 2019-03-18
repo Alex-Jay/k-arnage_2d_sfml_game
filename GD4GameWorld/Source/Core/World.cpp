@@ -27,13 +27,11 @@ World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sou
 	, mFonts(fonts)
 	, mSounds(sounds)
 	, mSceneLayers()
-	, mScrollSpeed(0.f)
 	, mZombieSpawnTime(-1)
 	, mNumZombiesSpawn(2)
 	, mNumZombiesAlive(0)
 	, mZombieHitDelay(sf::Time::Zero)
 	, mZombieHitElapsedTime(sf::Time::Zero)
-	//, mPlayerLocalCharacter(nullptr)
 	, mNetworkedWorld(networked)
 	, mNetworkNode(nullptr)
 {
@@ -218,17 +216,17 @@ sf::Vector3f World::getMainfold(const sf::FloatRect & overlap, const sf::Vector2
 	return mainfold;
 }
 
-int World::getAliveZombieCount()
+int8_t World::getAliveZombieCount()
 {
 	return mNumZombiesAlive;
 }
 
-void World::setAliveZombieCount(int count)
+void World::setAliveZombieCount(int8_t count)
 {
 	mNumZombiesAlive = count;
 }
 
-Character * World::getCharacter(int localIdentifier) const
+Character * World::getCharacter(int8_t localIdentifier) const
 {
 	for (Character* c : mPlayerCharacters)
 	{
@@ -240,7 +238,7 @@ Character * World::getCharacter(int localIdentifier) const
 	return nullptr;
 }
 
-void World::removeCharacter(int localIdentifier)
+void World::removeCharacter(int8_t localIdentifier)
 {
 	Character* character = getCharacter(localIdentifier);
 	if (character)
@@ -250,7 +248,7 @@ void World::removeCharacter(int localIdentifier)
 	}
 }
 
-Character * World::addCharacter(int identifier, bool isLocal)
+Character * World::addCharacter(int8_t identifier, bool isLocal)
 {
 
 	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
@@ -353,14 +351,14 @@ void World::addZombies(sf::Time dt)
 	}
 }
 
-void World::addZombie(float x, float y, float a)
+void World::addZombie(int16_t x, int16_t y, int16_t a)
 {
 	SpawnPoint spawn(Character::Type::Zombie, x, y, a);
 	mEnemySpawnPoints.push_back(spawn);
 	//std::cout << "SPAWN POINT ADDED " << std::endl;
 }
 
-void World::addObstacle(Obstacle::ObstacleID type, float x, float y, float a)
+void World::addObstacle(Obstacle::ObstacleID type, int16_t x, int16_t y, int16_t a)
 {
 	obstacleSpawnPoint spawn(type, x, y, a);
 	mObstacleSpawnPoints.push_back(spawn);
@@ -408,15 +406,6 @@ void World::spawnObstacles()
 		// Enemy is spawned, remove from the list to spawn
 		mObstacleSpawnPoints.pop_back();
 	}
-}
-
-void World::sortEnemies()
-{
-	// Sort all enemies according to their y value, such that lower enemies are checked first for spawning
-	std::sort(mEnemySpawnPoints.begin(), mEnemySpawnPoints.end(), [](SpawnPoint lhs, SpawnPoint rhs)
-	{
-		return lhs.y < rhs.y;
-	});
 }
 
 //Mike

@@ -122,7 +122,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 {
 	// Connected to server: Handle all the network logic
 	if (mConnected) {
-	
+
 		// Remove players whose characters were destroyed
 		bool foundLocalPlane = false;
 		for (auto itr = mPlayers.begin(); itr != mPlayers.end();) {
@@ -411,7 +411,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		int x;
 		int y;
 		packet >> x >> y;
-		
+
 		mWorld.addZombie(x, y, 0);
 		//mWorld.sortEnemies();
 	} break;
@@ -467,7 +467,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 {
-	sf::Vector2f spawnPosition = sf::Vector2f(0, 0); 
+	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
 	// TO FIX this Needs to be done by Modulas, so that it wraps around when more playes join
 	if (Identifier == 0)
 	{

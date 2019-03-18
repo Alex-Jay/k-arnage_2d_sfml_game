@@ -15,57 +15,57 @@
 
 class MultiplayerGameState : public State
 {
-	public:
-									MultiplayerGameState(StateStack& stack, Context context, bool isHost);
+public:
+	MultiplayerGameState(StateStack& stack, Context context, bool isHost);
 
-		virtual void				draw();
-		virtual bool				update(sf::Time dt);
-		virtual bool				handleEvent(const sf::Event& event);
-		virtual void				onActivate();
-		void						onDestroy();
+	virtual void				draw();
+	virtual bool				update(sf::Time dt);
+	virtual bool				handleEvent(const sf::Event& event);
+	virtual void				onActivate();
+	void						onDestroy();
 
-		void						disableAllRealtimeActions();
-
-
-	private:
-		void						updateBroadcastMessage(sf::Time elapsedTime);
-		void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
-
-		sf::Vector2f assignCharacterSpawn(int Identifier);
+	void						disableAllRealtimeActions();
 
 
-	private:
-		typedef std::unique_ptr<Player> PlayerPtr;
+private:
+	void						updateBroadcastMessage(sf::Time elapsedTime);
+	void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
+
+	sf::Vector2f assignCharacterSpawn(int Identifier);
 
 
-	private:
-		World						mWorld;
-		sf::RenderWindow&			mWindow;
-		TextureHolder&				mTextureHolder;
+private:
+	typedef std::unique_ptr<Player> PlayerPtr;
 
-		std::map<int, PlayerPtr>	mPlayers;
-		std::vector<sf::Int32>		mLocalPlayerIdentifiers;
-		sf::TcpSocket				mSocket;
-		bool						mConnected;
-		std::unique_ptr<GameServer> mGameServer;
-		sf::Clock					mTickClock;
 
-		std::vector<std::string>	mBroadcasts;
-		sf::Text					mBroadcastText;
-		sf::Time					mBroadcastElapsedTime;
+private:
+	World						mWorld;
+	sf::RenderWindow&			mWindow;
+	TextureHolder&				mTextureHolder;
 
-		sf::Text					mPlayerInvitationText;
-		sf::Time					mPlayerInvitationTime;
+	std::map<int, PlayerPtr>	mPlayers;
+	std::vector<sf::Int32>		mLocalPlayerIdentifiers;
+	sf::TcpSocket				mSocket;
+	bool						mConnected;
+	std::unique_ptr<GameServer> mGameServer;
+	sf::Clock					mTickClock;
 
-		sf::Text					mFailedConnectionText;
-		sf::Clock					mFailedConnectionClock;
+	std::vector<std::string>	mBroadcasts;
+	sf::Text					mBroadcastText;
+	sf::Time					mBroadcastElapsedTime;
 
-		bool						mActiveState;
-		bool						mHasFocus;
-		bool						mHost;
-		bool						mGameStarted;
-		sf::Time					mClientTimeout;
-		sf::Time					mTimeSinceLastPacket;
+	sf::Text					mPlayerInvitationText;
+	sf::Time					mPlayerInvitationTime;
+
+	sf::Text					mFailedConnectionText;
+	sf::Clock					mFailedConnectionClock;
+
+	bool						mActiveState;
+	bool						mHasFocus;
+	bool						mHost;
+	bool						mGameStarted;
+	sf::Time					mClientTimeout;
+	sf::Time					mTimeSinceLastPacket;
 };
 
 #endif // BOOK_MULTIPLAYERGAMESTATE_HPP

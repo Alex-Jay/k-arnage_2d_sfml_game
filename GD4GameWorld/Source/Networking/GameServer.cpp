@@ -11,29 +11,29 @@
 
 #include <iostream>
 
-GameServer::RemotePeer::RemotePeer() 
-: ready(false)
-, timedOut(false)
+GameServer::RemotePeer::RemotePeer()
+	: ready(false)
+	, timedOut(false)
 {
 	socket.setBlocking(false);
 }
 
 GameServer::GameServer(sf::Vector2f battlefieldSize)
-: mThread(&GameServer::executionThread, this)
-, mListeningState(false)
-, mClientTimeoutTime(sf::seconds(3.f))
-, mMaxConnectedPlayers(10)
-, mConnectedPlayers(0)
-, mWorldHeight(5000.f)
-, mBattleFieldRect(0.f, mWorldHeight - battlefieldSize.y, battlefieldSize.x, battlefieldSize.y)
-, mBattleFieldScrollSpeed(-50.f)
-, mCharacterCount(0)
-, mPeers(1)
-, mCharacterIdentifierCounter(1)
-, mWaitingThreadEnd(false)
-, mLastSpawnTime(sf::Time::Zero)
-, mTimeForNextSpawn(sf::seconds(5.f))
-, mZombieCount(0)
+	: mThread(&GameServer::executionThread, this)
+	, mListeningState(false)
+	, mClientTimeoutTime(sf::seconds(3.f))
+	, mMaxConnectedPlayers(10)
+	, mConnectedPlayers(0)
+	, mWorldHeight(5000.f)
+	, mBattleFieldRect(0.f, mWorldHeight - battlefieldSize.y, battlefieldSize.x, battlefieldSize.y)
+	, mBattleFieldScrollSpeed(-50.f)
+	, mCharacterCount(0)
+	, mPeers(1)
+	, mCharacterIdentifierCounter(1)
+	, mWaitingThreadEnd(false)
+	, mLastSpawnTime(sf::Time::Zero)
+	, mTimeForNextSpawn(sf::seconds(5.f))
+	, mZombieCount(0)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -97,7 +97,7 @@ void GameServer::setListening(bool enable)
 {
 	// Check if it isn't already listening
 	if (enable)
-	{	
+	{
 		if (!mListeningState)
 			mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
 	}
@@ -119,7 +119,7 @@ void GameServer::executionThread()
 	sf::Clock stepClock, tickClock;
 
 	while (!mWaitingThreadEnd)
-	{	
+	{
 		handleIncomingPackets();
 		handleIncomingConnections();
 
@@ -145,7 +145,7 @@ void GameServer::executionThread()
 
 		// Sleep to prevent server from consuming 100% CPU
 		sf::sleep(sf::milliseconds(100));
-	}	
+	}
 }
 
 void GameServer::tick()
@@ -178,30 +178,30 @@ void GameServer::tick()
 
 	// Check if its time to attempt to spawn enemies
 	if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
-	{	
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Server::SpawnEnemy);
-			packet << randomIntExcluding(0, WORLD_WIDTH);
-			packet << randomIntExcluding(0, WORLD_HEIGHT);
+	{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::SpawnEnemy);
+		packet << randomIntExcluding(0, WORLD_WIDTH);
+		packet << randomIntExcluding(0, WORLD_HEIGHT);
 
-			sendToAll(packet);
+		sendToAll(packet);
 
-			++mZombieCount;
+		++mZombieCount;
 
-			mLastSpawnTime = now();
-			mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
+		mLastSpawnTime = now();
+		mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
 
-			//std::cout << "SERVER SENT SPAWN ZOMBIE PACKET COUNT: " << static_cast<int16_t>(mZombieCount) << std::endl;
+		//std::cout << "SERVER SENT SPAWN ZOMBIE PACKET COUNT: " << static_cast<int16_t>(mZombieCount) << std::endl;
 	}
 
 	if (!obstaclesSpawned)
-	{ 
+	{
 		obstaclesSpawned = true;
 		int rot;
 
 		std::size_t obstacleCount = 15; //1u + randomInt(20);
 		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
-	
+
 		// Send the spawn orders to all clients
 		for (std::size_t i = 0; i < obstacleCount; ++i)
 		{
@@ -254,7 +254,7 @@ sf::Time GameServer::now() const
 void GameServer::handleIncomingPackets()
 {
 	bool detectedTimeout = false;
-	
+
 	FOREACH(PeerPtr& peer, mPeers)
 	{
 		if (peer->ready)
@@ -289,108 +289,108 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	switch (packetType)
 	{
-		case Client::Quit:
+	case Client::Quit:
+	{
+		receivingPeer.timedOut = true;
+		detectedTimeout = true;
+	} break;
+
+	case Client::PlayerEvent:
+	{
+		sf::Int32 characterIdentifier;
+		sf::Int32 action;
+		packet >> characterIdentifier >> action;
+
+		notifyPlayerEvent(characterIdentifier, action);
+	} break;
+
+	case Client::PlayerRealtimeChange:
+	{
+		sf::Int32 characterIdentifier;
+		sf::Int32 action;
+		bool actionEnabled;
+		packet >> characterIdentifier >> action >> actionEnabled;
+		mCharacterInfo[characterIdentifier].realtimeActions[action] = actionEnabled;
+		notifyPlayerRealtimeChange(characterIdentifier, action, actionEnabled);
+	} break;
+
+	case Client::RequestCoopPartner:
+	{
+		receivingPeer.characterIdentifiers.push_back(mCharacterIdentifierCounter);
+		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
+		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
+		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
+
+		sf::Packet requestPacket;
+		requestPacket << static_cast<sf::Int32>(Server::AcceptCoopPartner);
+		requestPacket << mCharacterIdentifierCounter;
+		requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
+		requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
+
+		receivingPeer.socket.send(requestPacket);
+		mCharacterCount++;
+
+		// Inform every other peer about this new plane
+		FOREACH(PeerPtr& peer, mPeers)
 		{
-			receivingPeer.timedOut = true;
-			detectedTimeout = true;
-		} break;
-
-		case Client::PlayerEvent:
-		{
-			sf::Int32 characterIdentifier;
-			sf::Int32 action;
-			packet >> characterIdentifier >> action;
-
-			notifyPlayerEvent(characterIdentifier, action);
-		} break;
-
-		case Client::PlayerRealtimeChange:
-		{
-			sf::Int32 characterIdentifier;
-			sf::Int32 action;
-			bool actionEnabled;
-			packet >> characterIdentifier >> action >> actionEnabled;
-			mCharacterInfo[characterIdentifier].realtimeActions[action] = actionEnabled;
-			notifyPlayerRealtimeChange(characterIdentifier, action, actionEnabled);
-		} break;
-
-		case Client::RequestCoopPartner:
-		{
-			receivingPeer.characterIdentifiers.push_back(mCharacterIdentifierCounter);
-			mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
-			mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
-			mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
-
-			sf::Packet requestPacket;
-			requestPacket << static_cast<sf::Int32>(Server::AcceptCoopPartner);
-			requestPacket << mCharacterIdentifierCounter;
-			requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-			requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
-
-			receivingPeer.socket.send(requestPacket);
-			mCharacterCount++;
-
-			// Inform every other peer about this new plane
-			FOREACH(PeerPtr& peer, mPeers)
+			if (peer.get() != &receivingPeer && peer->ready)
 			{
-				if (peer.get() != &receivingPeer && peer->ready)
-				{
-					sf::Packet notifyPacket;
-					notifyPacket << static_cast<sf::Int32>(Server::PlayerConnect);
-					notifyPacket << mCharacterIdentifierCounter;
-					notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-					notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
-					peer->socket.send(notifyPacket);
-				}
+				sf::Packet notifyPacket;
+				notifyPacket << static_cast<sf::Int32>(Server::PlayerConnect);
+				notifyPacket << mCharacterIdentifierCounter;
+				notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
+				notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
+				peer->socket.send(notifyPacket);
 			}
-			mCharacterIdentifierCounter++;
-		} break;
-
-		case Client::PositionUpdate:
-		{
-			sf::Int32 numCharacters;
-			packet >> numCharacters;
-
-			for (sf::Int32 i = 0; i < numCharacters; ++i)
-			{
-				sf::Int32 characterIdentifier;
-				sf::Int32 characterHitpoints;
-				sf::Int32 missileAmmo;
-				sf::Vector2f characterPosition;
-				packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
-				mCharacterInfo[characterIdentifier].position = characterPosition;
-				mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
-				mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
-			}
-		} break;
-
-		case Client::GameEvent:
-		{
-			sf::Int32 action;
-			float x;
-			float y;
-
-			packet >> action;
-			packet >> x;
-			packet >> y;
-
-			// Enemy explodes: With certain probability, drop pickup
-			// To avoid multiple messages spawning multiple pickups, only listen to first peer (host)
-			if (action == GameActions::EnemyExplode && randomInt(3) == 0 && &receivingPeer == mPeers[0].get())
-			{
-				sf::Packet packet;
-				packet << static_cast<sf::Int32>(Server::SpawnPickup);
-				packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Pickup::Type::TypeCount)));
-				packet << x;
-				packet << y;
-
-				sendToAll(packet);
-			}
-
-			if (action == GameActions::EnemyExplode)
-				mZombieCount--;
-
 		}
+		mCharacterIdentifierCounter++;
+	} break;
+
+	case Client::PositionUpdate:
+	{
+		sf::Int32 numCharacters;
+		packet >> numCharacters;
+
+		for (sf::Int32 i = 0; i < numCharacters; ++i)
+		{
+			sf::Int32 characterIdentifier;
+			sf::Int32 characterHitpoints;
+			sf::Int32 missileAmmo;
+			sf::Vector2f characterPosition;
+			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
+			mCharacterInfo[characterIdentifier].position = characterPosition;
+			mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
+			mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+		}
+	} break;
+
+	case Client::GameEvent:
+	{
+		sf::Int32 action;
+		float x;
+		float y;
+
+		packet >> action;
+		packet >> x;
+		packet >> y;
+
+		// Enemy explodes: With certain probability, drop pickup
+		// To avoid multiple messages spawning multiple pickups, only listen to first peer (host)
+		if (action == GameActions::EnemyExplode && randomInt(3) == 0 && &receivingPeer == mPeers[0].get())
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::SpawnPickup);
+			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Pickup::Type::TypeCount)));
+			packet << x;
+			packet << y;
+
+			sendToAll(packet);
+		}
+
+		if (action == GameActions::EnemyExplode)
+			mZombieCount--;
+
+	}
 	}
 }
 
@@ -424,9 +424,9 @@ void GameServer::handleIncomingConnections()
 		packet << mCharacterIdentifierCounter;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.x;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.y;
-		
+
 		mPeers[mConnectedPlayers]->characterIdentifiers.push_back(mCharacterIdentifierCounter);
-		
+
 		broadcastMessage("New player!");
 		informWorldState(mPeers[mConnectedPlayers]->socket);
 		notifyPlayerSpawn(mCharacterIdentifierCounter++);
@@ -469,7 +469,7 @@ void GameServer::handleDisconnections()
 				mPeers.push_back(PeerPtr(new RemotePeer()));
 				setListening(true);
 			}
-				
+
 			broadcastMessage("An ally has disconnected.");
 		}
 		else
@@ -510,7 +510,7 @@ void GameServer::broadcastMessage(const std::string& message)
 			packet << message;
 
 			mPeers[i]->socket.send(packet);
-		}	
+		}
 	}
 }
 

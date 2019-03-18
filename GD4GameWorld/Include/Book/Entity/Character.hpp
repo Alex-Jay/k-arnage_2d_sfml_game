@@ -25,7 +25,7 @@ public:
 	bool isZombie() const;
 
 	float getMaxSpeed() const;
-	float getMaxRotationSpeed() const;
+	int16_t getMaxRotationSpeed() const;
 
 	void increaseFireRate();
 	void increaseSpread();
@@ -37,7 +37,7 @@ public:
 	void playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
 
 	void setGrenadeAmmo(sf::Int32 ammo);
-	unsigned int getGrenadeAmmo();
+	int8_t getGrenadeAmmo();
 
 
 
@@ -91,13 +91,13 @@ private:
 	float mGrenadeVelocity;
 	float mTravelledDistance;
 
-	int mFireRateLevel;
-	int mSpreadLevel;
-	int mGrenadeAmmo;
+	int8_t mFireRateLevel;
+	int8_t mSpreadLevel;
+	int8_t mGrenadeAmmo;
 
 	std::size_t mDirectionIndex;
 
-	int mLocalIdentifier;
+	int16_t mLocalIdentifier;
 
 	bool networkNotified{};
 

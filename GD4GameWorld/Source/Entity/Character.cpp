@@ -405,10 +405,10 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
 
 void Character::setGrenadeAmmo(sf::Int32 ammo) { mGrenadeAmmo = ammo; }
 
-unsigned int Character::getGrenadeAmmo() { return mGrenadeAmmo; }
+int8_t Character::getGrenadeAmmo() { return mGrenadeAmmo; }
 
 // Alex - Get maximum rotation speed (Set in Constants.hpp & DataTables.cpp)
-float Character::getMaxRotationSpeed() const
+int16_t Character::getMaxRotationSpeed() const
 {
 	return Table[static_cast<int>(mType)].rotationSpeed;
 }
