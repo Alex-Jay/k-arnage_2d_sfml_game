@@ -7,64 +7,64 @@ const int DESSERT_TILE_HEIGHT = 128;
 //++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ ANIMATION RECTANGLES ++++++++++++++
-const int PLAYER_MOVE_ANIMATION_HEIGHT = 156;
-const int PLAYER_MOVE_ANIMATION_WIDTH = 263;
+const int16_t PLAYER_MOVE_ANIMATION_HEIGHT = 156;
+const int16_t PLAYER_MOVE_ANIMATION_WIDTH = 263;
 
-const int PLAYER_DEATH_ANIMATION_HEIGHT = 434;
-const int PLAYER_DEATH_ANIMATION_WIDTH = 550;
+const int16_t PLAYER_DEATH_ANIMATION_HEIGHT = 434;
+const int16_t PLAYER_DEATH_ANIMATION_WIDTH = 550;
 
-const int ZOMBIE_MOVE_ANIMATION_HEIGHT = 40;
-const int ZOMBIE_MOVE_ANIMATION_WIDTH = 77;
+const int16_t ZOMBIE_MOVE_ANIMATION_HEIGHT = 40;
+const int16_t ZOMBIE_MOVE_ANIMATION_WIDTH = 77;
 
-const int ZOMBIE_DEATH_ANIMATION_HEIGHT = 88;
-const int ZOMBIE_DEATH_ANIMATION_WIDTH = 150;
+const int16_t ZOMBIE_DEATH_ANIMATION_HEIGHT = 88;
+const int16_t ZOMBIE_DEATH_ANIMATION_WIDTH = 150;
 //++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ PLAYER CONSTANTS ++++++++++++++++++
-const int ZOMBIE_KILL_MULTIPLIER = 10;
-const int PLAYERHITPOINTS = 100;
-const int GRENADEPICKUPAMMOVALUE = 3;
-const int PLAYERSPEED = 260;
-const float PLAYERFIREINTERVAL = 1.f;
-const float HEALTHPICKUPREPAIRVALUE = 17.5f;
-const int FIRERATELEVEL = 2;
-const float MAXFIRERATELEVEL = 3.f;
-const int MAXSPREADLEVEL = 1;
-const int SPREADLEVEL = 1;
-const int GRENADEAMMO = 2;
+const int16_t ZOMBIE_KILL_MULTIPLIER = 10;
+const int16_t PLAYERHITPOINTS = 100;
+const int16_t GRENADEPICKUPAMMOVALUE = 3;
+const int16_t PLAYERSPEED = 260;
+const int8_t PLAYERFIREINTERVAL = 1;
+const int8_t HEALTHPICKUPREPAIRVALUE = 20;
+const int8_t FIRERATELEVEL = 2;
+const int8_t MAXFIRERATELEVEL = 3;
+const int8_t MAXSPREADLEVEL = 1;
+const int8_t SPREADLEVEL = 1;
+const int8_t GRENADEAMMO = 2;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ ENEMY CONSTANTS ++++++++++++++++++++
-const float ZOMBIEHITPOINTS = 40.f;
-const float ZOMBIESPEED = 100.f;
-const float ZOMBIEATTACKDAMAGE = 19.5f;
-const float ZOMBIEATTACKDELAY = 600.f; // In miliseconds
+const int16_t ZOMBIEHITPOINTS = 40;
+const int16_t ZOMBIESPEED = 100;
+const int16_t ZOMBIEATTACKDAMAGE = 20;
+const int16_t ZOMBIEATTACKDELAY = 600; // In miliseconds
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
-const float BULLETDAMAGE = 10.f;
-const float BULLETSPEED = 1200.f;
-const float GRENADEDAMAGE = 130.f;
-const float GRENADESPEED = 300.f;
-const float GRENADBLASTRADIOUS = 25.f;
+const int8_t BULLETDAMAGE = 10;
+const int16_t BULLETSPEED = 1200;
+const int8_t GRENADEDAMAGE = 130;
+const int16_t GRENADESPEED = 300;
+const int8_t GRENADBLASTRADIOUS = 25;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ GENERAL CONSTANTS ++++++++++++++++++
-const float ROTATION_SPEED = 15.f;
+const int8_t ROTATION_SPEED = 15;
 const float M_PI = 3.14159265f;
-const float APPROACHRATE = 200;
+const int8_t APPROACHRATE = 200;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ World CONSTANTS ++++++++++++++++++
 const float LEVEL_ZOOM_FACTOR = 1.5f;
-const unsigned int WORLD_WIDTH = 3328;
-const unsigned int WORLD_HEIGHT = 2688;
-const float LAVA_DAMAGE = 2.f;
+const int16_t WORLD_WIDTH = 3328;
+const int16_t WORLD_HEIGHT = 2688;
+const int8_t LAVA_DAMAGE = 2;
 const int8_t MAX_ALIVE_ZOMBIES = 8;
 
-const unsigned short int MIN_ZOMBIE_SPAWN_TIME = 5000;
-const unsigned short int MAX_ZOMBIE_SPAWN_TIME = 15000;
+const int16_t MIN_ZOMBIE_SPAWN_TIME = 5000;
+const int16_t MAX_ZOMBIE_SPAWN_TIME = 15000;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ COLOUR CONSTANTS ++++++++++++++++++
@@ -76,8 +76,8 @@ const int ORANGE = 0Xffa100ff;
 
 
 //+++++++++++ CONTROLLER CONSTANS ++++++++++++++++++
-const float TRIGGER_THRESHOLD = 70.0f;
-const float THUMBSTICK_THRESHOLD = 50.0f;
+const int8_t TRIGGER_THRESHOLD = 70;
+const int8_t THUMBSTICK_THRESHOLD = 50;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 

@@ -24,14 +24,14 @@ struct Direction {
 };
 
 struct CharacterData {
-	int hitpoints;
-	float speed;
+	int8_t hitpoints;
+	int16_t speed;
 	float rotationSpeed;
 	float deathScale;
 	float moveScale;
 	Textures::ID texture;
 	Textures::ID moveAnimation;
-	int moveFrames;
+	int16_t moveFrames;
 	Textures::ID deathAnimation;
 	int deathFrames;
 	sf::IntRect textureRect;
@@ -41,15 +41,6 @@ struct CharacterData {
 	std::vector<Direction> directions;
 };
 
-struct characterData {
-	int hitpoints;
-	float speed;
-	Textures::ID texture;
-	sf::IntRect textureRect;
-	sf::Time fireInterval;
-	std::vector<Direction> directions;
-	bool hasRollAnimation;
-};
 
 struct ProjectileData {
 	int damage;
@@ -77,7 +68,7 @@ struct MapTileData {
 };
 
 struct ExplosionData {
-	int damage;
+	int8_t damage;
 	float radius;
 	int lifeTimeSeconds;
 	Textures::ID texture;
@@ -89,7 +80,6 @@ struct ObstacleData {
 	//sf::IntRect textureRect;
 };
 
-std::vector<characterData> initializecharacterData();
 std::vector<ProjectileData> initializeProjectileData();
 std::vector<PickupData> initializePickupData();
 std::vector<ParticleData> initializeParticleData();
