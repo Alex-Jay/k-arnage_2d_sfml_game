@@ -5,6 +5,7 @@
 #include "Entity/Particle.hpp"
 #include "Structural/MapTiler.hpp"
 #include "Entity/Explosion.hpp"
+#include "Entity/Obstacle.hpp"
 
 #include "DataTable/DataTables.hpp"
 #include "Constant/Constants.hpp"
@@ -153,5 +154,13 @@ std::vector<ExplosionData> initializeExplosionData()
 //Mike
 std::vector<ObstacleData> initializeObstacleData()
 {
-	return std::vector<ObstacleData>();
+	std::vector<ObstacleData> data(static_cast<int>(Obstacle::ObstacleID::TypeCount));
+
+	data[static_cast<int>(Obstacle::ObstacleID::Crate)].texture = Textures::ID::Crate;
+	//data[static_cast<int>(Obstacle::ObstacleID::Crate)].texture = 0;
+
+	data[static_cast<int>(Obstacle::ObstacleID::Wreck)].texture = Textures::ID::PlaneWreck;
+	//data[static_cast<int>(Obstacle::ObstacleID::Wreck)].texture = 0;
+
+	return data;
 }

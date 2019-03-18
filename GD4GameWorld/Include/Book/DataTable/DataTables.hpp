@@ -85,6 +85,8 @@ struct ExplosionData {
 };
 
 struct ObstacleData {
+	Textures::ID texture;
+	//sf::IntRect textureRect;
 };
 
 std::vector<characterData> initializecharacterData();

@@ -29,6 +29,7 @@ namespace Textures
 		ZombieDeath,
 		MapTiles,
 		Crate,
+		PlaneWreck,
 		DistortionMap
 	};
 }

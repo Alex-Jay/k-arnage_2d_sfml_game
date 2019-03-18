@@ -12,7 +12,9 @@ public:
 	enum class ObstacleID
 	{
 		Crate,
-		Rock
+		Wreck,
+		Rock,
+		TypeCount
 	};
 
 public:

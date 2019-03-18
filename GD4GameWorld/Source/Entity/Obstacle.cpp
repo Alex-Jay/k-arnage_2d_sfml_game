@@ -18,10 +18,10 @@ namespace
 Obstacle::Obstacle(ObstacleID type, const TextureHolder& textures)
 	: Entity(30)
 	, mType(type)
-	, mSprite(textures.get(Textures::ID::Crate))
+	, mSprite(textures.get(Table[static_cast<int>(type)].texture))
 	, mDroppedPickup(false)
 {
-	//centreOrigin(mSprite);
+	centreOrigin(mSprite);
 
 	mDropPickupCommand.category = static_cast<int>(Category::SceneLayer);
 	mDropPickupCommand.action = [this, &textures](SceneNode& node, sf::Time)

@@ -35,8 +35,8 @@ const int GRENADEAMMO = 2;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ ENEMY CONSTANTS ++++++++++++++++++++
-const float ZOMBIEHITPOINTS = 100.f;
-const float ZOMBIESPEED = 160.f;
+const float ZOMBIEHITPOINTS = 40.f;
+const float ZOMBIESPEED = 100.f;
 const float ZOMBIEATTACKDAMAGE = 19.5f;
 const float ZOMBIEATTACKDELAY = 600.f; // In miliseconds
 
@@ -44,7 +44,7 @@ const float LAVA_DAMAGE = 2.f;
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ Projectile CONSTANTS ++++++++++++++++++++
-const float BULLETDAMAGE = 17.5f;
+const float BULLETDAMAGE = 10.f;
 const float BULLETSPEED = 1200.f;
 const float GRENADEDAMAGE = 130.f;
 const float GRENADESPEED = 300.f;

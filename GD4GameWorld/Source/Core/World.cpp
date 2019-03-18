@@ -66,6 +66,7 @@ void World::loadTextures()
 	mTextures.load(Textures::ID::MapTiles, "Media/Textures/Tiles.png");
 	mTextures.load(Textures::ID::Crate, "Media/Textures/Crate.png");
 	mTextures.load(Textures::ID::DistortionMap, "Media/Textures/distortion_map.png");
+	mTextures.load(Textures::ID::PlaneWreck, "Media/Textures/PlaneWreck1.png");
 }
 
 #pragma region Mutators
@@ -124,6 +125,8 @@ void World::update(sf::Time dt)
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
+
+	//TOFIX This Should Be handled By Server
 	guideZombies();
 
 	// Forward commands to scene graph, adapt velocity (scrolling, diagonal correction)
@@ -551,15 +554,23 @@ void World::SpawnObstacles()
 
 	//List for all Spawned Bounding rects
 	std::list<sf::FloatRect> objectRects;
-
+	Obstacle::ObstacleID oType;
 	for (int i = 0; i < rand; i++)
 	{
+		int type = randomInt(20);
+
+		if (type < 10)
+			oType = Obstacle::ObstacleID::Wreck;
+		else
+			oType = Obstacle::ObstacleID::Crate;
+
 		//Random Position in the world
 		int xPos = randomInt(std::ceil(mWorldBounds.width));
 		int yPos = randomInt(std::ceil(mWorldBounds.height));
 
-		std::unique_ptr<Obstacle> obstacle(new Obstacle(Obstacle::ObstacleID::Crate, mTextures));
+		std::unique_ptr<Obstacle> obstacle(new Obstacle(oType, mTextures));
 		obstacle->setPosition(sf::Vector2f(xPos, yPos));
+		obstacle->setRotation(type * 18);
 		sf::FloatRect boundingRectangle = obstacle->getBoundingRect();
 
 		//If the list does not contain that rectangle spawn a new object
@@ -723,14 +734,31 @@ void World::handleProjectileCollisions(SceneNode::Pair& pair)
 {
 	auto& entity = static_cast<Entity&>(*pair.first);
 	auto& projectile = static_cast<Projectile&>(*pair.second);
-
+	//TODO WAY To MANY if Else Going On here, can be refactored much cleaner
 	if (projectile.isGrenade())
 	{
-		projectile.setVelocity(-projectile.getVelocity() / 2.f);
+		if (Character* player = dynamic_cast<Character*>(&entity))
+		{
+			if (!player->getLocalIdentifier() == localCharacterID)
+			{
+				projectile.setVelocity(-projectile.getVelocity() / 2.f);
+			}
+		}
 	}
 	else
 	{
-		entity.damage(projectile.getDamage());
+		if (Obstacle* o = dynamic_cast<Obstacle*>(&entity))
+		{
+			if (o->isDestructible())
+			{
+				entity.damage(projectile.getDamage());
+			}
+		}
+		else
+		{
+			entity.damage(projectile.getDamage());
+		}
+		
 
 		if (entity.isDestroyed())
 		{
@@ -805,7 +833,7 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 		return Projectile_Obstacle;
 	}
 	else if (matchesCategories(pair, Category::EnemyCharacter, Category::AlliedProjectile)
-		|| matchesCategories(pair, Category::PlayerCharacter, Category::EnemyProjectile))
+		|| matchesCategories(pair, Category::PlayerCharacter, Category::AlliedProjectile))
 	{
 		return Projectile_Character;
 	}

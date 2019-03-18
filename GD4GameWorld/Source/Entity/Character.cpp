@@ -323,7 +323,7 @@ void Character::createBullets(SceneNode& node,
 	const TextureHolder& textures) const
 {
 	// TODO ALL Bullets Damage Everybody, NO Enemy or Allied Bullets
-	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.228f, 1,
+	createProjectile(node, Projectile::ProjectileIDs::AlliedBullet, -0.228f, 1.5f,
 		textures, getLocalIdentifier());
 }
 
@@ -359,8 +359,13 @@ void Character::updateTexts()
 	mHealthDisplay->setOrigin(30.0f, -90.f);
 
 	// Sets dimensions of health display to 0x 0y if health is depleted
-	mHealthDisplay->setSize(getHitpoints() > 0 ? getHitpoints() : 0,
-		getHitpoints() > 0 ? 5.f : 0);
+	if (!isZombie())
+		mHealthDisplay->setSize(getHitpoints() > 0 ? getHitpoints() : 0,
+			getHitpoints() > 0 ? 5.f : 0);
+	else
+		mHealthDisplay->setSize(getHitpoints()  > 0 ? getHitpoints()*2 : 0,
+			getHitpoints() > 0 ? 5.f : 0);
+
 
 	if (mGrenadeDisplay) {
 		mGrenadePower->setPosition(0.f, 0.f);
