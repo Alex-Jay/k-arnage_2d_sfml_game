@@ -17,6 +17,8 @@ namespace Server
 		InitialState,
 		PlayerEvent,
 		PlayerRealtimeChange,
+		PlayerLobbyConnect,
+		PlayerLobbyDisconnect,
 		PlayerConnect,
 		PlayerDisconnect,
 		AcceptCoopPartner,

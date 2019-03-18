@@ -29,7 +29,6 @@ MenuState::MenuState(StateStack& stack, Context context)
 	hostPlayButton->setText("Host");
 	hostPlayButton->setCallback([this] ()
 	{
-		requestStackPop();
 		requestStackPush(States::Lobby);
 	});
 
