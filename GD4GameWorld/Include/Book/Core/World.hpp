@@ -72,6 +72,8 @@
 
 			void createPickup(sf::Vector2f position, Pickup::Type type);
 
+			
+
 			void addZombie(float x, float y, float a);
 
 			void spawnZombies();
@@ -92,6 +94,7 @@
 			void handleExplosionCollisions(SceneNode::Pair& pair);
 			CollisionType GetCollisionType(SceneNode::Pair& pair);
 			
+			void setView();
 			void addZombies(sf::Time dt);
 			void updateSounds();
 

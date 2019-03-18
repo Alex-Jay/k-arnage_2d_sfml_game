@@ -119,14 +119,8 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
-	// Alex - Stick view to player position
 
-	mWorldView.setCenter(mPlayerCharacters[localCharacterID]->getPosition());
-
-	handlePlayerCollision();
-
-	FOREACH(Character* c, mPlayerCharacters)
-		c->setVelocity(0.f, 0.f);
+	setView();
 
 	// Setup commands to destroy entities, and guide grenades
 	destroyEntitiesOutsideView();
@@ -176,6 +170,18 @@ void World::draw()
 	{
 		mTarget.setView(mWorldView);
 		mTarget.draw(mSceneGraph);
+	}
+}
+
+void World::setView()
+{
+	for (Character* c : mPlayerCharacters)
+	{
+		if (c->getLocalIdentifier() == localCharacterID)
+		{
+			mWorldView.setCenter(c->getPosition());
+		}
+		c->setVelocity(0.f, 0.f);
 	}
 }
 
@@ -251,7 +257,7 @@ Character * World::addCharacter(int identifier, bool isLocal)
 
 	if (isLocal)
 	{
-		localCharacterID = (identifier -1);
+		localCharacterID = (identifier);
 	}
 
 	return mPlayerCharacters.back();
@@ -323,7 +329,7 @@ void World::addZombies(sf::Time dt)
 				int xPos = randomIntExcluding(std::ceil(getViewBounds().left), std::ceil(getViewBounds().width));
 				int yPos = randomIntExcluding(std::ceil(getViewBounds().top), std::ceil(getViewBounds().height));
 
-				float angle = -mPlayerCharacters[localCharacterID]->getAngle();
+				float angle = 0;// -mPlayerCharacters[localCharacterID]->getAngle();
 
 				std::unique_ptr<Character> enemy(new Character(Character::Type::Zombie, mTextures, mFonts));
 				enemy->setPosition(xPos, yPos);
@@ -591,13 +597,17 @@ bool matchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 //Mike
 void World::handlePlayerCollision()
 {
-	if (!mWorldBounds.contains(mPlayerCharacters[localCharacterID]->getPosition()))
-		mPlayerCharacters[localCharacterID]->damage(LAVA_DAMAGE);
+	FOREACH(Character* c, mPlayerCharacters)
+		if (c->getLocalIdentifier() == localCharacterID
+			&& !mWorldBounds.contains(c->getPosition()))
+			mPlayerCharacters[localCharacterID]->damage(LAVA_DAMAGE);
 }
 
 //Mike
 void World::handleCollisions(sf::Time dt)
 {
+	handlePlayerCollision();
+
 	std::set<SceneNode::Pair> collisionPairs;
 	mSceneGraph.checkSceneCollision(mSceneGraph, collisionPairs);
 
@@ -822,3 +832,5 @@ void World::createPickup(sf::Vector2f position, Pickup::Type type)
 }
 
 #pragma endregion
+
+
