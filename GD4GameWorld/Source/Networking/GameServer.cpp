@@ -5,6 +5,7 @@
 #include "Entity/Pickup.hpp"
 #include "Entity/Character.hpp"
 #include "Entity/Obstacle.hpp"
+#include "Constant/Constants.hpp"
 
 #include <SFML/Network/Packet.hpp>
 
@@ -214,45 +215,55 @@ void GameServer::tick()
 	if (!obstaclesSpawned)
 	{ 
 		obstaclesSpawned = true;
-		//TODO FIX Obstacle SPawn MAgic numbers and Make sure they dont spawn on top of each other
-		std::list<sf::FloatRect> objectRects;
+		int rot;
 
-		//Random Position in the world 
-		int xPos = randomInt(500);
-		int yPos = randomInt(500);
-		int rot = randomInt(360);
-
-		sf::Vector2f position(xPos, yPos);
-		sf::Vector2f size(100, 100);
-
-		sf::FloatRect boundingRectangle = sf::FloatRect(position, size);
-
-		//If the list does not contain that rectangle spawn a new object
-		//if (!containsIntersection(objectRects, boundingRectangle)
-		//{
-		//	objectRects.push_back(boundingRectangle);
-		//	addObstacle(oType, xPos, yPos, type * 18);
-		//	//mSceneLayers[UpperLayer]->attachChild(std::move(obstacle));
-		//}
-		//packet >> type >> x >> y >> a;
-
-		std::size_t obstacleCount = 1u + randomInt(10);
+		std::size_t obstacleCount = 15; //1u + randomInt(20);
+		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
+	
 		// Send the spawn orders to all clients
 		for (std::size_t i = 0; i < obstacleCount; ++i)
 		{
+			rot = randomInt(360);
 			sf::Packet packet;
+
 			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
 			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
-			packet << xPos;
-			packet << yPos;
+			packet << spawnPoints[i].x;
+			packet << spawnPoints[i].y;
 			packet << rot;
 
 			sendToAll(packet);
 		}
 	}
-
-
 }
+
+std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
+{
+	std::vector<sf::Vector2f> spawnPoints;
+	std::list<sf::FloatRect> objectRects;
+	int xPos, yPos;
+
+	sf::FloatRect worldBounds = sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(WORLD_WIDTH, WORLD_HEIGHT));
+
+	for (size_t i = 0; i < obstacleCount; ++i)
+	{
+		xPos = DESSERT_TILE_WIDTH + randomInt(std::ceil(WORLD_WIDTH - DESSERT_TILE_WIDTH));
+		yPos = DESSERT_TILE_HEIGHT + randomInt(std::ceil(WORLD_HEIGHT - DESSERT_TILE_HEIGHT));
+		sf::FloatRect boundingRectangle = sf::FloatRect(xPos, yPos, DESSERT_TILE_WIDTH * 2, DESSERT_TILE_HEIGHT * 2);
+
+		if (!containsIntersection(objectRects, boundingRectangle))
+		{
+			objectRects.push_back(boundingRectangle);
+			spawnPoints.push_back(sf::Vector2f(xPos, yPos));
+		}
+		else
+			i--;
+
+	}
+
+	return spawnPoints;
+}
+
 
 sf::Time GameServer::now() const
 {

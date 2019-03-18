@@ -49,6 +49,7 @@ private:
 	void setListening(bool enable);
 	void executionThread();
 	void tick();
+	std::vector<sf::Vector2f> getObjectSpwanPoints(int obstacleCount);
 	sf::Time now() const;
 
 	void handleIncomingPackets();

@@ -49,13 +49,18 @@ const float BULLETSPEED = 1200.f;
 const float GRENADEDAMAGE = 130.f;
 const float GRENADESPEED = 300.f;
 const float GRENADBLASTRADIOUS = 25.f;
-const float LEVEL_ZOOM_FACTOR = 1.5f;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ GENERAL CONSTANTS ++++++++++++++++++
 const float ROTATION_SPEED = 15.f;
 const float M_PI = 3.14159265f;
 const float APPROACHRATE = 200;
+//++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//++++++++++++ World CONSTANTS ++++++++++++++++++
+const float LEVEL_ZOOM_FACTOR = 1.5f;
+const unsigned int WORLD_WIDTH = 3328;
+const unsigned int WORLD_HEIGHT = 2688;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //++++++++++++ COLOUR CONSTANTS ++++++++++++++++++
