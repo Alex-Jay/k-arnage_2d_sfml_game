@@ -247,16 +247,16 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 		pair.second->handleEvent(event, commands);
 
 	if (event.type == sf::Event::KeyPressed) {
-		// Enter pressed, add second player co-op (only if we are one player)
-		if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
+		//// Enter pressed, add second player co-op (only if we are one player)
+		//if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
+		//	sf::Packet packet;
+		//	packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
 
-			mSocket.send(packet);
-		}
+		//	mSocket.send(packet);
+		//}
 
 		// Escape pressed, trigger the pause screen
-		else if (event.key.code == sf::Keyboard::Escape) {
+		if (event.key.code == sf::Keyboard::Escape) {
 			disableAllRealtimeActions();
 			requestStackPush(States::NetworkPause);
 		}
