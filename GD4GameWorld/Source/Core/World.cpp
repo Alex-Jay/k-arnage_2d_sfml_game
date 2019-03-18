@@ -19,8 +19,6 @@
 #include <cmath>
 #include <limits>
 
-
-
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds, bool networked)
 	: mTarget(outputTarget)
 	, mWorldView(outputTarget.getDefaultView())
@@ -120,6 +118,7 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
+	std::cout << "Local ID: " << mPlayerCharacters[localCharacterID]->getLocalIdentifier() << std::endl;
 
 	setView();
 
@@ -647,7 +646,9 @@ void World::handlePlayerCollision()
 	FOREACH(Character* c, mPlayerCharacters)
 		if (c->getLocalIdentifier() == localCharacterID
 			&& !mWorldBounds.contains(c->getPosition()))
+		{
 			mPlayerCharacters[localCharacterID]->damage(LAVA_DAMAGE);
+		}
 }
 
 //Mike

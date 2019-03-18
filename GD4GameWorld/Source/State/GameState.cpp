@@ -7,9 +7,9 @@
 GameState::GameState(StateStack& stack, Context context)
 : State(stack, context)
 , mWorld(*context.window, *context.fonts, *context.sounds, false)
-, mPlayer(nullptr, 1, context.keys1)
+, mPlayer(nullptr, 0, context.keys1)
 {
-	mWorld.addCharacter(1, true);
+	mWorld.addCharacter(0, true);
 	mPlayer.setMissionStatus(Player::MissionRunning);
 
 	// Play game theme

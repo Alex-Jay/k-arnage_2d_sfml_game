@@ -54,8 +54,8 @@ class MultiplayerGameState : public State
 		sf::Text					mBroadcastText;
 		sf::Time					mBroadcastElapsedTime;
 
-		sf::Text					mPlayerInvitationText;
-		sf::Time					mPlayerInvitationTime;
+		//sf::Text					mPlayerInvitationText;
+		//sf::Time					mPlayerInvitationTime;
 
 		sf::Text					mFailedConnectionText;
 		sf::Clock					mFailedConnectionClock;
