@@ -42,11 +42,11 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 
-	mPlayerInvitationText.setFont(context.fonts->get(Fonts::Main));
-	mPlayerInvitationText.setCharacterSize(20);
-	mPlayerInvitationText.setFillColor(sf::Color::White);
-	mPlayerInvitationText.setString("Press Enter to spawn player 2");
-	mPlayerInvitationText.setPosition(1000 - mPlayerInvitationText.getLocalBounds().width, 760 - mPlayerInvitationText.getLocalBounds().height);
+	//mPlayerInvitationText.setFont(context.fonts->get(Fonts::Main));
+	//mPlayerInvitationText.setCharacterSize(20);
+	//mPlayerInvitationText.setFillColor(sf::Color::White);
+	//mPlayerInvitationText.setString("Press Enter to spawn player 2");
+	//mPlayerInvitationText.setPosition(1000 - mPlayerInvitationText.getLocalBounds().width, 760 - mPlayerInvitationText.getLocalBounds().height);
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
@@ -95,8 +95,8 @@ void MultiplayerGameState::draw()
 		if (!mBroadcasts.empty())
 			mWindow.draw(mBroadcastText);
 
-		if (mLocalPlayerIdentifiers.size() < 2 && mPlayerInvitationTime < sf::seconds(0.5f))
-			mWindow.draw(mPlayerInvitationText);
+		//if (mLocalPlayerIdentifiers.size() < 2 && mPlayerInvitationTime < sf::seconds(0.5f))
+		//	mWindow.draw(mPlayerInvitationText);
 	}
 	else {
 		mWindow.draw(mFailedConnectionText);
@@ -185,9 +185,9 @@ bool MultiplayerGameState::update(sf::Time dt)
 		updateBroadcastMessage(dt);
 
 		// Time counter for blinking 2nd player text
-		mPlayerInvitationTime += dt;
-		if (mPlayerInvitationTime > sf::seconds(1.f))
-			mPlayerInvitationTime = sf::Time::Zero;
+		//mPlayerInvitationTime += dt;
+		//if (mPlayerInvitationTime > sf::seconds(1.f))
+		//	mPlayerInvitationTime = sf::Time::Zero;
 
 		// Events occurring in the game
 		GameActions::Action gameAction;
