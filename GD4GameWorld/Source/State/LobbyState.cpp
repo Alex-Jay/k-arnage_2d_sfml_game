@@ -3,12 +3,16 @@
 #include "Structural/Utility.hpp"
 #include "Audio/MusicPlayer.hpp"
 #include "Structural/ResourceHolder.hpp"
-
+#include "State/MultiplayerGameState.hpp"
 #include <SFML/Network/IpAddress.hpp>
-
+#include "Constant/Constants.hpp"
 #include <string>
 #include <fstream>
 #include <iostream>
+
+sf::TcpSocket CLIENT_SOCKET;
+
+
 
 sf::IpAddress LobbyState::getAddressFromFile()
 {
@@ -43,7 +47,7 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
-	mFailedConnectionText.setString("Attempting to connect...");
+	mFailedConnectionText.setString("FUCK YEAH");
 	mFailedConnectionText.setCharacterSize(35);
 	mFailedConnectionText.setFillColor(sf::Color::White);
 	centerOrigin(mFailedConnectionText);
@@ -92,12 +96,20 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 		std::string s = ip.toString();
 	}
 
-	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
+	if (CLIENT_SOCKET.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
 		mConnected = true;
 	else
 		mFailedConnectionClock.restart();
 
-	mSocket.setBlocking(false);
+	CLIENT_SOCKET.setBlocking(false);
+
+	//if (mConnected)
+	//{
+	//	stack.registerState<MultiplayerGameState>(States::HostGame, true, &mSocket);
+	//	stack.registerState<MultiplayerGameState>(States::JoinGame, false, &mSocket);
+	//}
+
+	std::cout << "SOCKET PORT LOBBY ID : " << CLIENT_SOCKET.getLocalPort() << std::endl;
 }
 
 void LobbyState::setDisplayText(Context context)
@@ -158,18 +170,16 @@ void LobbyState::sendDisconnectSelf()
 	if (mConnected) {
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
+		CLIENT_SOCKET.send(packet);
 	}
 }
 
 void LobbyState::sendStartGame()
 {
-	std::cout << "Sending Start Game" << std::endl;
 	if (mHost && mConnected){
-		std::cout << "Sending Messege" << std::endl;
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::StartGame);
-		mSocket.send(packet);
+		CLIENT_SOCKET.send(packet);
 	}
 }
 
@@ -187,7 +197,7 @@ void LobbyState::onDestroy()
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
+		CLIENT_SOCKET.send(packet);
 	}
 }
 
@@ -201,7 +211,7 @@ bool LobbyState::update(sf::Time dt)
 
 		// Handle messages from server that may have arrived
 		sf::Packet packet;
-		if (mSocket.receive(packet) == sf::Socket::Done) {
+		if (CLIENT_SOCKET.receive(packet) == sf::Socket::Done) {
 			mTimeSinceLastPacket = sf::seconds(0.f);
 			sf::Int32 packetType;
 			packet >> packetType;
@@ -334,12 +344,12 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 
 	case Server::StartGame:
 	{
-		requestStackPop();
+		
 		if (mHost)
 			requestStackPush(States::HostGame);
 		else
+			requestStackPop();
 			requestStackPush(States::JoinGame);
-
 	} break;
 	}
 }

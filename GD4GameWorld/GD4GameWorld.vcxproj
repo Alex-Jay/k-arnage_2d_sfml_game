@@ -73,6 +73,7 @@
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
     <ClInclude Include="ScoreBoardState.hpp" />
+    <ClInclude Include="SocketManager.hpp" />
     <ClInclude Include="Xbox360Controller.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +83,7 @@
   <ItemGroup>
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ScoreBoardState.cpp" />
+    <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
     <ClCompile Include="Source\Audio\MusicPlayer.cpp" />
     <ClCompile Include="Source\Audio\SoundPlayer.cpp" />

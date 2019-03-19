@@ -2,19 +2,20 @@
 #include "Audio/MusicPlayer.hpp"
 #include "Structural/Foreach.hpp"
 #include "Structural/Utility.hpp"
-
+#include "Constant/Constants.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Network/IpAddress.hpp>
 
 #include <fstream>
 
+//MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::TcpSocket *socket)
 MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
-	, mGameServer(nullptr)
+//	, mSocket(socket)
 	, mActiveState(true)
 	, mHasFocus(true)
 	, mHost(isHost)
@@ -25,8 +26,10 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 
+
 	// Play game theme
 	context.music->play(Music::MissionTheme);
+
 }
 
 #pragma region Update
@@ -110,7 +113,7 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
 
-			mSocket.send(packet);
+			CLIENT_SOCKET.send(packet);
 		}
 
 		// Escape pressed, trigger the pause screen
@@ -140,14 +143,14 @@ void MultiplayerGameState::onDestroy()
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
+		CLIENT_SOCKET.send(packet);
 	}
 }
-
 
 #pragma endregion
 
 #pragma region Packet Handling
+
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
 	switch (packetType) {
@@ -229,7 +232,7 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 	Character* character = mWorld.addCharacter((characterIdentifier), true);
 	character->setPosition(assignCharacterSpawn(characterIdentifier));
 
-	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys1));
+	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, getContext().keys1));
 	mLocalPlayerIdentifiers.push_back(characterIdentifier);
 
 	mGameStarted = true;
@@ -246,7 +249,7 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 	Character* character = mWorld.addCharacter(characterIdentifier, false);
 	character->setPosition(characterPosition);
 
-	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, nullptr));
 }
 
 void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
@@ -280,7 +283,7 @@ void MultiplayerGameState::setInitialState(sf::Packet& packet)
 		//character->setHitpoints(hitpoints);
 		character->setGrenadeAmmo(grenadeAmmo);
 
-		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+		mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, nullptr));
 	}
 }
 
@@ -377,6 +380,7 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 
 	return spawnPosition;
 }
+
 #pragma endregion
 
 #pragma region Handle Updates
@@ -432,7 +436,7 @@ void MultiplayerGameState::handleServerMessages()
 {
 	// Handle messages from server that may have arrived
 	sf::Packet packet;
-	if (mSocket.receive(packet) == sf::Socket::Done) {
+	if (CLIENT_SOCKET.receive(packet) == sf::Socket::Done) {
 		mTimeSinceLastPacket = sf::seconds(0.f);
 		sf::Int32 packetType;
 		packet >> packetType;
@@ -462,7 +466,7 @@ void MultiplayerGameState::handleGameActions()
 		packet << gameAction.position.x;
 		packet << gameAction.position.y;
 
-		mSocket.send(packet);
+		CLIENT_SOCKET.send(packet);
 	}
 }
 
@@ -480,7 +484,7 @@ void MultiplayerGameState::handlePositionUpdates()
 				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
 		}
 
-		mSocket.send(positionUpdatePacket);
+		CLIENT_SOCKET.send(positionUpdatePacket);
 		mTickClock.restart();
 	}
 }

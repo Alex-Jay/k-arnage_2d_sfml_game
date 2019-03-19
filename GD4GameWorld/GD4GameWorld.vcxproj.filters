@@ -258,6 +258,9 @@
     <ClInclude Include="include\Book\State\LobbyState.hpp">
       <Filter>Header Files\State</Filter>
     </ClInclude>
+    <ClInclude Include="SocketManager.hpp">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl">
@@ -411,6 +414,9 @@
     </ClCompile>
     <ClCompile Include="Source\State\LobbyState.cpp">
       <Filter>Source Files\State</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketManager.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

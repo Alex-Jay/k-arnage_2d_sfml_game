@@ -1,4 +1,7 @@
 #pragma once
+
+#include <SFML/Network/TcpSocket.hpp>
+
 #include<string>
 //++++++++++++ MAP DATA ++++++++++++++
 const std::string DESSERTMAP = "Media/map.txt";
@@ -79,5 +82,6 @@ const int ORANGE = 0Xffa100ff;
 const int8_t TRIGGER_THRESHOLD = 70;
 const int8_t THUMBSTICK_THRESHOLD = 50;
 
+extern sf::TcpSocket CLIENT_SOCKET;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 

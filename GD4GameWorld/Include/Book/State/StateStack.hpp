@@ -7,6 +7,7 @@
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/Network/TcpSocket.hpp>
 
 #include <vector>
 #include <utility>
@@ -33,6 +34,11 @@ public:
 	void registerState(States::ID stateID);
 	template <typename T, typename Param1>
 	void registerState(States::ID stateID, Param1 arg1);
+
+	template<typename T, typename Param1, typename Param2>
+	void registerState(States::ID stateID, Param1 arg1, Param2 arg2);
+
+
 
 	void update(sf::Time dt);
 	void draw();
@@ -79,6 +85,14 @@ void StateStack::registerState(States::ID stateID, Param1 arg1)
 {
 	mFactories[stateID] = [this, arg1]() {
 		return State::Ptr(new T(*this, mContext, arg1));
+	};
+}
+
+template <typename T, typename Param1, typename Param2>
+void StateStack::registerState(States::ID stateID, Param1 arg1, Param2 arg2)
+{
+	mFactories[stateID] = [this, arg1, arg2]() {
+		return State::Ptr(new T(*this, mContext, arg1, arg2));
 	};
 }
 

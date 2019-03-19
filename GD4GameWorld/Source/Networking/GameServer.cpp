@@ -46,6 +46,11 @@ GameServer::~GameServer()
 	mThread.wait();
 }
 
+void GameServer::onDestroy()
+{
+	std::cout << "DESTROYED" << std::endl;
+}
+
 void GameServer::notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled)
 {
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)

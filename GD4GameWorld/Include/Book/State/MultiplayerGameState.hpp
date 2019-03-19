@@ -16,7 +16,9 @@
 class MultiplayerGameState : public State
 {
 public:
-	MultiplayerGameState(StateStack& stack, Context context, bool isHost);
+	//MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::TcpSocket * socket);
+
+	MultiplayerGameState(StateStack & stack, Context context, bool isHost);
 
 	virtual void				draw();
 	virtual bool				update(sf::Time dt);
@@ -30,6 +32,28 @@ public:
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
 	void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
+
+	void broadcastMessage(sf::Packet & packet);
+
+	void spawnSelf(sf::Packet & packet);
+
+	void playerConnect(sf::Packet & packet);
+
+	void playerDisconnect(sf::Packet & packet);
+
+	void setInitialState(sf::Packet & packet);
+
+	void playerEvent(sf::Packet & packet);
+
+	void playerRealTimeChange(sf::Packet & packet);
+
+	void spawnEnemy(sf::Packet & packet);
+
+	void spawnObstacle(sf::Packet & packet);
+
+	void spawnPickup(sf::Packet & packet);
+
+	void updateClientState(sf::Packet & packet);
 
 	sf::Vector2f assignCharacterSpawn(int Identifier);
 
@@ -57,7 +81,7 @@ private:
 
 	std::map<int, PlayerPtr>	mPlayers;
 	std::vector<sf::Int32>		mLocalPlayerIdentifiers;
-	sf::TcpSocket				mSocket;
+	//sf::TcpSocket*				mSocket;
 	bool						mConnected;
 	std::unique_ptr<GameServer> mGameServer;
 	sf::Clock					mTickClock;

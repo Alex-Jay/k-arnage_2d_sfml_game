@@ -1,10 +1,12 @@
 #pragma once
 #include "State/State.hpp"
+#include "State/StateStack.hpp"
 #include "Component/Container.hpp"
 #include "Entity/Character.hpp"
 #include "Networking/GameServer.hpp"
 #include "Networking/NetworkProtocol.hpp"
 #include "Entity/Player.hpp"
+#include "../SocketManager.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -46,6 +48,8 @@ private:
 private:
 	typedef std::unique_ptr<Player> PlayerPtr;
 
+
+
 private:
 
 	struct lobbyPlayers {
@@ -68,7 +72,7 @@ private:
 
 	std::unique_ptr<GameServer> mGameServer;
 
-	sf::TcpSocket mSocket;
+	//sf::TcpSocket mSocket;
 
 	bool mConnected;
 	bool mActiveState;
@@ -88,4 +92,5 @@ private:
 
 	sf::Time mClientTimeout;
 	sf::Time mTimeSinceLastPacket;
+
 };

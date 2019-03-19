@@ -18,6 +18,9 @@ public:
 	explicit GameServer(sf::Vector2f battlefieldSize);
 	~GameServer();
 
+	void onDestroy();
+
+
 	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
