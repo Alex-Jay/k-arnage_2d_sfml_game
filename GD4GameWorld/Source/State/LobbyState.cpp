@@ -39,26 +39,29 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 
 	setDisplayText(context);
 
-	auto readyButton = std::make_shared<GUI::Button>(context);
-	readyButton->setPosition(300, 600);
-	readyButton->setText("Ready");
-	readyButton->setCallback([this]() {
+	if (isHost)
+	{
+		auto readyButton = std::make_shared<GUI::Button>(context);
+		readyButton->setPosition(300, 600);
+		readyButton->setText("Ready");
+		readyButton->setCallback([this]() {
 
-		//TODO KEEP TRACK OF READY PLAYERS
-		//requestStackPop();
-		//requestStackPush(States::Game);
-	});
+			//TODO KEEP TRACK OF READY PLAYERS
+			requestStackPop();
+			requestStackPush(States::Game);
+		});
+
+		mGUIContainer.pack(readyButton);
+	}
 
 	auto exitButton = std::make_shared<GUI::Button>(context);
 	exitButton->setPosition(300, 500);
 	exitButton->setText("Back");
 	exitButton->setCallback([this]() {
-		//TODO This is where we should sen player left lobby message to server
-		requestStackPop();
-		requestStackPush(States::Menu);
+		mText.setString("Disconnecting....");
+		sendDisconnectSelf();
 	});
 
-	mGUIContainer.pack(readyButton);
 	mGUIContainer.pack(exitButton);
 
 	sf::IpAddress ip;
@@ -124,7 +127,22 @@ bool LobbyState::handleEvent(const sf::Event& event)
 	return false;
 }
 
+void LobbyState::returnToMenu()
+{
+	requestStackPop();
+	requestStackPush(States::Menu);
+}
+
 #pragma region Networking Logic
+
+void LobbyState::sendDisconnectSelf()
+{
+	if (!mHost && mConnected) {
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::Quit);
+		mSocket.send(packet);
+	}
+}
 
 void LobbyState::onActivate()
 {
@@ -133,7 +151,10 @@ void LobbyState::onActivate()
 
 void LobbyState::onDestroy()
 {
+	std::cout << "1 ON DESTROY" << std::endl;
 	if (!mHost && mConnected) {
+
+		std::cout << "2 Sending Destroy Packet Quit NUmber: " << static_cast<sf::Int32>(Client::Quit) << std::endl;
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
@@ -227,6 +248,7 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 
 		mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
 
+		mLocalPlayerID = characterIdentifier;
 		//std::cout << "YOU CONNECTED!!!!!!!" << std::endl;
 		updateDisplayText();
 	} break;
@@ -245,6 +267,7 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		//
 	case Server::PlayerDisconnect: 
 	{
+		std::cout << "8 Client Recived Disconnect Message" << std::endl;
 		sf::Int32 characterIdentifier;
 		packet >> characterIdentifier;
 
@@ -252,6 +275,11 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 			std::remove_if(mPlayers.begin(), mPlayers.end(), [&](lobbyPlayers const & player) {
 			return player.identifier == characterIdentifier;}), mPlayers.end());
 		updateDisplayText();
+
+		if (characterIdentifier == mLocalPlayerID)
+		{
+			returnToMenu();
+		}
 		//std::cout << "PLAYER DISCONNECTED!!!!!!!" << std::endl;
 	} break;
 

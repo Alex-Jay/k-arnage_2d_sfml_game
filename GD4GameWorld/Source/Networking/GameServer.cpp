@@ -272,6 +272,7 @@ void GameServer::handleIncomingPackets()
 
 			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
+				std::cout << "4 Setting Timeout status" << std::endl;
 				peer->timedOut = true;
 				detectedTimeout = true;
 			}
@@ -279,7 +280,7 @@ void GameServer::handleIncomingPackets()
 	}
 
 	if (detectedTimeout)
-		handleDisconnections();
+		GameServer::handleDisconnections();
 }
 
 void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout)
@@ -287,10 +288,13 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	sf::Int32 packetType;
 	packet >> packetType;
 
+	std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
+
 	switch (packetType)
 	{
 	case Client::Quit:
 	{
+		std::cout << "3 GAMESERVER Recived Disconnect Message" << std::endl;
 		receivingPeer.timedOut = true;
 		detectedTimeout = true;
 	} break;
@@ -446,6 +450,7 @@ void GameServer::handleIncomingConnections()
 
 void GameServer::handleDisconnections()
 {
+	std::cout << "5 HANDLEING DISSCONECTIONS" << std::endl;
 	for (auto itr = mPeers.begin(); itr != mPeers.end(); )
 	{
 		if ((*itr)->timedOut)
@@ -453,6 +458,7 @@ void GameServer::handleDisconnections()
 			// Inform everyone of the disconnection, erase 
 			FOREACH(sf::Int32 identifier, (*itr)->characterIdentifiers)
 			{
+				std::cout << "6 SENDING PACKET TO CLIENTS" << std::endl;
 				sendToAll(sf::Packet() << static_cast<sf::Int32>(Server::PlayerDisconnect) << identifier);
 
 				mCharacterInfo.erase(identifier);
@@ -522,3 +528,5 @@ void GameServer::sendToAll(sf::Packet& packet)
 			peer->socket.send(packet);
 	}
 }
+
+

@@ -29,6 +29,10 @@ public:
 	void handlePacket(sf::Int32 packetType, sf::Packet& packet);
 	virtual bool handleEvent(const sf::Event& event);
 
+	void returnToMenu();
+
+	void sendDisconnectSelf();
+
 	virtual void onActivate();
 	void onDestroy();
 
@@ -68,6 +72,9 @@ private:
 	bool mActiveState;
 	bool mHasFocus;
 	bool mHost;
+	bool mDisconnectSelf{};
+
+	int16_t mLocalPlayerID;
 
 	sf::Text mFailedConnectionText;
 	sf::Clock mFailedConnectionClock;
