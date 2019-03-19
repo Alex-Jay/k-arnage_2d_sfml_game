@@ -46,10 +46,7 @@ GameServer::~GameServer()
 	mThread.wait();
 }
 
-void GameServer::onDestroy()
-{
-	std::cout << "DESTROYED" << std::endl;
-}
+#pragma region Notify Clients
 
 void GameServer::notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled)
 {
@@ -110,7 +107,9 @@ void GameServer::notifyPlayerSpawn(sf::Int32 characterIdentifier)
 		}
 	}
 }
+#pragma endregion
 
+#pragma region Update
 void GameServer::setListening(bool enable)
 {
 	// Check if it isn't already listening
@@ -237,36 +236,12 @@ void GameServer::tick()
 	}
 }
 
-std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
-{
-	std::vector<sf::Vector2f> spawnPoints;
-	std::list<sf::FloatRect> objectRects;
-	int xPos, yPos;
-
-	sf::FloatRect worldBounds = sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(WORLD_WIDTH, WORLD_HEIGHT));
-
-	for (size_t i = 0; i < obstacleCount; ++i)
-	{
-		xPos = DESSERT_TILE_WIDTH + randomInt(std::ceil(WORLD_WIDTH - DESSERT_TILE_WIDTH));
-		yPos = DESSERT_TILE_HEIGHT + randomInt(std::ceil(WORLD_HEIGHT - DESSERT_TILE_HEIGHT));
-		sf::FloatRect boundingRectangle = sf::FloatRect(xPos, yPos, DESSERT_TILE_WIDTH * 2, DESSERT_TILE_HEIGHT * 2);
-
-		if (!containsIntersection(objectRects, boundingRectangle))
-		{
-			objectRects.push_back(boundingRectangle);
-			spawnPoints.push_back(sf::Vector2f(xPos, yPos));
-		}
-		else
-			i--;
-	}
-
-	return spawnPoints;
-}
-
 sf::Time GameServer::now() const
 {
 	return mClock.getElapsedTime();
 }
+#pragma endregion
+
 
 void GameServer::handleIncomingPackets()
 {
@@ -311,7 +286,6 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	{
 	case Client::Quit:
 	{
-		std::cout << "3 GAMESERVER Recived Disconnect Message" << std::endl;
 		receivingPeer.timedOut = true;
 		detectedTimeout = true;
 	} break;
@@ -319,6 +293,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	case Client::StartGame:
 	{
 		notifyStartGame();
+		sendCharacters();
 	} break;
 
 	case Client::PlayerEvent:
@@ -326,7 +301,6 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 		sf::Int32 characterIdentifier;
 		sf::Int32 action;
 		packet >> characterIdentifier >> action;
-
 		notifyPlayerEvent(characterIdentifier, action);
 	} break;
 
@@ -338,38 +312,6 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 		packet >> characterIdentifier >> action >> actionEnabled;
 		mCharacterInfo[characterIdentifier].realtimeActions[action] = actionEnabled;
 		notifyPlayerRealtimeChange(characterIdentifier, action, actionEnabled);
-	} break;
-
-	case Client::RequestCoopPartner:
-	{
-		receivingPeer.characterIdentifiers.push_back(mCharacterIdentifierCounter);
-		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
-		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
-		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
-
-		sf::Packet requestPacket;
-		requestPacket << static_cast<sf::Int32>(Server::AcceptCoopPartner);
-		requestPacket << mCharacterIdentifierCounter;
-		requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-		requestPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
-
-		receivingPeer.socket.send(requestPacket);
-		mCharacterCount++;
-
-		// Inform every other peer about this new plane
-		FOREACH(PeerPtr& peer, mPeers)
-		{
-			if (peer.get() != &receivingPeer && peer->ready)
-			{
-				sf::Packet notifyPacket;
-				notifyPacket << static_cast<sf::Int32>(Server::PlayerConnect);
-				notifyPacket << mCharacterIdentifierCounter;
-				notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-				notifyPacket << mCharacterInfo[mCharacterIdentifierCounter].position.y;
-				peer->socket.send(notifyPacket);
-			}
-		}
-		mCharacterIdentifierCounter++;
 	} break;
 
 	case Client::PositionUpdate:
@@ -432,6 +374,8 @@ void GameServer::updateClientState()
 
 	sendToAll(updateClientStatePacket);
 }
+
+#pragma region Connection Logic
 
 void GameServer::handleIncomingConnections()
 {
@@ -507,12 +451,14 @@ void GameServer::handleDisconnections()
 	}
 }
 
+#pragma endregion
+
 // Tell the newly connected peer about how the world is currently
 void GameServer::informWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Server::InitialState);
-	packet << mWorldHeight << mBattleFieldRect.top + mBattleFieldRect.height;
+
 	packet << static_cast<sf::Int32>(mCharacterCount);
 
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
@@ -520,7 +466,7 @@ void GameServer::informWorldState(sf::TcpSocket& socket)
 		if (mPeers[i]->ready)
 		{
 			FOREACH(sf::Int32 identifier, mPeers[i]->characterIdentifiers)
-				packet << identifier << mCharacterInfo[identifier].position.x << mCharacterInfo[identifier].position.y << mCharacterInfo[identifier].hitpoints << mCharacterInfo[identifier].missileAmmo;
+				packet << identifier;
 		}
 	}
 
@@ -552,3 +498,51 @@ void GameServer::sendToAll(sf::Packet& packet)
 }
 
 
+#pragma region Build World
+
+void GameServer::SetInitialWorldState()
+{
+
+}
+
+void GameServer::sendCharacters()
+{
+	for (std::size_t i = 5; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::PlayerConnect);
+			packet << i;
+			mPeers[i]->socket.send(packet);
+		}
+	}
+}
+
+std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
+{
+	std::vector<sf::Vector2f> spawnPoints;
+	std::list<sf::FloatRect> objectRects;
+	int xPos, yPos;
+
+	sf::FloatRect worldBounds = sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(WORLD_WIDTH, WORLD_HEIGHT));
+
+	for (size_t i = 0; i < obstacleCount; ++i)
+	{
+		xPos = DESSERT_TILE_WIDTH + randomInt(std::ceil(WORLD_WIDTH - DESSERT_TILE_WIDTH));
+		yPos = DESSERT_TILE_HEIGHT + randomInt(std::ceil(WORLD_HEIGHT - DESSERT_TILE_HEIGHT));
+		sf::FloatRect boundingRectangle = sf::FloatRect(xPos, yPos, DESSERT_TILE_WIDTH * 2, DESSERT_TILE_HEIGHT * 2);
+
+		if (!containsIntersection(objectRects, boundingRectangle))
+		{
+			objectRects.push_back(boundingRectangle);
+			spawnPoints.push_back(sf::Vector2f(xPos, yPos));
+		}
+		else
+			i--;
+	}
+
+	return spawnPoints;
+}
+
+#pragma endregion

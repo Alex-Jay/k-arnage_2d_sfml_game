@@ -12,8 +12,6 @@
 
 sf::TcpSocket CLIENT_SOCKET;
 
-
-
 sf::IpAddress LobbyState::getAddressFromFile()
 {
 	{ // Try to open existing file (RAII block)
@@ -38,12 +36,23 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	, mClientTimeout(sf::seconds(300.f))//Loby Timeout of five min
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
+	, mStack(stack)
+{
+
+	setText(context);
+	setButtons(context);
+	connectToServer();
+}
+
+#pragma region Initialization
+
+void LobbyState::setText(Context context)
 {
 	sf::Texture& texture = context.textures->get(Textures::LobbyScreen);
 	mBackgroundSprite.setTexture(texture);
 
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
-	mBroadcastText.setPosition(1024.f / 2, 100.f);
+	mBroadcastText.setPosition(1024.f / 2, 400.f);
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
@@ -61,15 +70,17 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	centerOrigin(mFailedConnectionText);
 
 	setDisplayText(context);
+}
 
+void LobbyState::setButtons(Context context)
+{
 	if (mHost)
 	{
 		auto readyButton = std::make_shared<GUI::Button>(context);
 		readyButton->setPosition(300, 600);
 		readyButton->setText("Ready");
-		readyButton->setCallback([this]() 
+		readyButton->setCallback([this]()
 		{
-			std::cout << "Button CLicked" << std::endl;
 			sendStartGame();
 		});
 
@@ -85,9 +96,12 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	});
 
 	mGUIContainer.pack(exitButton);
+}
 
+void LobbyState::connectToServer()
+{
 	sf::IpAddress ip;
-	if (isHost) {
+	if (mHost) {
 		mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
 		ip = "127.0.0.1";
 	}
@@ -102,34 +116,15 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 		mFailedConnectionClock.restart();
 
 	CLIENT_SOCKET.setBlocking(false);
-
-	//if (mConnected)
-	//{
-	//	stack.registerState<MultiplayerGameState>(States::HostGame, true, &mSocket);
-	//	stack.registerState<MultiplayerGameState>(States::JoinGame, false, &mSocket);
-	//}
-
-	std::cout << "SOCKET PORT LOBBY ID : " << CLIENT_SOCKET.getLocalPort() << std::endl;
 }
+#pragma endregion
 
-void LobbyState::setDisplayText(Context context)
-{
-	std::string text = "Multiplayer Lobby " + std::to_string(getConnectedPlayers()) + " Players Connected";
-	mText.setFont(context.fonts->get(Fonts::Main));
-	mText.setString(text);
-	centerOrigin(mText);
-	mText.setPosition(sf::Vector2f(context.window->getSize().x / 2u, 100));
-}
+#pragma region Update
 
 void LobbyState::updateDisplayText()
 {
-	std::string text = "Multiplayer Lobby " + std::to_string(getConnectedPlayers()) + " Players Connected";
+	std::string text = "Multiplayer Lobby " + std::to_string(mPlayerCount) + " Players Connected";
 	mText.setString(text);
-}
-
-int8_t LobbyState::getConnectedPlayers()
-{
-	return mPlayers.size();
 }
 
 void LobbyState::draw()
@@ -148,56 +143,6 @@ void LobbyState::draw()
 	}
 	else {
 		mWindow.draw(mFailedConnectionText);
-	}
-}
-
-bool LobbyState::handleEvent(const sf::Event& event)
-{
-	mGUIContainer.handleEvent(event);
-	return false;
-}
-
-void LobbyState::returnToMenu()
-{
-	requestStackPop();
-	requestStackPush(States::Menu);
-}
-
-#pragma region Networking Logic
-
-void LobbyState::sendDisconnectSelf()
-{
-	if (mConnected) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		CLIENT_SOCKET.send(packet);
-	}
-}
-
-void LobbyState::sendStartGame()
-{
-	if (mHost && mConnected){
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::StartGame);
-		CLIENT_SOCKET.send(packet);
-	}
-}
-
-void LobbyState::onActivate()
-{
-	mActiveState = true;
-}
-
-void LobbyState::onDestroy()
-{
-	std::cout << "1 ON DESTROY" << std::endl;
-	if (!mHost && mConnected) {
-
-		std::cout << "2 Sending Destroy Packet Quit NUmber: " << static_cast<sf::Int32>(Client::Quit) << std::endl;
-		// Inform server this client is dying
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		CLIENT_SOCKET.send(packet);
 	}
 }
 
@@ -262,96 +207,178 @@ void LobbyState::updateBroadcastMessage(sf::Time elapsedTime)
 	}
 }
 
+#pragma endregion
+
+#pragma region Events
+bool LobbyState::handleEvent(const sf::Event& event)
+{
+	mGUIContainer.handleEvent(event);
+	return false;
+}
+
+void LobbyState::onActivate()
+{
+	mActiveState = true;
+}
+
+void LobbyState::onDestroy()
+{
+	std::cout << "1 ON DESTROY" << std::endl;
+	if (!mHost && mConnected) {
+
+		std::cout << "2 Sending Destroy Packet Quit NUmber: " << static_cast<sf::Int32>(Client::Quit) << std::endl;
+		// Inform server this client is dying
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::Quit);
+		CLIENT_SOCKET.send(packet);
+	}
+}
+
+void LobbyState::returnToMenu()
+{
+	requestStackPop();
+	requestStackPush(States::Menu);
+}
+
+void LobbyState::startGame()
+{
+	if (mHost)
+		requestStackPush(States::HostGame);
+	else
+		requestStackPop();
+	requestStackPush(States::JoinGame);
+}
+
+void LobbyState::setDisplayText(Context context)
+{
+	std::string text = "Multiplayer Lobby " + std::to_string(mPlayerCount) + " Players Connected";
+	mText.setFont(context.fonts->get(Fonts::Main));
+	mText.setString(text);
+	centerOrigin(mText);
+	mText.setPosition(sf::Vector2f(context.window->getSize().x / 2u, 100));
+}
+
+#pragma endregion
+
+#pragma region Send Packet
+
+void LobbyState::sendStartGame()
+{
+	if (mHost && mConnected) {
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::StartGame);
+		CLIENT_SOCKET.send(packet);
+	}
+}
+
+void LobbyState::sendDisconnectSelf()
+{
+	if (mConnected) {
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::Quit);
+		CLIENT_SOCKET.send(packet);
+	}
+}
+
+#pragma endregion
+
+#pragma region Handle Packet
+
 void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
 	switch (packetType) {
 		// Send message to all clients
 	case Server::BroadcastMessage: {
-		std::string message;
-		packet >> message;
-		mBroadcasts.push_back(message);
-
-		// Just added first message, display immediately
-		if (mBroadcasts.size() == 1) {
-			mBroadcastText.setString(mBroadcasts.front());
-			centerOrigin(mBroadcastText);
-			mBroadcastElapsedTime = sf::Time::Zero;
-		}
+		setBroadcastMessage(packet);
 	} break;
 
 	case Server::SpawnSelf: {
-
-		sf::Int32 characterIdentifier;
-		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
-		mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
-
-		mLocalPlayerID = characterIdentifier;
-		//std::cout << "YOU CONNECTED!!!!!!!" << std::endl;
-		updateDisplayText();
+		spawnSelf(packet);
 	} break;
 
 	case Server::PlayerConnect: {
-
-		sf::Int32 characterIdentifier;
-		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
-		mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
-		//std::cout << "PLAYER CONNECTED!!!!!!!" << std::endl;
-		updateDisplayText();
+		playerConnect(packet);
 	} break;
 
-		//
-	case Server::PlayerDisconnect: 
+	case Server::PlayerDisconnect:
 	{
-		std::cout << "8 Client Recived Disconnect Message" << std::endl;
-		sf::Int32 characterIdentifier;
-		packet >> characterIdentifier;
-
-		mPlayers.erase(
-			std::remove_if(mPlayers.begin(), mPlayers.end(), [&](lobbyPlayers const & player) {
-			return player.identifier == characterIdentifier;}), mPlayers.end());
-		updateDisplayText();
-
-		if (characterIdentifier == mLocalPlayerID)
-		{
-			returnToMenu();
-		}
-		//std::cout << "PLAYER DISCONNECTED!!!!!!!" << std::endl;
+		playerDisconnect(packet);
 	} break;
 
 	case Server::InitialState: {
-		sf::Int32 characterCount;
-		float worldHeight, currentScroll;
-
-		packet >> worldHeight >> currentScroll; // TODO No NEED FOR These VAriables
-
-		packet >> characterCount;
-
-		for (sf::Int32 i = 0; i < characterCount; ++i) {
-			sf::Int32 characterIdentifier;
-			sf::Int32 hitpoints;
-			sf::Int32 grenadeAmmo;
-			sf::Vector2f characterPosition;
-			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
-
-			mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
-		}
-		updateDisplayText();
+		setInitialLobbyState(packet);
 	} break;
 
 	case Server::StartGame:
 	{
-		
-		if (mHost)
-			requestStackPush(States::HostGame);
-		else
-			requestStackPop();
-			requestStackPush(States::JoinGame);
+		startGame();
 	} break;
 	}
 }
 
+void LobbyState::setBroadcastMessage(sf::Packet& packet)
+{
+	std::string message;
+	packet >> message;
+	mBroadcasts.push_back(message);
+
+	// Just added first message, display immediately
+	if (mBroadcasts.size() == 1) {
+		mBroadcastText.setString(mBroadcasts.front());
+		centerOrigin(mBroadcastText);
+		mBroadcastElapsedTime = sf::Time::Zero;
+	}
+}
+
+void LobbyState::spawnSelf(sf::Packet& packet)
+{
+	sf::Int32 characterIdentifier;
+
+	packet >> characterIdentifier;
+
+	mLocalPlayerID = characterIdentifier;
+
+	mPlayerCount += 1;
+
+	updateDisplayText();
+
+	mStack.registerState<MultiplayerGameState>(States::HostGame, true, mLocalPlayerID);
+	mStack.registerState<MultiplayerGameState>(States::JoinGame, false, mLocalPlayerID);
+}
+
+void LobbyState::playerConnect(sf::Packet& packet)
+{
+	++mPlayerCount;
+	updateDisplayText();
+}
+
+void LobbyState::playerDisconnect(sf::Packet& packet)
+{
+	sf::Int32 characterIdentifier;
+	packet >> characterIdentifier;
+	
+	if (characterIdentifier == mLocalPlayerID)
+		returnToMenu();
+	else
+	{
+		--mPlayerCount;
+		updateDisplayText();
+	}
+
+}
+
+void LobbyState::setInitialLobbyState(sf::Packet& packet)
+{
+	sf::Int32 characterCount;
+
+	packet >> characterCount;
+	
+	mPlayerCount = characterCount;
+
+	updateDisplayText();
+}
+
 #pragma endregion
+
+
+

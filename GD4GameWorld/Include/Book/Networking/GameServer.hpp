@@ -20,7 +20,6 @@ public:
 
 	void onDestroy();
 
-
 	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
@@ -55,6 +54,7 @@ private:
 	void executionThread();
 	void tick();
 	std::vector<sf::Vector2f> getObjectSpwanPoints(int obstacleCount);
+	void buildWorld();
 	sf::Time now() const;
 
 	void handleIncomingPackets();
@@ -65,6 +65,8 @@ private:
 
 	void informWorldState(sf::TcpSocket& socket);
 	void broadcastMessage(const std::string& message);
+	void SetInitialWorldState();
+	void sendCharacters();
 	void sendToAll(sf::Packet& packet);
 	void updateClientState();
 

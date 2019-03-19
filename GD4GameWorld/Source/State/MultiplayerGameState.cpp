@@ -9,7 +9,7 @@
 #include <fstream>
 
 //MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::TcpSocket *socket)
-MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
+MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, int16_t localID)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
@@ -22,13 +22,21 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mGameStarted(false)
 	, mClientTimeout(sf::seconds(2.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
+	, mLocalPlayerID(localID)
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 
 
+	mWorld.addCharacter(0, true);
+	mWorld.addCharacter(1, true);
+	mWorld.addCharacter(2, true);
+	mWorld.addCharacter(3, true);
+	
+	std::cout << "LOCAL ID " << mLocalPlayerID << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
+
 
 }
 
@@ -263,26 +271,26 @@ void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
 
 void MultiplayerGameState::setInitialState(sf::Packet& packet)
 {
-	sf::Int32 characterCount;
-	float worldHeight, currentScroll;
-	packet >> worldHeight >> currentScroll;
 
-	//mWorld.setWorldHeight(worldHeight);
-	//mWorld.setCurrentBattleFieldPosition(currentScroll);
+	sf::Int32 characterCount;
+
+	float worldHeight, currentScroll;
 
 	packet >> characterCount;
 	for (sf::Int32 i = 0; i < characterCount; ++i) {
 		sf::Int32 characterIdentifier;
-		sf::Int32 hitpoints;
-		sf::Int32 grenadeAmmo;
-		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
+	
+		packet >> characterIdentifier;
+		sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
 
-		Character* character = mWorld.addCharacter(characterIdentifier, false);
+		Character* character;
+
+		if (characterIdentifier == mLocalPlayerID)
+			character = mWorld.addCharacter(characterIdentifier, true);
+		else
+			character = mWorld.addCharacter(characterIdentifier, false);
+		
 		character->setPosition(characterPosition);
-		//character->setHitpoints(hitpoints);
-		character->setGrenadeAmmo(grenadeAmmo);
-
 		mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, nullptr));
 	}
 }
@@ -384,6 +392,7 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 #pragma endregion
 
 #pragma region Handle Updates
+
 void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 {
 	// Remove players whose characters were destroyed
@@ -488,4 +497,5 @@ void MultiplayerGameState::handlePositionUpdates()
 		mTickClock.restart();
 	}
 }
+
 #pragma endregion
