@@ -316,7 +316,12 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 
 	case Server::StartGame:
 	{
-		mText.setString("STARTING GAME");
+		requestStackPop();
+		if (mHost)
+			requestStackPush(States::HostGame);
+		else
+			requestStackPush(States::JoinGame);
+
 	} break;
 	}
 }

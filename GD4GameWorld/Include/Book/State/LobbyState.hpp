@@ -33,6 +33,8 @@ public:
 
 	void sendDisconnectSelf();
 
+	void sendStartGame();
+
 	virtual void onActivate();
 	void onDestroy();
 

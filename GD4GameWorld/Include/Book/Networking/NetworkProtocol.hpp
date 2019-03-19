@@ -26,7 +26,8 @@ namespace Server
 		SpawnObstacle,
 		SpawnPickup,
 		UpdateClientState,
-		MissionSuccess
+		MissionSuccess,
+		StartGame
 	};
 }
 
@@ -35,6 +36,7 @@ namespace Client
 	// Packets originated in the client
 	enum PacketType
 	{
+		StartGame,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		RequestCoopPartner,

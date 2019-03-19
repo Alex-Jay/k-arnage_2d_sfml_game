@@ -22,6 +22,8 @@ public:
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
+	void notifyStartGame();
+
 private:
 	// A GameServerRemotePeer refers to one instance of the game, may it be local or from another computer
 	struct RemotePeer {
