@@ -21,7 +21,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	playButton->setCallback([this] ()
 	{
 		requestStackPop();
-		requestStackPush(States::Game);
+		requestStackPush(States::HostGame);
 	});
 
 	auto hostPlayButton = std::make_shared<GUI::Button>(context);
@@ -29,7 +29,8 @@ MenuState::MenuState(StateStack& stack, Context context)
 	hostPlayButton->setText("Host");
 	hostPlayButton->setCallback([this] ()
 	{
-		requestStackPush(States::Lobby);
+		requestStackPop();
+		requestStackPush(States::HostLobby);
 	});
 
 	auto joinPlayButton = std::make_shared<GUI::Button>(context);
@@ -38,7 +39,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	joinPlayButton->setCallback([this] ()
 	{
 		requestStackPop();
-		requestStackPush(States::JoinGame);
+		requestStackPush(States::JoinLobby);
 	});
 
 	auto settingsButton = std::make_shared<GUI::Button>(context);

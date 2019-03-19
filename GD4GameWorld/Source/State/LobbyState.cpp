@@ -31,7 +31,7 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mGUIContainer()
 	, mWindow(*context.window)
-	, mClientTimeout(sf::seconds(2.f))
+	, mClientTimeout(sf::seconds(300.f))//Loby Timeout of five min
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 {
 	sf::Texture& texture = context.textures->get(Textures::LobbyScreen);
@@ -42,23 +42,24 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	auto readyButton = std::make_shared<GUI::Button>(context);
 	readyButton->setPosition(300, 600);
 	readyButton->setText("Ready");
-	readyButton->setCallback([this]()
-	{
-		requestStackPop();
-		requestStackPush(States::Game);
+	readyButton->setCallback([this]() {
+
+		//TODO KEEP TRACK OF READY PLAYERS
+		//requestStackPop();
+		//requestStackPush(States::Game);
 	});
 
 	auto exitButton = std::make_shared<GUI::Button>(context);
 	exitButton->setPosition(300, 500);
 	exitButton->setText("Back");
-	exitButton->setCallback([this]()
-	{
+	exitButton->setCallback([this]() {
+		//TODO This is where we should sen player left lobby message to server
 		requestStackPop();
+		requestStackPush(States::Menu);
 	});
 
 	mGUIContainer.pack(readyButton);
 	mGUIContainer.pack(exitButton);
-
 
 	sf::IpAddress ip;
 	if (isHost) {
@@ -76,7 +77,6 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 		mFailedConnectionClock.restart();
 
 	mSocket.setBlocking(false);
-
 }
 
 void LobbyState::setDisplayText(Context context)
@@ -88,9 +88,15 @@ void LobbyState::setDisplayText(Context context)
 	mText.setPosition(sf::Vector2f(context.window->getSize().x / 2u, 100));
 }
 
+void LobbyState::updateDisplayText()
+{
+	std::string text = "Multiplayer Lobby " + std::to_string(getConnectedPlayers()) + " Players Connected";
+	mText.setString(text);
+}
+
 int8_t LobbyState::getConnectedPlayers()
 {
-	return  mPlayers.size();
+	return mPlayers.size();
 }
 
 void LobbyState::draw()
@@ -106,12 +112,10 @@ void LobbyState::draw()
 
 		if (!mBroadcasts.empty())
 			mWindow.draw(mBroadcastText);
-
 	}
 	else {
 		mWindow.draw(mFailedConnectionText);
 	}
-
 }
 
 bool LobbyState::handleEvent(const sf::Event& event)
@@ -129,8 +133,7 @@ void LobbyState::onActivate()
 
 void LobbyState::onDestroy()
 {
-	if (!mHost && mConnected) 
-	{
+	if (!mHost && mConnected) {
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
@@ -203,8 +206,7 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
 	switch (packetType) {
 		// Send message to all clients
-	case Server::BroadcastMessage:
-	{
+	case Server::BroadcastMessage: {
 		std::string message;
 		packet >> message;
 		mBroadcasts.push_back(message);
@@ -218,46 +220,60 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 	} break;
 
 	case Server::SpawnSelf: {
-		std::cout << "YOU CONNECTED!!!!!!!" << std::endl;
+
+		sf::Int32 characterIdentifier;
+		sf::Vector2f characterPosition;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+
+		mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
+
+		//std::cout << "YOU CONNECTED!!!!!!!" << std::endl;
+		updateDisplayText();
 	} break;
 
-	case Server::PlayerConnect:
-	{
-		std::cout << "PLAYER CONNECTED!!!!!!!" << std::endl;
+	case Server::PlayerConnect: {
+
+		sf::Int32 characterIdentifier;
+		sf::Vector2f characterPosition;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+
+		mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
+		//std::cout << "PLAYER CONNECTED!!!!!!!" << std::endl;
+		updateDisplayText();
 	} break;
 
 		//
 	case Server::PlayerDisconnect: 
 	{
-		std::cout << "PLAYER DISCONNECTED!!!!!!!" << std::endl;
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier;
+
+		mPlayers.erase(
+			std::remove_if(mPlayers.begin(), mPlayers.end(), [&](lobbyPlayers const & player) {
+			return player.identifier == characterIdentifier;}), mPlayers.end());
+		updateDisplayText();
+		//std::cout << "PLAYER DISCONNECTED!!!!!!!" << std::endl;
 	} break;
 
-		//
-	//case Server::InitialState: {
-	//	sf::Int32 characterCount;
-	//	float worldHeight, currentScroll;
-	//	packet >> worldHeight >> currentScroll;
+	case Server::InitialState: {
+		sf::Int32 characterCount;
+		float worldHeight, currentScroll;
 
-	//	//mWorld.setWorldHeight(worldHeight);
-	//	//mWorld.setCurrentBattleFieldPosition(currentScroll);
+		packet >> worldHeight >> currentScroll; // TODO No NEED FOR These VAriables
 
-	//	packet >> characterCount;
-	//	for (sf::Int32 i = 0; i < characterCount; ++i) {
-	//		sf::Int32 characterIdentifier;
-	//		sf::Int32 hitpoints;
-	//		sf::Int32 grenadeAmmo;
-	//		sf::Vector2f characterPosition;
-	//		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
+		packet >> characterCount;
 
-	//		Character* character = mWorld.addCharacter(characterIdentifier, false);
-	//		character->setPosition(characterPosition);
-	//		//character->setHitpoints(hitpoints);
-	//		character->setGrenadeAmmo(grenadeAmmo);
+		for (sf::Int32 i = 0; i < characterCount; ++i) {
+			sf::Int32 characterIdentifier;
+			sf::Int32 hitpoints;
+			sf::Int32 grenadeAmmo;
+			sf::Vector2f characterPosition;
+			packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> hitpoints >> grenadeAmmo;
 
-	//		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-	//	}
-	//} break;
-
+			mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
+		}
+		updateDisplayText();
+	} break;
 	}
 }
 

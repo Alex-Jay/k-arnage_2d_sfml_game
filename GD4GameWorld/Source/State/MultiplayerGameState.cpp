@@ -310,6 +310,9 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 		// Sent by the server to order to spawn player 1 airplane on connect
 	case Server::SpawnSelf: {
+
+		std::cout <<  "Spawn Self" << std::endl;
+
 		sf::Int32 characterIdentifier;
 		sf::Vector2f characterPosition;
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
@@ -326,6 +329,8 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 		//
 	case Server::PlayerConnect: {
+
+		std::cout << "Player Connect" << std::endl;
 		sf::Int32 characterIdentifier;
 		sf::Vector2f characterPosition;
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;

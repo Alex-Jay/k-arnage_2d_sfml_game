@@ -21,7 +21,7 @@ GameServer::RemotePeer::RemotePeer()
 GameServer::GameServer(sf::Vector2f battlefieldSize)
 	: mThread(&GameServer::executionThread, this)
 	, mListeningState(false)
-	, mClientTimeoutTime(sf::seconds(3.f))
+	, mClientTimeoutTime(sf::seconds(300.f))
 	, mMaxConnectedPlayers(10)
 	, mConnectedPlayers(0)
 	, mWorldHeight(5000.f)
@@ -270,7 +270,7 @@ void GameServer::handleIncomingPackets()
 				packet.clear();
 			}
 
-			if (now() >= peer->lastPacketTime + mClientTimeoutTime)
+			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
 				peer->timedOut = true;
 				detectedTimeout = true;

@@ -16,21 +16,21 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 
-class LobbyState : public State
-{
+class LobbyState : public State {
 public:
 	sf::IpAddress getAddressFromFile();
 	LobbyState(StateStack& stack, Context context, bool isHost);
 	void setDisplayText(Context context);
+	void updateDisplayText();
 	int8_t getConnectedPlayers();
-	virtual void			draw();
-	virtual bool			update(sf::Time dt);
+	virtual void draw();
+	virtual bool update(sf::Time dt);
 	void updateBroadcastMessage(sf::Time elapsedTime);
-	void handlePacket(sf::Int32 packetType, sf::Packet & packet);
-	virtual bool			handleEvent(const sf::Event& event);
+	void handlePacket(sf::Int32 packetType, sf::Packet& packet);
+	virtual bool handleEvent(const sf::Event& event);
 
-	virtual void				onActivate();
-	void						onDestroy();
+	virtual void onActivate();
+	void onDestroy();
 
 	int getButtonFromXY(int x, int y);
 
@@ -41,32 +41,42 @@ private:
 	typedef std::unique_ptr<Player> PlayerPtr;
 
 private:
-	std::vector<Character*>		mPlayers;
-	sf::RenderWindow&			mWindow;
 
-	sf::Sprite				mBackgroundSprite;
-	GUI::Container			mGUIContainer;
+	struct lobbyPlayers {
+		lobbyPlayers(int16_t identifier, int16_t startX, int16_t startY)
+			: identifier(identifier)
+			, startX(startX)
+			, startY(startY){}
 
-	sf::Text			mText;
+		int16_t identifier;
+		int16_t startX;
+		int16_t startY;
+	};
+	std::vector<lobbyPlayers> mPlayers;
+	sf::RenderWindow& mWindow;
+
+	sf::Sprite mBackgroundSprite;
+	GUI::Container mGUIContainer;
+
+	sf::Text mText;
 
 	std::unique_ptr<GameServer> mGameServer;
 
-	sf::TcpSocket				mSocket;
+	sf::TcpSocket mSocket;
 
-	bool						mConnected;
-	bool						mActiveState;
-	bool						mHasFocus;
-	bool						mHost;
+	bool mConnected;
+	bool mActiveState;
+	bool mHasFocus;
+	bool mHost;
 
-	sf::Text					mFailedConnectionText;
-	sf::Clock					mFailedConnectionClock;
-	std::vector<std::string>	mBroadcasts;
-	sf::Text					mBroadcastText;
-	sf::Time					mBroadcastElapsedTime;
+	sf::Text mFailedConnectionText;
+	sf::Clock mFailedConnectionClock;
+	std::vector<std::string> mBroadcasts;
+	sf::Text mBroadcastText;
+	sf::Time mBroadcastElapsedTime;
 
-	std::vector<int8_t>			mLocalPlayerIdentifiers;
+	std::vector<int8_t> mLocalPlayerIdentifiers;
 
-	sf::Time					mClientTimeout;
-	sf::Time					mTimeSinceLastPacket;
+	sf::Time mClientTimeout;
+	sf::Time mTimeSinceLastPacket;
 };
-
