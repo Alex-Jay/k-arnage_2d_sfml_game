@@ -42,43 +42,23 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 
-	mPlayerInvitationText.setFont(context.fonts->get(Fonts::Main));
-	mPlayerInvitationText.setCharacterSize(20);
-	mPlayerInvitationText.setFillColor(sf::Color::White);
-	mPlayerInvitationText.setString("Press Enter to spawn player 2");
-	mPlayerInvitationText.setPosition(1000 - mPlayerInvitationText.getLocalBounds().width, 760 - mPlayerInvitationText.getLocalBounds().height);
 
-	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
-	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
-	mFailedConnectionText.setString("Attempting to connect...");
-	mFailedConnectionText.setCharacterSize(35);
-	mFailedConnectionText.setFillColor(sf::Color::White);
-	centerOrigin(mFailedConnectionText);
-	mFailedConnectionText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+	//sf::IpAddress ip;
+	//if (isHost) {
+	//	mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
+	//	ip = "127.0.0.1";
+	//}
+	//else {
+	//	ip = getAddressFromFile();
+	//	std::string s = ip.toString();
+	//}
 
-	// Render a "establishing connection" frame for user feedback
-	mWindow.clear(sf::Color::Black);
-	mWindow.draw(mFailedConnectionText);
-	mWindow.display();
-	mFailedConnectionText.setString("Could not connect to the remote server!");
-	centerOrigin(mFailedConnectionText);
+	//if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
+	//	mConnected = true;
+	//else
+	//	mFailedConnectionClock.restart();
 
-	sf::IpAddress ip;
-	if (isHost) {
-		mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
-		ip = "127.0.0.1";
-	}
-	else {
-		ip = getAddressFromFile();
-		std::string s = ip.toString();
-	}
-
-	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
-		mConnected = true;
-	else
-		mFailedConnectionClock.restart();
-
-	mSocket.setBlocking(false);
+	//mSocket.setBlocking(false);
 
 	// Play game theme
 	context.music->play(Music::MissionTheme);
@@ -86,7 +66,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 void MultiplayerGameState::draw()
 {
-	if (mConnected) {
 		mWorld.draw();
 
 		// Broadcast messages in default view
@@ -94,13 +73,6 @@ void MultiplayerGameState::draw()
 
 		if (!mBroadcasts.empty())
 			mWindow.draw(mBroadcastText);
-
-		if (mLocalPlayerIdentifiers.size() < 2 && mPlayerInvitationTime < sf::seconds(0.5f))
-			mWindow.draw(mPlayerInvitationText);
-	}
-	else {
-		mWindow.draw(mFailedConnectionText);
-	}
 }
 
 void MultiplayerGameState::onActivate()
@@ -120,111 +92,21 @@ void MultiplayerGameState::onDestroy()
 
 bool MultiplayerGameState::update(sf::Time dt)
 {
-	// Connected to server: Handle all the network logic
-	if (mConnected) {
+		handleCharacterCount(dt);
 
-		// Remove players whose characters were destroyed
-		bool foundLocalPlane = false;
-		for (auto itr = mPlayers.begin(); itr != mPlayers.end();) {
-			// Check if there are no more local planes for remote clients
-			if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end()) {
-				foundLocalPlane = true;
-			}
+		handleRealTimeInput();
 
-			if (!mWorld.getCharacter(itr->first)) {
-				itr = mPlayers.erase(itr);
+		handleNetworkInput();
 
-				// No more players left: Mission failed
-				if (mPlayers.empty())
-					requestStackPush(States::GameOver);
-			}
-			else {
-				++itr;
-			}
-
-			mWorld.update(dt);
-		}
-
-		if (!foundLocalPlane && mGameStarted) {
-			requestStackPush(States::GameOver);
-		}
-
-		// Only handle the realtime input if the window has focus and the game is unpaused
-		if (mActiveState && mHasFocus) {
-			CommandQueue& commands = mWorld.getCommandQueue();
-
-			FOREACH(auto& pair, mPlayers)
-				pair.second->handleRealtimeInput(commands);
-		}
-
-		// Always handle the network input
-		CommandQueue& commands = mWorld.getCommandQueue();
-		FOREACH(auto& pair, mPlayers)
-			pair.second->handleRealtimeNetworkInput(commands);
-
-		// Handle messages from server that may have arrived
-		sf::Packet packet;
-		if (mSocket.receive(packet) == sf::Socket::Done) {
-			mTimeSinceLastPacket = sf::seconds(0.f);
-			sf::Int32 packetType;
-			packet >> packetType;
-			handlePacket(packetType, packet);
-		}
-		else {
-			// Check for timeout with the server
-			if (mTimeSinceLastPacket > mClientTimeout) {
-				mConnected = false;
-
-				mFailedConnectionText.setString("Lost connection to server");
-				centerOrigin(mFailedConnectionText);
-
-				mFailedConnectionClock.restart();
-			}
-		}
+		handleServerMessages();
 
 		updateBroadcastMessage(dt);
 
-		// Time counter for blinking 2nd player text
-		mPlayerInvitationTime += dt;
-		if (mPlayerInvitationTime > sf::seconds(1.f))
-			mPlayerInvitationTime = sf::Time::Zero;
+		handleGameActions();
 
-		// Events occurring in the game
-		GameActions::Action gameAction;
-		while (mWorld.pollGameAction(gameAction)) {
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::GameEvent);
-			packet << static_cast<sf::Int32>(gameAction.type);
-			packet << gameAction.position.x;
-			packet << gameAction.position.y;
-
-			mSocket.send(packet);
-		}
-
-		// Regular position updates
-		if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
-			sf::Packet positionUpdatePacket;
-			positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
-			positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
-
-			FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
-			{
-				if (Character* character = mWorld.getCharacter(identifier))
-					positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
-			}
-
-			mSocket.send(positionUpdatePacket);
-			mTickClock.restart();
-		}
+		handlePositionUpdates();
 
 		mTimeSinceLastPacket += dt;
-	}
-
-	// Failed to connect and waited for more than 5 seconds: Back to menu
-	else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
-		requestStateClear();
-		requestStackPush(States::Menu);
-	}
 
 	return true;
 }
@@ -492,4 +374,109 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 	}
 
 	return spawnPosition;
+}
+
+void MultiplayerGameState::handleCharacterCount(sf::Time dt)
+{
+	// Remove players whose characters were destroyed
+	bool foundLocalPlane = false;
+
+	for (auto itr = mPlayers.begin(); itr != mPlayers.end();)
+	{
+		// Check if there are no more local planes for remote clients
+		if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end())
+			foundLocalPlane = true;
+
+		if (!mWorld.getCharacter(itr->first))
+		{
+			itr = mPlayers.erase(itr);
+
+			if (mPlayers.empty())
+				requestStackPush(States::GameOver);
+		}
+		else
+			++itr;
+
+		mWorld.update(dt);
+	}
+
+	if (!foundLocalPlane && mGameStarted)
+		requestStackPush(States::GameOver);
+}
+
+void MultiplayerGameState::handleRealTimeInput()
+{
+	// Only handle the realtime input if the window has focus and the game is unpaused
+	if (mActiveState && mHasFocus) {
+		CommandQueue& commands = mWorld.getCommandQueue();
+
+		FOREACH(auto& pair, mPlayers)
+			pair.second->handleRealtimeInput(commands);
+	}
+}
+
+void MultiplayerGameState::handleNetworkInput()
+{
+	// Always handle the network input
+	CommandQueue& commands = mWorld.getCommandQueue();
+
+	FOREACH(auto& pair, mPlayers)
+		pair.second->handleRealtimeNetworkInput(commands);
+}
+
+void MultiplayerGameState::handleServerMessages()
+{
+	// Handle messages from server that may have arrived
+	sf::Packet packet;
+	if (mSocket.receive(packet) == sf::Socket::Done) {
+		mTimeSinceLastPacket = sf::seconds(0.f);
+		sf::Int32 packetType;
+		packet >> packetType;
+		handlePacket(packetType, packet);
+	}
+	else {
+		// Check for timeout with the server
+		if (mTimeSinceLastPacket > mClientTimeout) {
+			mConnected = false;
+
+			mFailedConnectionText.setString("Lost connection to server");
+			centerOrigin(mFailedConnectionText);
+
+			mFailedConnectionClock.restart();
+		}
+	}
+}
+
+void MultiplayerGameState::handleGameActions()
+{
+	// Events occurring in the game
+	GameActions::Action gameAction;
+	while (mWorld.pollGameAction(gameAction)) {
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::GameEvent);
+		packet << static_cast<sf::Int32>(gameAction.type);
+		packet << gameAction.position.x;
+		packet << gameAction.position.y;
+
+		mSocket.send(packet);
+	}
+}
+
+void MultiplayerGameState::handlePositionUpdates()
+{
+	// Regular position updates
+	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
+		sf::Packet positionUpdatePacket;
+		positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
+		positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
+
+		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+		{
+			if (Character* character = mWorld.getCharacter(identifier))
+				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
+		}
+
+		mSocket.send(positionUpdatePacket);
+		mTickClock.restart();
+	}
 }

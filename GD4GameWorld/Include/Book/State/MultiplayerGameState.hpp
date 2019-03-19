@@ -33,6 +33,18 @@ private:
 
 	sf::Vector2f assignCharacterSpawn(int Identifier);
 
+	void handleCharacterCount(sf::Time dt);
+
+	void handleRealTimeInput();
+
+	void handleNetworkInput();
+
+	void handleServerMessages();
+
+	void handleGameActions();
+
+	void handlePositionUpdates();
+
 
 private:
 	typedef std::unique_ptr<Player> PlayerPtr;

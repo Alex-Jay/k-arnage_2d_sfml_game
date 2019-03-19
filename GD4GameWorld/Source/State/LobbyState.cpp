@@ -38,6 +38,24 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	sf::Texture& texture = context.textures->get(Textures::LobbyScreen);
 	mBackgroundSprite.setTexture(texture);
 
+	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
+	mBroadcastText.setPosition(1024.f / 2, 100.f);
+
+	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
+	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
+	mFailedConnectionText.setString("Attempting to connect...");
+	mFailedConnectionText.setCharacterSize(35);
+	mFailedConnectionText.setFillColor(sf::Color::White);
+	centerOrigin(mFailedConnectionText);
+	mFailedConnectionText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+
+	// Render a "establishing connection" frame for user feedback
+	mWindow.clear(sf::Color::Black);
+	mWindow.draw(mFailedConnectionText);
+	mWindow.display();
+	mFailedConnectionText.setString("Could not connect to the remote server!");
+	centerOrigin(mFailedConnectionText);
+
 	setDisplayText(context);
 
 	if (mHost)
