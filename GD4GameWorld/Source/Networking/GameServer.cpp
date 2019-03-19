@@ -79,6 +79,19 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 	}
 }
 
+void GameServer::notifyStartGame()
+{
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::StartGame);
+			mPeers[i]->socket.send(packet);
+		}
+	}
+}
+
 void GameServer::notifyPlayerSpawn(sf::Int32 characterIdentifier)
 {
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
@@ -245,7 +258,6 @@ std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
 	return spawnPoints;
 }
 
-
 sf::Time GameServer::now() const
 {
 	return mClock.getElapsedTime();
@@ -297,6 +309,11 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 		std::cout << "3 GAMESERVER Recived Disconnect Message" << std::endl;
 		receivingPeer.timedOut = true;
 		detectedTimeout = true;
+	} break;
+
+	case Client::StartGame:
+	{
+		notifyStartGame();
 	} break;
 
 	case Client::PlayerEvent:

@@ -33,22 +33,22 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	, mWindow(*context.window)
 	, mClientTimeout(sf::seconds(300.f))//Loby Timeout of five min
 	, mTimeSinceLastPacket(sf::seconds(0.f))
+	, mHost(isHost)
 {
 	sf::Texture& texture = context.textures->get(Textures::LobbyScreen);
 	mBackgroundSprite.setTexture(texture);
 
 	setDisplayText(context);
 
-	if (isHost)
+	if (mHost)
 	{
 		auto readyButton = std::make_shared<GUI::Button>(context);
 		readyButton->setPosition(300, 600);
 		readyButton->setText("Ready");
-		readyButton->setCallback([this]() {
-
-			//TODO KEEP TRACK OF READY PLAYERS
-			requestStackPop();
-			requestStackPush(States::Game);
+		readyButton->setCallback([this]() 
+		{
+			std::cout << "Button CLicked" << std::endl;
+			sendStartGame();
 		});
 
 		mGUIContainer.pack(readyButton);
@@ -137,9 +137,20 @@ void LobbyState::returnToMenu()
 
 void LobbyState::sendDisconnectSelf()
 {
-	if (!mHost && mConnected) {
+	if (mConnected) {
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
+		mSocket.send(packet);
+	}
+}
+
+void LobbyState::sendStartGame()
+{
+	std::cout << "Sending Start Game" << std::endl;
+	if (mHost && mConnected){
+		std::cout << "Sending Messege" << std::endl;
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::StartGame);
 		mSocket.send(packet);
 	}
 }
@@ -301,6 +312,11 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 			mPlayers.push_back(lobbyPlayers(characterIdentifier, characterPosition.x, characterPosition.y));
 		}
 		updateDisplayText();
+	} break;
+
+	case Server::StartGame:
+	{
+		mText.setString("STARTING GAME");
 	} break;
 	}
 }
