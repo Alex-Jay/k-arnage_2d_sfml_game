@@ -18,7 +18,7 @@ class MultiplayerGameState : public State
 public:
 	//MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::TcpSocket * socket);
 
-	MultiplayerGameState(StateStack & stack, Context context, bool isHost, int16_t localID);
+	MultiplayerGameState(StateStack& stack, Context context, bool isHost);
 
 	virtual void				draw();
 	virtual bool				update(sf::Time dt);
@@ -77,11 +77,12 @@ private:
 private:
 	World						mWorld;
 	sf::RenderWindow&			mWindow;
+	sf::TcpSocket&				mSocket;
+	uint16_t					mLocalPlayerID;
 	TextureHolder&				mTextureHolder;
 
 	std::map<int, PlayerPtr>	mPlayers;
 	std::vector<sf::Int32>		mLocalPlayerIdentifiers;
-	//sf::TcpSocket*				mSocket;
 	bool						mConnected;
 	std::unique_ptr<GameServer> mGameServer;
 	sf::Clock					mTickClock;
@@ -102,8 +103,6 @@ private:
 	bool						mGameStarted;
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
-
-	int16_t mLocalPlayerID;
 };
 
 #endif // BOOK_MULTIPLAYERGAMESTATE_HPP

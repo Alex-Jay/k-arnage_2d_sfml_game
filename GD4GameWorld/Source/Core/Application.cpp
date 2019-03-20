@@ -115,6 +115,8 @@ void Application::registerStates()
 	mStateStack.registerState<TitleState>(States::Title);
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
+	mStateStack.registerState<MultiplayerGameState>(States::HostGame, true);
+	mStateStack.registerState<MultiplayerGameState>(States::JoinGame, false);
 	mStateStack.registerState<LobbyState>(States::HostLobby, true);
 	mStateStack.registerState<LobbyState>(States::JoinLobby, false);
 	mStateStack.registerState<PauseState>(States::Pause);

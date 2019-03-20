@@ -9,20 +9,20 @@
 #include <fstream>
 
 //MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::TcpSocket *socket)
-MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, int16_t localID)
+MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
+	, mSocket(*context.socket)
+	, mLocalPlayerID(*context.localID)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
-//	, mSocket(socket)
 	, mActiveState(true)
 	, mHasFocus(true)
 	, mHost(isHost)
 	, mGameStarted(false)
 	, mClientTimeout(sf::seconds(2.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
-	, mLocalPlayerID(localID)
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
@@ -142,7 +142,7 @@ void MultiplayerGameState::onDestroy()
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		CLIENT_SOCKET.send(packet);
+		mSocket.send(packet);
 	}
 }
 
@@ -229,7 +229,7 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 	Character* character = mWorld.addCharacter((characterIdentifier), true);
 	character->setPosition(assignCharacterSpawn(characterIdentifier));
 
-	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, getContext().keys));
+	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 	mLocalPlayerIdentifiers.push_back(characterIdentifier);
 
 	mGameStarted = true;
@@ -245,7 +245,7 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 	Character* character = mWorld.addCharacter(characterIdentifier, false);
 	character->setPosition(characterPosition);
 
-	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, nullptr));
+	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
 }
 
 void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
@@ -278,7 +278,7 @@ void MultiplayerGameState::setInitialState(sf::Packet& packet)
 			character = mWorld.addCharacter(characterIdentifier, false);
 		
 		character->setPosition(characterPosition);
-		mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, nullptr));
+		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
 	}
 }
 
@@ -432,7 +432,7 @@ void MultiplayerGameState::handleServerMessages()
 {
 	// Handle messages from server that may have arrived
 	sf::Packet packet;
-	if (CLIENT_SOCKET.receive(packet) == sf::Socket::Done) {
+	if (mSocket.receive(packet) == sf::Socket::Done) {
 		mTimeSinceLastPacket = sf::seconds(0.f);
 		sf::Int32 packetType;
 		packet >> packetType;
@@ -462,7 +462,7 @@ void MultiplayerGameState::handleGameActions()
 		packet << gameAction.position.x;
 		packet << gameAction.position.y;
 
-		CLIENT_SOCKET.send(packet);
+		mSocket.send(packet);
 	}
 }
 
@@ -480,7 +480,7 @@ void MultiplayerGameState::handlePositionUpdates()
 				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
 		}
 
-		CLIENT_SOCKET.send(positionUpdatePacket);
+		mSocket.send(positionUpdatePacket);
 		mTickClock.restart();
 	}
 }

@@ -2,22 +2,22 @@
 #include "State/StateStack.hpp"
 
 
-State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t localID, TextureHolder& textures, FontHolder& fonts,
+State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
 	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys)
-: window(&window)
-, socket(&socket)
-, localID(&localID)
-, textures(&textures)
-, fonts(&fonts)
-, music(&music)
-, sounds(&sounds)
-, keys(&keys)
+	: window(&window)
+	, socket(&socket)
+	, localID(&localID)
+	, textures(&textures)
+	, fonts(&fonts)
+	, music(&music)
+	, sounds(&sounds)
+	, keys(&keys)
 {
 }
 
 State::State(StateStack& stack, Context context)
-: mStack(&stack)
-, mContext(context)
+	: mStack(&stack)
+	, mContext(context)
 {
 }
 

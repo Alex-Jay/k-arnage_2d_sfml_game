@@ -10,8 +10,6 @@
 #include <fstream>
 #include <iostream>
 
-sf::TcpSocket CLIENT_SOCKET;
-
 sf::IpAddress LobbyState::getAddressFromFile()
 {
 	{ // Try to open existing file (RAII block)
@@ -150,6 +148,7 @@ void LobbyState::draw()
 
 bool LobbyState::update(sf::Time dt)
 {
+	std::cout << "LOCAL PLAYER ID [LobbyState]: " << mLocalPlayerID << std::endl;
 	// Connected to server: Handle all the network logic
 	if (mConnected) {
 
@@ -340,13 +339,11 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 	packet >> characterIdentifier;
 
 	mLocalPlayerID = characterIdentifier;
+	//std::cout << "LOCAL PLAYER ID [LOBBY STATE]: " << mLocalPlayerID << std::endl;
 
 	mPlayerCount += 1;
 
 	updateDisplayText();
-
-	mStack.registerState<MultiplayerGameState>(States::HostGame, true, mLocalPlayerID);
-	mStack.registerState<MultiplayerGameState>(States::JoinGame, false, mLocalPlayerID);
 }
 
 void LobbyState::playerConnect(sf::Packet& packet)
@@ -382,6 +379,3 @@ void LobbyState::setInitialLobbyState(sf::Packet& packet)
 }
 
 #pragma endregion
-
-
-
