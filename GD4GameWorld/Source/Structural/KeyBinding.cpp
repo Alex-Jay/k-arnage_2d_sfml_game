@@ -29,8 +29,7 @@ KeyBinding::KeyBinding(int controlPreconfiguration)
 	}
 }
 
-void
-KeyBinding::assignKey(Action action, sf::Keyboard::Key key)
+void KeyBinding::assignKey(Action action, sf::Keyboard::Key key)
 {
 	// Remove all keys that already map to action
 	for (auto itr = mKeyMap.begin(); itr != mKeyMap.end();) {
@@ -45,8 +44,7 @@ KeyBinding::assignKey(Action action, sf::Keyboard::Key key)
 }
 
 // Mike
-void
-KeyBinding::assignReleaseKey(Action action, sf::Keyboard::Key key)
+void KeyBinding::assignReleaseKey(Action action, sf::Keyboard::Key key)
 {
 	// Remove all keys that are already mapped to an action
 	for (auto itr = mKeyBindingReleased.begin();
@@ -62,8 +60,7 @@ KeyBinding::assignReleaseKey(Action action, sf::Keyboard::Key key)
 	}
 }
 
-sf::Keyboard::Key
-KeyBinding::getAssignedKey(Action action) const
+sf::Keyboard::Key KeyBinding::getAssignedKey(Action action) const
 {
 	FOREACH(auto pair, mKeyMap)
 	{
@@ -74,8 +71,7 @@ KeyBinding::getAssignedKey(Action action) const
 	return sf::Keyboard::Unknown;
 }
 
-bool
-KeyBinding::checkAction(sf::Keyboard::Key key, Action& out) const
+bool KeyBinding::checkAction(sf::Keyboard::Key key, Action& out) const
 {
 	auto found = mKeyMap.find(key);
 	if (found == mKeyMap.end()) {
@@ -87,8 +83,7 @@ KeyBinding::checkAction(sf::Keyboard::Key key, Action& out) const
 	}
 }
 
-bool
-KeyBinding::checkReleaseAction(sf::Keyboard::Key key, Action& out) const
+bool KeyBinding::checkReleaseAction(sf::Keyboard::Key key, Action& out) const
 {
 	auto found = mKeyBindingReleased.find(key);
 	if (found == mKeyBindingReleased.end()) {
@@ -100,8 +95,7 @@ KeyBinding::checkReleaseAction(sf::Keyboard::Key key, Action& out) const
 	}
 }
 
-std::vector<KeyBinding::Action>
-KeyBinding::getRealtimeActions() const
+std::vector<KeyBinding::Action> KeyBinding::getRealtimeActions() const
 {
 	// Return all realtime actions that are currently active.
 	std::vector<Action> actions;
@@ -116,8 +110,7 @@ KeyBinding::getRealtimeActions() const
 	return actions;
 }
 
-bool
-isRealtimeAction(PlayerAction::Type action)
+bool isRealtimeAction(PlayerAction::Type action)
 {
 	switch (action) {
 	case PlayerAction::MoveLeft:
