@@ -252,6 +252,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
 	{
+		
 		notifyServerWorldBuilt();
 		mSeverNotifiedBuilt = true;
 		mGameStarted = true;
@@ -304,10 +305,10 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
-	std::cout << "SET CHARACTERS RECIEVED " << std::endl;
-	mCharactersRecieved = true;
-	sf::Int32 characterCount;
-	packet >> characterCount;
+	if (!mCharactersRecieved)
+	{
+		sf::Int32 characterCount;
+		packet >> characterCount;
 
 		for (sf::Int32 i = 0; i < characterCount; ++i) {
 
@@ -320,6 +321,8 @@ void MultiplayerGameState::setCharacters(sf::Packet& packet)
 
 			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 		}
+		mCharactersRecieved = true;
+	}
 
 
 }
@@ -389,12 +392,17 @@ void MultiplayerGameState::spawnEnemy(sf::Packet& packet)
 void MultiplayerGameState::spawnObstacle(sf::Packet& packet)
 {
 	std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
-	mObstaclesRecieved = true;
-	float x, y, a;
-	sf::Int32 type;
-	packet >> type >> x >> y >> a;
+	
+	if (!mObstaclesRecieved)
+	{
+		float x, y, a;
+		sf::Int32 type;
+		packet >> type >> x >> y >> a;
 
-	mWorld.addObstacle(static_cast<Obstacle::ObstacleID>(type), x, y, a);
+		mWorld.addObstacle(static_cast<Obstacle::ObstacleID>(type), x, y, a);
+		mObstaclesRecieved = true;
+	}
+
 }
 
 void MultiplayerGameState::spawnPickup(sf::Packet& packet)

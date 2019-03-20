@@ -360,7 +360,7 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 
 	mLocalPlayerID = characterIdentifier;
 
-	mPlayerCount += 1;
+	++mPlayerCount;
 
 	updateDisplayText();
 }
