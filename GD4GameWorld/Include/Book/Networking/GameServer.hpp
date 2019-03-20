@@ -21,6 +21,11 @@ public:
 	void onDestroy();
 
 	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
+	void startGame();
+	void playerEvent(sf::Packet packet);
+	void playerRealTimeChange(sf::Packet packet);
+	void positionUpdate(sf::Packet packet);
+	void gameEvent(sf::Packet packet);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
@@ -59,14 +64,16 @@ private:
 
 	void handleIncomingPackets();
 	void handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout);
-
 	void handleIncomingConnections();
 	void handleDisconnections();
 
 	void informWorldState(sf::TcpSocket& socket);
 	void broadcastMessage(const std::string& message);
+	void RemoveDestroyedCharacters();
 	void SetInitialWorldState();
 	void sendCharacters();
+	void spawnObstacles();
+	void spawnEnemys();
 	void sendToAll(sf::Packet& packet);
 	void updateClientState();
 
@@ -97,6 +104,10 @@ private:
 	bool obstaclesSpawned{};
 
 	int8_t mZombieCount;
+
+	std::vector<int16_t> mPlayerIDs;
+
+	int16_t clientReadyCount;
 };
 
 #endif // BOOK_GAMESERVER_HPP

@@ -210,6 +210,7 @@ void LobbyState::updateBroadcastMessage(sf::Time elapsedTime)
 #pragma endregion
 
 #pragma region Events
+
 bool LobbyState::handleEvent(const sf::Event& event)
 {
 	mGUIContainer.handleEvent(event);
