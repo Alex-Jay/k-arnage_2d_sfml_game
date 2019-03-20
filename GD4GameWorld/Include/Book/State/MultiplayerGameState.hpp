@@ -28,6 +28,8 @@ public:
 
 	void notifyServerReady();
 
+	void notifyServerWorldBuilt();
+
 	void						disableAllRealtimeActions();
 
 
@@ -106,7 +108,9 @@ private:
 	bool						mHost;
 	bool						mGameStarted;
 	bool mCharactersRecieved{};
+	bool mObstaclesRecieved{};
 	bool mServerNotifiedReady{};
+	bool mSeverNotifiedBuilt{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
 };

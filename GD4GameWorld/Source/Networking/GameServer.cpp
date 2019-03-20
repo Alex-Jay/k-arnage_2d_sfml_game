@@ -118,9 +118,9 @@ void GameServer::tick()
 		std::cout << "ALL CLIENTS READY: " << std::endl;
 		mAllClientsReady = true;
 
+		spawnObstacles();
 		sendCharacters();
-		//sendObsticales();
-
+		
 		buildWorldPacketSent = true;
 	}
 
@@ -194,6 +194,13 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	case Client::Ready:
 	{
 		std::cout << "RECIEVED CLIENT READY: " << std::endl;
+		++mClientReadyCount;
+
+	} break;
+
+	case Client::WorldBuilt:
+	{
+		std::cout << "RECIEVED World BUILT: " << std::endl;
 		++mClientReadyCount;
 
 	} break;
@@ -540,16 +547,20 @@ void GameServer::sendCharacters()
 	std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
+
 	packet << static_cast<sf::Int32>(Server::SetCharacters);
+	packet << static_cast<sf::Int32>(mCharacterCount);
 
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
 		{
-			mPeers[i]->socket.send(packet);
+			FOREACH(sf::Int32 identifier, mPeers[i]->characterIdentifiers)
+				packet << identifier;
 		}
 	}
 
+	sendToAll(packet);
 }
 
 void GameServer::spawnObstacles()

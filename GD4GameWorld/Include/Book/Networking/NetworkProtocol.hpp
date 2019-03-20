@@ -42,6 +42,7 @@ namespace Client
 		StartGame,
 		LoadGame,
 		Ready,
+		WorldBuilt,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		RequestCoopPartner,

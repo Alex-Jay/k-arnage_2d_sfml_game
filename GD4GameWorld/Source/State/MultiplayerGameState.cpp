@@ -107,6 +107,14 @@ void MultiplayerGameState::notifyServerReady()
 	mSocket.send(packet);
 }
 
+void MultiplayerGameState::notifyServerWorldBuilt()
+{
+	std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::WorldBuilt);
+	mSocket.send(packet);
+}
+
 void MultiplayerGameState::disableAllRealtimeActions()
 {
 	mActiveState = false;
@@ -178,6 +186,8 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 	} break;
 
 	case Server::SpawnSelf: {
+
+		std::cout << "SPAWN SELF RECIEVED" << std::endl;
 		//spawnSelf(packet);
 	} break;
 
@@ -231,6 +241,12 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		notifyServerReady();
 		mServerNotifiedReady = true;
 	}
+
+	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
+	{
+		notifyServerWorldBuilt();
+		mSeverNotifiedBuilt = true;
+	}
 }
 
 void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
@@ -280,26 +296,27 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
 	std::cout << "SET CHARACTERS RECIEVED " << std::endl;
-	float currentWorldPosition;
+	mCharactersRecieved = true;
 	sf::Int32 characterCount;
-	packet >> currentWorldPosition >> characterCount;
+	packet >> characterCount;
 
-	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
-	if (!mCharactersRecieved)
-	{
-		mCharactersRecieved = true;
 		for (sf::Int32 i = 0; i < characterCount; ++i) {
 
 			sf::Int32 characterIdentifier;
 			packet >> characterIdentifier;
 
-			Character* character = mWorld.addCharacter(0, true);
+			Character* character;
+
+			if (characterIdentifier == mLocalPlayerID)
+				character = mWorld.addCharacter(characterIdentifier, true);
+			else
+				character = mWorld.addCharacter(characterIdentifier, false);
 
 			character->setPosition(assignCharacterSpawn(characterIdentifier));
 
 			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 		}
-	}
+
 
 }
 
@@ -367,6 +384,8 @@ void MultiplayerGameState::spawnEnemy(sf::Packet& packet)
 
 void MultiplayerGameState::spawnObstacle(sf::Packet& packet)
 {
+	std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
+	mObstaclesRecieved = true;
 	float x, y, a;
 	sf::Int32 type;
 	packet >> type >> x >> y >> a;
@@ -454,7 +473,7 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		else
 			++itr;
 
-		mWorld.update(dt);
+		//mWorld.update(dt);
 	}
 
 	//if (!foundLocalPlane && mGameStarted)
