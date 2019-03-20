@@ -70,7 +70,6 @@ private:
 
 	void informWorldState(sf::TcpSocket& socket);
 	void broadcastMessage(const std::string& message);
-	void gameEvent(sf::Packet packet, RemotePeer& receivingPeer);
 	void RemoveDestroyedCharacters();
 	void SetInitialWorldState();
 	void sendCharacters();

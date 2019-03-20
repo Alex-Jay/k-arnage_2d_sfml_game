@@ -58,7 +58,7 @@ void LobbyState::setText(Context context)
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
-	mFailedConnectionText.setString("FUCK YEAH");
+	//mFailedConnectionText.setString("FUCK YEAH");
 	mFailedConnectionText.setCharacterSize(35);
 	mFailedConnectionText.setFillColor(sf::Color::White);
 	centerOrigin(mFailedConnectionText);
