@@ -26,18 +26,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
-
-
-	mWorld.addCharacter(0, true);
-	mWorld.addCharacter(1, true);
-	mWorld.addCharacter(2, true);
-	mWorld.addCharacter(3, true);
 	
-	std::cout << "LOCAL ID " << mLocalPlayerID << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
-
-
 }
 
 #pragma region Update
