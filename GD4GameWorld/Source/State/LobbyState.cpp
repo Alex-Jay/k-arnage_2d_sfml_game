@@ -33,12 +33,11 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	, mSocket(*context.socket)
 	, mLocalPlayerID(*context.localID)
 	, mGUIContainer()
-	, mClientTimeout(sf::seconds(300.f))//Loby Timeout of five min
+	, mClientTimeout(sf::seconds(300.f)) // 5 second timeout
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
 	, mStack(stack)
 {
-
 	setText(context);
 	setButtons(context);
 	connectToServer();
@@ -56,7 +55,6 @@ void LobbyState::setText(Context context)
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
-	//mFailedConnectionText.setString("FUCK YEAH");
 	mFailedConnectionText.setCharacterSize(35);
 	mFailedConnectionText.setFillColor(sf::Color::White);
 	centerOrigin(mFailedConnectionText);
@@ -101,19 +99,29 @@ void LobbyState::setButtons(Context context)
 void LobbyState::connectToServer()
 {
 	sf::IpAddress ip;
-	if (mHost) {
+
+	if (mHost)
+	{
 		mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
 		ip = "127.0.0.1";
 	}
-	else {
+	else
+	{
 		ip = LobbyState::getAddressFromFile();
 		std::string s = ip.toString();
 	}
 
-	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
+	sf::Socket::Status status = mSocket.connect(ip, ServerPort, sf::seconds(5.f));
+
+	if (status == sf::TcpSocket::Done)
+	{
 		mConnected = true;
+	}
 	else
+	{
+		mConnected = false;
 		mFailedConnectionClock.restart();
+	}
 
 	mSocket.setBlocking(false);
 }
@@ -129,7 +137,6 @@ void LobbyState::updateDisplayText()
 
 void LobbyState::draw()
 {
-
 	if (mConnected) {
 
 		// Broadcast messages in default view
@@ -148,7 +155,6 @@ void LobbyState::draw()
 
 bool LobbyState::update(sf::Time dt)
 {
-	std::cout << "LOCAL PLAYER ID [LobbyState]: " << mLocalPlayerID << std::endl;
 	// Connected to server: Handle all the network logic
 	if (mConnected) {
 
@@ -225,11 +231,9 @@ void LobbyState::onActivate()
 
 void LobbyState::onDestroy()
 {
-	std::cout << "1 ON DESTROY" << std::endl;
-	if (!mHost && mConnected) {
-
-		std::cout << "2 Sending Destroy Packet Quit NUmber: " << static_cast<sf::Int32>(Client::Quit) << std::endl;
-		// Inform server this client is dying
+	if (!mHost && mConnected)
+	{
+		// Inform server that host has left or disconnected
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
 		mSocket.send(packet);
@@ -238,6 +242,7 @@ void LobbyState::onDestroy()
 
 void LobbyState::returnToMenu()
 {
+	mSocket.disconnect();
 	requestStackPop();
 	requestStackPush(States::Menu);
 }
@@ -248,12 +253,13 @@ void LobbyState::startGame()
 		requestStackPush(States::HostGame);
 	else
 		requestStackPop();
+
 	requestStackPush(States::JoinGame);
 }
 
 void LobbyState::setDisplayText(Context context)
 {
-	std::string text = "Multiplayer Lobby " + std::to_string(mPlayerCount) + " Players Connected";
+	std::string text = "Multiplayer Lobby " + std::to_string(mPlayerCount) + " Player(s) Connected";
 	mText.setFont(context.fonts->get(Fonts::Main));
 	mText.setString(text);
 	centerOrigin(mText);
@@ -339,7 +345,6 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 	packet >> characterIdentifier;
 
 	mLocalPlayerID = characterIdentifier;
-	//std::cout << "LOCAL PLAYER ID [LOBBY STATE]: " << mLocalPlayerID << std::endl;
 
 	mPlayerCount += 1;
 
@@ -358,7 +363,10 @@ void LobbyState::playerDisconnect(sf::Packet& packet)
 	packet >> characterIdentifier;
 	
 	if (characterIdentifier == mLocalPlayerID)
+	{
+		mSocket.disconnect();
 		returnToMenu();
+	}
 	else
 	{
 		--mPlayerCount;

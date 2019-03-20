@@ -81,7 +81,5 @@ const int ORANGE = 0Xffa100ff;
 //+++++++++++ CONTROLLER CONSTANS ++++++++++++++++++
 const int8_t TRIGGER_THRESHOLD = 70;
 const int8_t THUMBSTICK_THRESHOLD = 50;
-
-extern sf::TcpSocket CLIENT_SOCKET;
 //++++++++++++++++++++++++++++++++++++++++++++++++++
 
