@@ -110,6 +110,11 @@ void GameServer::tick()
 	//handleWinCondition();
 	RemoveDestroyedCharacters();
 	spawnEnemys();
+
+
+	sendCharacters();
+
+	
 }
 
 sf::Time GameServer::now() const
@@ -158,7 +163,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	sf::Int32 packetType;
 	packet >> packetType;
 
-	std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
+	//std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
 
 	switch (packetType)
 	{
@@ -171,6 +176,8 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	case Client::StartGame:
 	{
 		startGame();
+		//When Clients are Ready
+		
 	} break;
 
 	case Client::PlayerEvent:
@@ -200,8 +207,8 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 void GameServer::startGame()
 {
+	//gameStarted = true;
 	notifyStartGame();
-	sendCharacters();
 }
 
 void GameServer::playerEvent(sf::Packet packet)
@@ -411,7 +418,7 @@ void GameServer::handleIncomingConnections()
 		mPeers[mConnectedPlayers]->characterIdentifiers.push_back(mCharacterIdentifierCounter);
 
 		broadcastMessage("New player!");
-		informWorldState(mPeers[mConnectedPlayers]->socket);
+		
 		notifyPlayerSpawn(mCharacterIdentifierCounter++);
 
 		mPeers[mConnectedPlayers]->socket.send(packet);
@@ -480,24 +487,21 @@ void GameServer::RemoveDestroyedCharacters()
 
 void GameServer::SetInitialWorldState()
 {
-	sendCharacters();
+	//sendCharacters();
 }
 
 void GameServer::sendCharacters()
 {
+
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::InitialState);
+	packet << static_cast<sf::Int32>(Server::SetCharacters);
 
-	packet << static_cast<sf::Int32>(mCharacterCount);
+	packet << static_cast<sf::Int32>(mCharacterInfo.size());
 
-	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
-	{
-		if (mPeers[i]->ready)
-		{
-			FOREACH(sf::Int32 identifier, mPeers[i]->characterIdentifiers)
-				packet << identifier;
-		}
-	}
+	FOREACH(auto character, mCharacterInfo)
+		packet << character.first;
+
+	sendToAll(packet);
 }
 
 void GameServer::spawnObstacles()

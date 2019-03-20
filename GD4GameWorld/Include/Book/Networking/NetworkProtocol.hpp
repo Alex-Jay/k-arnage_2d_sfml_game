@@ -14,6 +14,7 @@ namespace Server
 	{
 		BroadcastMessage,	// format: [Int32:packetType] [string:message]
 		SpawnSelf,			// format: [Int32:packetType]
+		SetCharacters,
 		InitialState,
 		PlayerEvent,
 		PlayerRealtimeChange,

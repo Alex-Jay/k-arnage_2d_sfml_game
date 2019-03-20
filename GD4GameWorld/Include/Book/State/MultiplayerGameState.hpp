@@ -39,6 +39,8 @@ private:
 
 	void playerConnect(sf::Packet & packet);
 
+	void setCharacters(sf::Packet & packet);
+
 	void playerDisconnect(sf::Packet & packet);
 
 	void setInitialState(sf::Packet & packet);
@@ -101,6 +103,7 @@ private:
 	bool						mHasFocus;
 	bool						mHost;
 	bool						mGameStarted;
+	bool mCharactersRecieved{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
 };

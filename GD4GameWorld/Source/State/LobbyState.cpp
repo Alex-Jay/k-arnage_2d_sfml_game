@@ -41,6 +41,7 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	setText(context);
 	setButtons(context);
 	connectToServer();
+
 }
 
 #pragma region Initialization

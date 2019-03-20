@@ -26,7 +26,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
+
 	
+	std::cout << "SOCKET PORT MP : " << mSocket.getLocalPort() << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 }
@@ -152,6 +154,7 @@ void MultiplayerGameState::onDestroy()
 
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
+	std::cout << "RECIEVED PACKET TYPE: " << packetType << std::endl;
 	switch (packetType) {
 		// Send message to all clients
 	case Server::BroadcastMessage: {
@@ -159,7 +162,11 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 	} break;
 
 	case Server::SpawnSelf: {
-		spawnSelf(packet);
+		//spawnSelf(packet);
+	} break;
+
+	case Server::SetCharacters: {
+		setCharacters(packet);
 	} break;
 
 	case Server::PlayerConnect: {
@@ -246,6 +253,33 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 	character->setPosition(characterPosition);
 
 	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+
+}
+
+void MultiplayerGameState::setCharacters(sf::Packet& packet)
+{
+
+	float currentWorldPosition;
+	sf::Int32 characterCount;
+	packet >> currentWorldPosition >> characterCount;
+
+	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+	if (!mCharactersRecieved)
+	{
+		mCharactersRecieved = true;
+		for (sf::Int32 i = 0; i < characterCount; ++i) {
+
+			sf::Int32 characterIdentifier;
+			packet >> characterIdentifier;
+
+			Character* character = mWorld.addCharacter(0, true);
+
+			character->setPosition(assignCharacterSpawn(characterIdentifier));
+
+			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+		}
+	}
+
 }
 
 void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
@@ -259,27 +293,25 @@ void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
 
 void MultiplayerGameState::setInitialState(sf::Packet& packet)
 {
-	sf::Int32 characterCount;
+	//sf::Int32 characterCount;
 
-	float worldHeight, currentScroll;
+	//packet >> characterCount;
+	//for (sf::Int32 i = 0; i < characterCount; ++i) {
+	//	sf::Int32 characterIdentifier;
+	//
+	//	packet >> characterIdentifier;
+	//	sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
 
-	packet >> characterCount;
-	for (sf::Int32 i = 0; i < characterCount; ++i) {
-		sf::Int32 characterIdentifier;
-	
-		packet >> characterIdentifier;
-		sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
+	//	Character* character;
 
-		Character* character;
-
-		if (characterIdentifier == mLocalPlayerID)
-			character = mWorld.addCharacter(characterIdentifier, true);
-		else
-			character = mWorld.addCharacter(characterIdentifier, false);
-		
-		character->setPosition(characterPosition);
-		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-	}
+	//	if (characterIdentifier == mLocalPlayerID)
+	//		character = mWorld.addCharacter(characterIdentifier, true);
+	//	else
+	//		character = mWorld.addCharacter(characterIdentifier, false);
+	//	
+	//	character->setPosition(characterPosition);
+	//	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+	//}
 }
 
 void MultiplayerGameState::playerEvent(sf::Packet& packet)
@@ -395,8 +427,8 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		{
 			itr = mPlayers.erase(itr);
 
-			if (mPlayers.empty())
-				requestStackPush(States::GameOver);
+			//if (mPlayers.empty())
+			//	requestStackPush(States::GameOver);
 		}
 		else
 			++itr;
@@ -404,8 +436,8 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		mWorld.update(dt);
 	}
 
-	if (!foundLocalPlane && mGameStarted)
-		requestStackPush(States::GameOver);
+	//if (!foundLocalPlane && mGameStarted)
+	//	requestStackPush(States::GameOver);
 }
 
 void MultiplayerGameState::handleRealTimeInput()
