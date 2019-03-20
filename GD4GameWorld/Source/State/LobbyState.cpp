@@ -31,8 +31,10 @@ sf::IpAddress LobbyState::getAddressFromFile()
 
 LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
-	, mGUIContainer()
 	, mWindow(*context.window)
+	, mSocket(*context.socket)
+	, mLocalPlayerID(*context.localID)
+	, mGUIContainer()
 	, mClientTimeout(sf::seconds(300.f))//Loby Timeout of five min
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
@@ -110,12 +112,12 @@ void LobbyState::connectToServer()
 		std::string s = ip.toString();
 	}
 
-	if (CLIENT_SOCKET.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
+	if (mSocket.connect(ip, ServerPort, sf::seconds(5.f)) == sf::TcpSocket::Done)
 		mConnected = true;
 	else
 		mFailedConnectionClock.restart();
 
-	CLIENT_SOCKET.setBlocking(false);
+	mSocket.setBlocking(false);
 }
 #pragma endregion
 
@@ -156,7 +158,7 @@ bool LobbyState::update(sf::Time dt)
 
 		// Handle messages from server that may have arrived
 		sf::Packet packet;
-		if (CLIENT_SOCKET.receive(packet) == sf::Socket::Done) {
+		if (mSocket.receive(packet) == sf::Socket::Done) {
 			mTimeSinceLastPacket = sf::seconds(0.f);
 			sf::Int32 packetType;
 			packet >> packetType;
@@ -231,7 +233,7 @@ void LobbyState::onDestroy()
 		// Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		CLIENT_SOCKET.send(packet);
+		mSocket.send(packet);
 	}
 }
 
@@ -268,7 +270,7 @@ void LobbyState::sendStartGame()
 	if (mHost && mConnected) {
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::StartGame);
-		CLIENT_SOCKET.send(packet);
+		mSocket.send(packet);
 	}
 }
 
@@ -277,7 +279,7 @@ void LobbyState::sendDisconnectSelf()
 	if (mConnected) {
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::Quit);
-		CLIENT_SOCKET.send(packet);
+		mSocket.send(packet);
 	}
 }
 

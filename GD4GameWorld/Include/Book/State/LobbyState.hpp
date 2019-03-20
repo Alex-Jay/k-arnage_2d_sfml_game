@@ -52,14 +52,11 @@ private:
 
 private:
 	sf::RenderWindow& mWindow;
-	sf::Sprite mBackgroundSprite;
-	GUI::Container mGUIContainer;
+	sf::TcpSocket& mSocket;
+	int16_t mLocalPlayerID;
 
-	sf::Text mText;
-
+	int16_t mPlayerCount;
 	std::unique_ptr<GameServer> mGameServer;
-
-	//sf::TcpSocket mSocket;
 
 	bool mConnected;
 	bool mActiveState;
@@ -67,8 +64,9 @@ private:
 	bool mHost;
 	bool mDisconnectSelf{};
 
-	int16_t mLocalPlayerID;
-	int16_t mPlayerCount;
+	sf::Sprite mBackgroundSprite;
+	GUI::Container mGUIContainer;
+	sf::Text mText;
 
 	sf::Text mFailedConnectionText;
 	sf::Clock mFailedConnectionClock;
