@@ -319,7 +319,15 @@ void MultiplayerGameState::setCharacters(sf::Packet& packet)
 			mLocalPlayerIdentifiers.push_back(characterIdentifier);
 			character->setPosition(assignCharacterSpawn(characterIdentifier));
 
-			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+			if (characterIdentifier == mLocalPlayerID)
+			{
+				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+			}
+			else
+			{
+				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+			}
+			
 		}
 		mCharactersRecieved = true;
 	}
