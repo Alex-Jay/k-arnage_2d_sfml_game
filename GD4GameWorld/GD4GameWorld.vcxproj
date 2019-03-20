@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Debugger.hpp" />
     <ClInclude Include="Include\Book\Animation\Animation.hpp" />
     <ClInclude Include="Include\Book\Audio\MusicPlayer.hpp" />
     <ClInclude Include="Include\Book\Audio\SoundPlayer.hpp" />
@@ -72,16 +71,15 @@
     <ClInclude Include="Include\Book\Structural\ResourceHolder.hpp" />
     <ClInclude Include="Include\Book\Structural\ResourceIdentifiers.hpp" />
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
+    <ClInclude Include="Include\Book\Structural\Xbox360Controller.hpp" />
     <ClInclude Include="ScoreBoardState.hpp" />
     <ClInclude Include="SocketManager.hpp" />
-    <ClInclude Include="Xbox360Controller.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl" />
     <None Include="Include\Book\Structural\Utility.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ScoreBoardState.cpp" />
     <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
@@ -129,7 +127,7 @@
     <ClCompile Include="Source\Structural\KeyBinding.cpp" />
     <ClCompile Include="Source\Structural\MapTiler.cpp" />
     <ClCompile Include="Source\Structural\Utility.cpp" />
-    <ClCompile Include="Xbox360Controller.cpp" />
+    <ClCompile Include="Source\Structural\Xbox360Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Source\CMakeLists.txt" />

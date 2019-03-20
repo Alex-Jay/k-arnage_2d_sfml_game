@@ -228,14 +228,8 @@
     <ClInclude Include="Include\Book\Entity\Explosion.hpp">
       <Filter>Header Files\Entity</Filter>
     </ClInclude>
-    <ClInclude Include="Xbox360Controller.hpp">
-      <Filter>Header Files\Structural</Filter>
-    </ClInclude>
     <ClInclude Include="ScoreBoardState.hpp">
       <Filter>Header Files\State</Filter>
-    </ClInclude>
-    <ClInclude Include="Debugger.hpp">
-      <Filter>Header Files\Structural</Filter>
     </ClInclude>
     <ClInclude Include="Include\Book\Entity\Obstacle.hpp">
       <Filter>Header Files\Entity</Filter>
@@ -260,6 +254,9 @@
     </ClInclude>
     <ClInclude Include="SocketManager.hpp">
       <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Book\Structural\Xbox360Controller.hpp">
+      <Filter>Header Files\Structural</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,14 +388,8 @@
     <ClCompile Include="Source\Entity\Explosion.cpp">
       <Filter>Source Files\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="Xbox360Controller.cpp">
-      <Filter>Source Files\Structural</Filter>
-    </ClCompile>
     <ClCompile Include="ScoreBoardState.cpp">
       <Filter>Source Files\State</Filter>
-    </ClCompile>
-    <ClCompile Include="Debugger.cpp">
-      <Filter>Source Files\Structural</Filter>
     </ClCompile>
     <ClCompile Include="Source\Entity\Obstacle.cpp">
       <Filter>Source Files\Entity</Filter>
@@ -417,6 +408,9 @@
     </ClCompile>
     <ClCompile Include="SocketManager.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Structural\Xbox360Controller.cpp">
+      <Filter>Source Files\Structural</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

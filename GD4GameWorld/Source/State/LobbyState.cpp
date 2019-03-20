@@ -113,7 +113,7 @@ void LobbyState::connectToServer()
 	}
 
 	mSocket.setBlocking(true);
-	sf::Socket::Status status = mSocket.connect(ip, ServerPort, sf::seconds(5.f));
+	sf::Socket::Status status = mSocket.connect(ip, ServerPort, sf::seconds(2.f));
 
 	if (status == sf::TcpSocket::Done)
 	{

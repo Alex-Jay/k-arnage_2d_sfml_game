@@ -2,6 +2,9 @@
 #define BOOK_KEYBINDING_HPP
 
 #include <SFML/Window/Keyboard.hpp>
+#include "Structural/Xbox360Controller.hpp"
+#include <SFML/Window/Joystick.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <map>
 #include <vector>
@@ -19,6 +22,23 @@ namespace PlayerAction
 		StartGrenade,
 		Count,
 		LaunchGrenade,
+	};
+}
+
+namespace Joystick
+{
+	enum class Button
+	{
+		A,
+		B,
+		X,
+		Y,
+		LB,
+		RB,
+		Back,
+		Start,
+		L3,
+		R3
 	};
 }
 
@@ -45,6 +65,9 @@ class KeyBinding
 
 
 	private:
+		Xbox360Controller*						mJoystick;
+		std::map<Joystick::Button, Action>		mJoystickBindingPressed;
+		std::map<Joystick::Button, Action>		mJoystickBindingReleased;
 		std::map<sf::Keyboard::Key, Action>		mKeyMap;
 		std::map<sf::Keyboard::Key, Action>		mKeyBindingReleased;
 };
