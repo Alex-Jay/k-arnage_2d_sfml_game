@@ -8,7 +8,6 @@
 
 #include <fstream>
 
-//MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::TcpSocket *socket)
 MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)

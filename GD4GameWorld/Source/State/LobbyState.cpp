@@ -33,7 +33,8 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	, mSocket(*context.socket)
 	, mLocalPlayerID(*context.localID)
 	, mGUIContainer()
-	, mClientTimeout(sf::seconds(300.f)) // 5 second timeout
+	, mConnected(false)
+	, mClientTimeout(sf::seconds(5.f)) // 5 second timeout
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
 	, mStack(stack)
@@ -41,7 +42,6 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	setText(context);
 	setButtons(context);
 	connectToServer();
-
 }
 
 #pragma region Initialization
@@ -63,8 +63,8 @@ void LobbyState::setText(Context context)
 
 	// Render a "establishing connection" frame for user feedback
 	mWindow.clear(sf::Color::Black);
-	mWindow.draw(mFailedConnectionText);
-	mWindow.display();
+	//mWindow.draw(mFailedConnectionText);
+	//mWindow.display();
 	mFailedConnectionText.setString("Could not connect to the remote server!");
 	centerOrigin(mFailedConnectionText);
 
@@ -113,18 +113,21 @@ void LobbyState::connectToServer()
 	}
 
 	sf::Socket::Status status = mSocket.connect(ip, ServerPort, sf::seconds(5.f));
-
+	mSocket.setBlocking(false);
+	
 	if (status == sf::TcpSocket::Done)
 	{
 		mConnected = true;
 	}
-	else
+	else if (status == sf::TcpSocket::Error)
 	{
 		mConnected = false;
 		mFailedConnectionClock.restart();
 	}
-
-	mSocket.setBlocking(false);
+	else
+	{
+		std::cout << "Not Ready" << std::endl;
+	}
 }
 #pragma endregion
 
@@ -157,22 +160,25 @@ void LobbyState::draw()
 bool LobbyState::update(sf::Time dt)
 {
 	// Connected to server: Handle all the network logic
-	if (mConnected) {
-
+	if (mConnected)
+	{
 		// TODO Remove players who disconnect
-		bool foundLocalPlayer = false;
+		//bool foundLocalPlayer = false;
 
 		// Handle messages from server that may have arrived
 		sf::Packet packet;
-		if (mSocket.receive(packet) == sf::Socket::Done) {
+		if (mSocket.receive(packet) == sf::Socket::Done)
+		{
 			mTimeSinceLastPacket = sf::seconds(0.f);
 			sf::Int32 packetType;
 			packet >> packetType;
 			handlePacket(packetType, packet);
 		}
-		else {
+		else
+		{
 			// Check for timeout with the server
-			if (mTimeSinceLastPacket > mClientTimeout) {
+			if (mTimeSinceLastPacket > mClientTimeout)
+			{
 				mConnected = false;
 
 				mFailedConnectionText.setString("Lost connection to server");
@@ -243,7 +249,6 @@ void LobbyState::onDestroy()
 
 void LobbyState::returnToMenu()
 {
-	mSocket.disconnect();
 	requestStackPop();
 	requestStackPush(States::Menu);
 }
@@ -251,11 +256,14 @@ void LobbyState::returnToMenu()
 void LobbyState::startGame()
 {
 	if (mHost)
+	{
 		requestStackPush(States::HostGame);
+	}
 	else
+	{
 		requestStackPop();
-
-	requestStackPush(States::JoinGame);
+		requestStackPush(States::JoinGame);
+	}
 }
 
 void LobbyState::setDisplayText(Context context)
@@ -365,7 +373,6 @@ void LobbyState::playerDisconnect(sf::Packet& packet)
 	
 	if (characterIdentifier == mLocalPlayerID)
 	{
-		mSocket.disconnect();
 		returnToMenu();
 	}
 	else

@@ -27,8 +27,7 @@ public:
 	virtual bool update(sf::Time dt);
 	virtual bool handleEvent(const sf::Event& event);
 	virtual void onActivate();
-
-	void onDestroy();
+	virtual void onDestroy();
 
 private:
 	typedef std::unique_ptr<Player> PlayerPtr;
