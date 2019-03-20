@@ -474,6 +474,8 @@ void GameServer::handleIncomingConnections()
 		
 		notifyPlayerSpawn(mCharacterIdentifierCounter++);
 
+		informWorldState(mPeers[mConnectedPlayers]->socket);
+
 		mPeers[mConnectedPlayers]->socket.send(packet);
 		mPeers[mConnectedPlayers]->ready = true;
 		mPeers[mConnectedPlayers]->lastPacketTime = now(); // prevent initial timeouts
