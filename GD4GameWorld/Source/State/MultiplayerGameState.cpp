@@ -117,15 +117,15 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 
 	if (event.type == sf::Event::KeyPressed) {
 		// Enter pressed, add second player co-op (only if we are one player)
-		if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
+		//if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
+		//	sf::Packet packet;
+		//	packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
 
-			CLIENT_SOCKET.send(packet);
-		}
+		//	CLIENT_SOCKET.send(packet);
+		//}
 
 		// Escape pressed, trigger the pause screen
-		else if (event.key.code == sf::Keyboard::Escape) {
+		if (event.key.code == sf::Keyboard::Escape) {
 			disableAllRealtimeActions();
 			requestStackPush(States::NetworkPause);
 		}
@@ -229,14 +229,12 @@ void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 
 void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 {
-
 	std::cout << "Spawn Self" << std::endl;
 
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
 	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-	//characterIdentifier = 4;
 	Character* character = mWorld.addCharacter((characterIdentifier), true);
 	character->setPosition(assignCharacterSpawn(characterIdentifier));
 
@@ -248,7 +246,6 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 
 void MultiplayerGameState::playerConnect(sf::Packet& packet)
 {
-
 	std::cout << "Player Connect" << std::endl;
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
@@ -271,7 +268,6 @@ void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
 
 void MultiplayerGameState::setInitialState(sf::Packet& packet)
 {
-
 	sf::Int32 characterCount;
 
 	float worldHeight, currentScroll;
