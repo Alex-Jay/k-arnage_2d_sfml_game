@@ -25,6 +25,7 @@ public:
 	void playerEvent(sf::Packet packet);
 	void playerRealTimeChange(sf::Packet packet);
 	void positionUpdate(sf::Packet packet);
+	void gameEvent(sf::Packet packet);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
@@ -52,7 +53,8 @@ private:
 
 	// Unique pointer to remote peers
 	typedef std::unique_ptr<RemotePeer> PeerPtr;
-
+public:
+	void gameEvent(sf::Packet packet, RemotePeer& receivingPeer);
 private:
 	void setListening(bool enable);
 	void executionThread();
