@@ -190,7 +190,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	case Client::GameEvent:
 	{
-		gameEvent(packet);
+		gameEvent(packet, receivingPeer);
 	}
 	}
 }
@@ -240,7 +240,7 @@ void GameServer::positionUpdate(sf::Packet packet)
 	}
 }
 
-void GameServer::gameEvent(sf::Packet packet)
+void GameServer::gameEvent(sf::Packet packet, RemotePeer& receivingPeer)
 {
 	sf::Int32 action;
 	float x, y;
