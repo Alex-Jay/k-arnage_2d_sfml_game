@@ -33,13 +33,14 @@ class Application
 		static const sf::Time	TimePerFrame;
 
 		sf::RenderWindow		mWindow;
+		sf::TcpSocket			mSocket;
+		uint16_t				mLocalID;
 		TextureHolder			mTextures;
 	  	FontHolder				mFonts;
 		MusicPlayer				mMusic;
 		SoundPlayer				mSounds;
 
-		KeyBinding				mKeyBinding1;
-		KeyBinding				mKeyBinding2;
+		KeyBinding				mKeyBinding;
 		StateStack				mStateStack;
 
 		sf::Text				mStatisticsText;

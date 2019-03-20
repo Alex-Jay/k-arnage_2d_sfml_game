@@ -13,6 +13,7 @@
 namespace sf
 {
 	class RenderWindow;
+	class TcpSocket;
 }
 
 class StateStack;
@@ -27,16 +28,17 @@ class State
 
 		struct Context
 		{
-								Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-									MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2);
+								Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t localID, TextureHolder& textures, FontHolder& fonts,
+									MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys);
 
 			sf::RenderWindow*	window;
+			sf::TcpSocket*		socket;
+			uint16_t*			localID;
 			TextureHolder*		textures;
 			FontHolder*			fonts;
 			MusicPlayer*		music;
 			SoundPlayer*		sounds;
-			KeyBinding*			keys1;
-			KeyBinding*			keys2;
+			KeyBinding*			keys;
 		};
 
 

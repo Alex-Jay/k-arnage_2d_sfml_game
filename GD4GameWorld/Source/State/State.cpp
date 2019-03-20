@@ -2,15 +2,16 @@
 #include "State/StateStack.hpp"
 
 
-State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2)
+State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t localID, TextureHolder& textures, FontHolder& fonts,
+	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys)
 : window(&window)
+, socket(&socket)
+, localID(&localID)
 , textures(&textures)
 , fonts(&fonts)
 , music(&music)
 , sounds(&sounds)
-, keys1(&keys1)
-, keys2(&keys2)
+, keys(&keys)
 {
 }
 

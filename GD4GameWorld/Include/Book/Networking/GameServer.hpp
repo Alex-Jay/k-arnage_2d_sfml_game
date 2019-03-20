@@ -25,7 +25,6 @@ public:
 	void playerEvent(sf::Packet packet);
 	void playerRealTimeChange(sf::Packet packet);
 	void positionUpdate(sf::Packet packet);
-	void gameEvent(sf::Packet packet);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
 
@@ -69,6 +68,7 @@ private:
 
 	void informWorldState(sf::TcpSocket& socket);
 	void broadcastMessage(const std::string& message);
+	void gameEvent(sf::Packet packet, RemotePeer& receivingPeer);
 	void RemoveDestroyedCharacters();
 	void SetInitialWorldState();
 	void sendCharacters();

@@ -229,7 +229,7 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 	Character* character = mWorld.addCharacter((characterIdentifier), true);
 	character->setPosition(assignCharacterSpawn(characterIdentifier));
 
-	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, getContext().keys1));
+	mPlayers[characterIdentifier].reset(new Player(&CLIENT_SOCKET, characterIdentifier, getContext().keys));
 	mLocalPlayerIdentifiers.push_back(characterIdentifier);
 
 	mGameStarted = true;
