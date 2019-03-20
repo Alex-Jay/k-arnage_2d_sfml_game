@@ -34,6 +34,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	mLoadingText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
 	mLoadingText.setString("Loading Game...");
 
+	std::cout << "MG M" << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 
@@ -108,7 +109,7 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 
 void MultiplayerGameState::notifyServerReady()
 {
-	//std::cout << "NOTIFY SERVER READY: " << std::endl;
+	std::cout << "NOTIFY SERVER READY: " << std::endl;
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Client::Ready);
 	mSocket.send(packet);
@@ -116,7 +117,7 @@ void MultiplayerGameState::notifyServerReady()
 
 void MultiplayerGameState::notifyServerWorldBuilt()
 {
-	//std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
+	std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Client::WorldBuilt);
 	mSocket.send(packet);
@@ -194,7 +195,7 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 
 	case Server::SpawnSelf: {
 
-		//std::cout << "SPAWN SELF RECIEVED" << std::endl;
+		std::cout << "SPAWN SELF RECIEVED" << std::endl;
 		//spawnSelf(packet);
 	} break;
 
@@ -273,7 +274,7 @@ void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 
 void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 {
-	//std::cout << "Spawn Self" << std::endl;
+	std::cout << "Spawn Self" << std::endl;
 
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
@@ -289,7 +290,7 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 
 void MultiplayerGameState::playerConnect(sf::Packet& packet)
 {
-	//std::cout << "Player Connect" << std::endl;
+	std::cout << "Player Connect" << std::endl;
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
 	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
@@ -303,7 +304,7 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
-	//std::cout << "SET CHARACTERS RECIEVED " << std::endl;
+	std::cout << "SET CHARACTERS RECIEVED " << std::endl;
 	mCharactersRecieved = true;
 	sf::Int32 characterCount;
 	packet >> characterCount;
@@ -387,7 +388,7 @@ void MultiplayerGameState::spawnEnemy(sf::Packet& packet)
 
 void MultiplayerGameState::spawnObstacle(sf::Packet& packet)
 {
-	//std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
+	std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
 	mObstaclesRecieved = true;
 	float x, y, a;
 	sf::Int32 type;

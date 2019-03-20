@@ -112,10 +112,10 @@ void GameServer::tick()
 	//handleWinCondition();
 	RemoveDestroyedCharacters();
 	spawnEnemys();
-
+	int np = mPeers.size();
 	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
 	{
-		//std::cout << "ALL CLIENTS READY: " << std::endl;
+		std::cout << "ALL CLIENTS READY: " << std::endl;
 		mAllClientsReady = true;
 
 		spawnObstacles();
@@ -193,14 +193,14 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	case Client::Ready:
 	{
-	//	std::cout << "RECIEVED CLIENT READY: " << std::endl;
+		std::cout << "RECIEVED CLIENT READY: " << std::endl;
 		++mClientReadyCount;
 
 	} break;
 
 	case Client::WorldBuilt:
 	{
-	//	std::cout << "RECIEVED World BUILT: " << std::endl;
+		std::cout << "RECIEVED World BUILT: " << std::endl;
 		++mClientReadyCount;
 
 	} break;
@@ -350,7 +350,7 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 
 void GameServer::notifyLoadGame()
 {
-//	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
@@ -456,6 +456,7 @@ void GameServer::handleIncomingConnections()
 
 	if (mListenerSocket.accept(mPeers[mConnectedPlayers]->socket) == sf::TcpListener::Done)
 	{
+		std::cout << "PLAYER ADDED " << std::endl;
 		// order the new client to spawn its own plane ( player 1 )
 		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
 		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
@@ -544,7 +545,7 @@ void GameServer::SetInitialWorldState()
 
 void GameServer::sendCharacters()
 {
-	//std::cout << "SENDING SET CHARACTERS " << std::endl;
+	std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
 

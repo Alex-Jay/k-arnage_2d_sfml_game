@@ -115,7 +115,6 @@ private:
 	int16_t mClientReadyCount;
 	bool buildWorldPacketSent{};
 	bool worldBuiltPacketRecieved{};
-
 	bool mCharactersRecieved{};
 };
 
