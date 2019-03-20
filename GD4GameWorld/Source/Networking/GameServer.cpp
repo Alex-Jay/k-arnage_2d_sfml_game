@@ -29,7 +29,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mBattleFieldScrollSpeed(-50.f)
 	, mCharacterCount(0)
 	, mPeers(1)
-	, mCharacterIdentifierCounter(1)
+	, mCharacterIdentifierCounter(0)
 	, mWaitingThreadEnd(false)
 	, mLastSpawnTime(sf::Time::Zero)
 	, mTimeForNextSpawn(sf::seconds(5.f))
@@ -115,7 +115,7 @@ void GameServer::tick()
 
 	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
 	{
-		std::cout << "ALL CLIENTS READY: " << std::endl;
+		//std::cout << "ALL CLIENTS READY: " << std::endl;
 		mAllClientsReady = true;
 
 		spawnObstacles();
@@ -157,7 +157,7 @@ void GameServer::handleIncomingPackets()
 
 			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
-				std::cout << "4 Setting Timeout status" << std::endl;
+				//std::cout << "4 Setting Timeout status" << std::endl;
 				peer->timedOut = true;
 				detectedTimeout = true;
 			}
@@ -193,14 +193,14 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	case Client::Ready:
 	{
-		std::cout << "RECIEVED CLIENT READY: " << std::endl;
+	//	std::cout << "RECIEVED CLIENT READY: " << std::endl;
 		++mClientReadyCount;
 
 	} break;
 
 	case Client::WorldBuilt:
 	{
-		std::cout << "RECIEVED World BUILT: " << std::endl;
+	//	std::cout << "RECIEVED World BUILT: " << std::endl;
 		++mClientReadyCount;
 
 	} break;
@@ -350,7 +350,7 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 
 void GameServer::notifyLoadGame()
 {
-	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+//	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
@@ -544,7 +544,7 @@ void GameServer::SetInitialWorldState()
 
 void GameServer::sendCharacters()
 {
-	std::cout << "SENDING SET CHARACTERS " << std::endl;
+	//std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
 

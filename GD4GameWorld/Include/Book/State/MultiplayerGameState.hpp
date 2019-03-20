@@ -97,8 +97,7 @@ private:
 	sf::Text					mBroadcastText;
 	sf::Time					mBroadcastElapsedTime;
 
-	sf::Text					mPlayerInvitationText;
-	sf::Time					mPlayerInvitationTime;
+	sf::Text					mLoadingText;
 
 	sf::Text					mFailedConnectionText;
 	sf::Clock					mFailedConnectionClock;

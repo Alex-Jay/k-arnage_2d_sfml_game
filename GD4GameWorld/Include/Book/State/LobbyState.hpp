@@ -63,6 +63,7 @@ private:
 	bool mHasFocus;
 	bool mHost;
 	bool mDisconnectSelf{};
+	bool mGameStarted{};
 
 	sf::Sprite mBackgroundSprite;
 	GUI::Container mGUIContainer;

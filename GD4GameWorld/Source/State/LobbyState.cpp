@@ -156,40 +156,43 @@ void LobbyState::draw()
 
 bool LobbyState::update(sf::Time dt)
 {
-	// Connected to server: Handle all the network logic
-	if (mConnected) {
+	if (!mGameStarted)
+	{
+		// Connected to server: Handle all the network logic
+		if (mConnected) {
 
-		// TODO Remove players who disconnect
-		bool foundLocalPlayer = false;
+			// TODO Remove players who disconnect
+			bool foundLocalPlayer = false;
 
-		// Handle messages from server that may have arrived
-		sf::Packet packet;
-		if (mSocket.receive(packet) == sf::Socket::Done) {
-			mTimeSinceLastPacket = sf::seconds(0.f);
-			sf::Int32 packetType;
-			packet >> packetType;
-			handlePacket(packetType, packet);
-		}
-		else {
-			// Check for timeout with the server
-			if (mTimeSinceLastPacket > mClientTimeout) {
-				mConnected = false;
-
-				mFailedConnectionText.setString("Lost connection to server");
-				centerOrigin(mFailedConnectionText);
-
-				mFailedConnectionClock.restart();
+			// Handle messages from server that may have arrived
+			sf::Packet packet;
+			if (mSocket.receive(packet) == sf::Socket::Done) {
+				mTimeSinceLastPacket = sf::seconds(0.f);
+				sf::Int32 packetType;
+				packet >> packetType;
+				handlePacket(packetType, packet);
 			}
+			else {
+				// Check for timeout with the server
+				if (mTimeSinceLastPacket > mClientTimeout) {
+					mConnected = false;
+
+					mFailedConnectionText.setString("Lost connection to server");
+					centerOrigin(mFailedConnectionText);
+
+					mFailedConnectionClock.restart();
+				}
+			}
+
+			updateBroadcastMessage(dt);
+			mTimeSinceLastPacket += dt;
 		}
 
-		updateBroadcastMessage(dt);
-		mTimeSinceLastPacket += dt;
-	}
-
-	// Failed to connect and waited for more than 5 seconds: Back to menu
-	else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
-		requestStateClear();
-		requestStackPush(States::Menu);
+		// Failed to connect and waited for more than 5 seconds: Back to menu
+		else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
+			requestStateClear();
+			requestStackPush(States::Menu);
+		}
 	}
 
 	return true;
@@ -221,7 +224,9 @@ void LobbyState::updateBroadcastMessage(sf::Time elapsedTime)
 
 bool LobbyState::handleEvent(const sf::Event& event)
 {
-	mGUIContainer.handleEvent(event);
+	if (!mGameStarted)
+		mGUIContainer.handleEvent(event);
+
 	return false;
 }
 
@@ -250,7 +255,7 @@ void LobbyState::returnToMenu()
 
 void LobbyState::loadGame()
 {
-	std::cout << "RECIEVED Load GAme " << std::endl;
+	//std::cout << "RECIEVED Load GAme " << std::endl;
 	if (mHost)
 	{
 		//requestStackPop();
@@ -262,6 +267,7 @@ void LobbyState::loadGame()
 		requestStackPush(States::JoinGame);
 	}
 
+	mGameStarted = true;
 }
 
 void LobbyState::setDisplayText(Context context)
@@ -279,7 +285,7 @@ void LobbyState::setDisplayText(Context context)
 
 void LobbyState::sendLoadGame()
 {
-	std::cout << "1 SEND LOAD GAME"  << std::endl;
+	//std::cout << "1 SEND LOAD GAME"  << std::endl;
 	if (mHost && mConnected) {
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::LoadGame);
