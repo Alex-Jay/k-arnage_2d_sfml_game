@@ -21,12 +21,15 @@ public:
 	void onDestroy();
 
 	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
+	void loadGame();
 	void startGame();
 	void playerEvent(sf::Packet packet);
 	void playerRealTimeChange(sf::Packet packet);
 	void positionUpdate(sf::Packet packet);
 	void notifyPlayerRealtimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
 	void notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
+
+	void notifyLoadGame();
 
 	void notifyStartGame();
 
@@ -107,9 +110,12 @@ private:
 
 	std::vector<int16_t> mPlayerIDs;
 
-	int16_t clientReadyCount;
+	bool gameStarted{};
+	bool mAllClientsReady{};
+	int16_t mClientReadyCount;
+	bool buildWorldPacketSent{};
 
-	bool gameStarted;
+	bool mCharactersRecieved{};
 };
 
 #endif // BOOK_GAMESERVER_HPP

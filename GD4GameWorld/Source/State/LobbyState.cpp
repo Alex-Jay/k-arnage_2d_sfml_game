@@ -80,7 +80,7 @@ void LobbyState::setButtons(Context context)
 		readyButton->setText("Ready");
 		readyButton->setCallback([this]()
 		{
-			sendStartGame();
+			sendLoadGame();
 		});
 
 		mGUIContainer.pack(readyButton);
@@ -248,14 +248,20 @@ void LobbyState::returnToMenu()
 	requestStackPush(States::Menu);
 }
 
-void LobbyState::startGame()
+void LobbyState::loadGame()
 {
+	std::cout << "RECIEVED Load GAme " << std::endl;
 	if (mHost)
+	{
+		//requestStackPop();
 		requestStackPush(States::HostGame);
+	}
 	else
+	{
 		requestStackPop();
+		requestStackPush(States::JoinGame);
+	}
 
-	requestStackPush(States::JoinGame);
 }
 
 void LobbyState::setDisplayText(Context context)
@@ -271,11 +277,12 @@ void LobbyState::setDisplayText(Context context)
 
 #pragma region Send Packet
 
-void LobbyState::sendStartGame()
+void LobbyState::sendLoadGame()
 {
+	std::cout << "1 SEND LOAD GAME"  << std::endl;
 	if (mHost && mConnected) {
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::StartGame);
+		packet << static_cast<sf::Int32>(Client::LoadGame);
 		mSocket.send(packet);
 	}
 }
@@ -301,7 +308,7 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		setBroadcastMessage(packet);
 	} break;
 
-	case Server::SpawnSelf: {
+	case Server::JoinLobby: {
 		spawnSelf(packet);
 	} break;
 
@@ -318,9 +325,9 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		setInitialLobbyState(packet);
 	} break;
 
-	case Server::StartGame:
+	case Server::LoadGame:
 	{
-		startGame();
+		loadGame();
 	} break;
 	}
 }

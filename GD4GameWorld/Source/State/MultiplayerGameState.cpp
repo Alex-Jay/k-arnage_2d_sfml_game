@@ -26,24 +26,32 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
-
+	mServerNotifiedReady = false;
 	
-	std::cout << "SOCKET PORT MP : " << mSocket.getLocalPort() << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
+	
 }
 
 #pragma region Update
 
 void MultiplayerGameState::draw()
 {
-	mWorld.draw();
+	if (mGameStarted)
+	{
+		mWorld.draw();
 
-	// Broadcast messages in default view
-	mWindow.setView(mWindow.getDefaultView());
+		// Broadcast messages in default view
+		mWindow.setView(mWindow.getDefaultView());
 
-	if (!mBroadcasts.empty())
-		mWindow.draw(mBroadcastText);
+		if (!mBroadcasts.empty())
+			mWindow.draw(mBroadcastText);
+	}
+	else
+	{
+		//DRAW LOADING
+	}
+
 }
 
 bool MultiplayerGameState::update(sf::Time dt)
@@ -90,6 +98,14 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 #pragma endregion
 
 #pragma region Events
+
+void MultiplayerGameState::notifyServerReady()
+{
+	std::cout << "NOTIFY SERVER READY: " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::Ready);
+	mSocket.send(packet);
+}
 
 void MultiplayerGameState::disableAllRealtimeActions()
 {
@@ -154,10 +170,10 @@ void MultiplayerGameState::onDestroy()
 
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
-	std::cout << "RECIEVED PACKET TYPE: " << packetType << std::endl;
 	switch (packetType) {
 		// Send message to all clients
 	case Server::BroadcastMessage: {
+		
 		broadcastMessage(packet);
 	} break;
 
@@ -209,6 +225,12 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		updateClientState(packet);
 	} break;
 	}
+
+	if (!mServerNotifiedReady)
+	{
+		notifyServerReady();
+		mServerNotifiedReady = true;
+	}
 }
 
 void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
@@ -239,7 +261,6 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 	mLocalPlayerIdentifiers.push_back(characterIdentifier);
 
-	mGameStarted = true;
 }
 
 void MultiplayerGameState::playerConnect(sf::Packet& packet)
@@ -258,7 +279,7 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
-
+	std::cout << "SET CHARACTERS RECIEVED " << std::endl;
 	float currentWorldPosition;
 	sf::Int32 characterCount;
 	packet >> currentWorldPosition >> characterCount;

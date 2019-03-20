@@ -34,7 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mLastSpawnTime(sf::Time::Zero)
 	, mTimeForNextSpawn(sf::seconds(5.f))
 	, mZombieCount(0)
-	, clientReadyCount(0)
+	, mClientReadyCount(1)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -98,6 +98,8 @@ void GameServer::executionThread()
 			tickTime -= tickInterval;
 		}
 
+
+
 		// Sleep to prevent server from consuming 100% CPU
 		sf::sleep(sf::milliseconds(100));
 	}
@@ -111,8 +113,16 @@ void GameServer::tick()
 	RemoveDestroyedCharacters();
 	spawnEnemys();
 
+	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
+	{
+		std::cout << "ALL CLIENTS READY: " << std::endl;
+		mAllClientsReady = true;
 
-	sendCharacters();
+		sendCharacters();
+		//sendObsticales();
+
+		buildWorldPacketSent = true;
+	}
 
 	
 }
@@ -173,6 +183,21 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 		detectedTimeout = true;
 	} break;
 
+	case Client::LoadGame:
+	{
+		loadGame();
+		//When Clients are Ready
+
+	} break;
+
+
+	case Client::Ready:
+	{
+		std::cout << "RECIEVED CLIENT READY: " << std::endl;
+		++mClientReadyCount;
+
+	} break;
+
 	case Client::StartGame:
 	{
 		startGame();
@@ -201,13 +226,19 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	}
 	}
 }
+
 #pragma endregion
 
 #pragma region Notify Events
 
+void GameServer::loadGame()
+{
+	notifyLoadGame();
+}
+
 void GameServer::startGame()
 {
-	//gameStarted = true;
+	gameStarted = true;
 	notifyStartGame();
 }
 
@@ -305,6 +336,20 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 			packet << characterIdentifier;
 			packet << action;
 
+			mPeers[i]->socket.send(packet);
+		}
+	}
+}
+
+void GameServer::notifyLoadGame()
+{
+	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::LoadGame);
 			mPeers[i]->socket.send(packet);
 		}
 	}
@@ -410,7 +455,7 @@ void GameServer::handleIncomingConnections()
 		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
 
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::SpawnSelf);
+		packet << static_cast<sf::Int32>(Server::JoinLobby);
 		packet << mCharacterIdentifierCounter;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.x;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.y;
@@ -492,16 +537,19 @@ void GameServer::SetInitialWorldState()
 
 void GameServer::sendCharacters()
 {
+	std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Server::SetCharacters);
 
-	packet << static_cast<sf::Int32>(mCharacterInfo.size());
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			mPeers[i]->socket.send(packet);
+		}
+	}
 
-	FOREACH(auto character, mCharacterInfo)
-		packet << character.first;
-
-	sendToAll(packet);
 }
 
 void GameServer::spawnObstacles()

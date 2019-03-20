@@ -26,6 +26,8 @@ public:
 	virtual void				onActivate();
 	void						onDestroy();
 
+	void notifyServerReady();
+
 	void						disableAllRealtimeActions();
 
 
@@ -104,6 +106,7 @@ private:
 	bool						mHost;
 	bool						mGameStarted;
 	bool mCharactersRecieved{};
+	bool mServerNotifiedReady{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
 };
