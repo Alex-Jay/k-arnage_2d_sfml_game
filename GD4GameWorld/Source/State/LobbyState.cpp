@@ -104,7 +104,7 @@ void LobbyState::connectToServer()
 	if (mHost)
 	{
 		mGameServer.reset(new GameServer(sf::Vector2f(mWindow.getSize())));
-		ip = "127.0.0.1";
+		ip = sf::IpAddress::getLocalAddress();
 	}
 	else
 	{
@@ -112,6 +112,7 @@ void LobbyState::connectToServer()
 		std::string s = ip.toString();
 	}
 
+	mSocket.setBlocking(true);
 	sf::Socket::Status status = mSocket.connect(ip, ServerPort, sf::seconds(5.f));
 
 	if (status == sf::TcpSocket::Done)
@@ -248,7 +249,6 @@ void LobbyState::onDestroy()
 
 void LobbyState::returnToMenu()
 {
-	mSocket.disconnect();
 	requestStackPop();
 	requestStackPush(States::Menu);
 }
