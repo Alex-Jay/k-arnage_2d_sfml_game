@@ -456,7 +456,7 @@ void GameServer::handleIncomingConnections()
 
 	if (mListenerSocket.accept(mPeers[mConnectedPlayers]->socket) == sf::TcpListener::Done)
 	{
-		std::cout << "PLAYER ADDED " << std::endl;
+		
 		// order the new client to spawn its own plane ( player 1 )
 		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
 		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
@@ -480,6 +480,13 @@ void GameServer::handleIncomingConnections()
 		mCharacterCount++;
 		mConnectedPlayers++;
 
+		std::cout << "PLAYER ADDED " << std::endl;
+
+		std::cout << "CHARC COUNT " << mCharacterCount << std::endl;
+
+		std::cout << "PLAYER CONNECTED " << mConnectedPlayers << std::endl;
+
+		std::cout << "PEERS" << mPeers.size() << std::endl;
 		if (mConnectedPlayers >= mMaxConnectedPlayers)
 			setListening(false);
 		else // Add a new waiting peer
