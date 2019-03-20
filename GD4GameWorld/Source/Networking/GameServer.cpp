@@ -110,6 +110,11 @@ void GameServer::tick()
 	//handleWinCondition();
 	RemoveDestroyedCharacters();
 	spawnEnemys();
+
+
+	sendCharacters();
+
+	
 }
 
 sf::Time GameServer::now() const
@@ -158,7 +163,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	sf::Int32 packetType;
 	packet >> packetType;
 
-	std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
+	//std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
 
 	switch (packetType)
 	{
@@ -172,7 +177,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	{
 		startGame();
 		//When Clients are Ready
-		//sendCharacters();
+		
 	} break;
 
 	case Client::PlayerEvent:
@@ -202,7 +207,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 void GameServer::startGame()
 {
-	gameStarted = true;
+	//gameStarted = true;
 	notifyStartGame();
 }
 
@@ -487,18 +492,16 @@ void GameServer::SetInitialWorldState()
 
 void GameServer::sendCharacters()
 {
-	FOREACH(PeerPtr& peer, mPeers)
-	{
-		if (peer->ready)
-		{
-			sf::Packet packet;
-			while (peer->socket.receive(packet) == sf::Socket::Done)
-			{
-				informWorldState(mPeers[mConnectedPlayers]->socket);
-			}
-		}
-	}
 
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Server::SetCharacters);
+
+	packet << static_cast<sf::Int32>(mCharacterInfo.size());
+
+	FOREACH(auto character, mCharacterInfo)
+		packet << character.first;
+
+	sendToAll(packet);
 }
 
 void GameServer::spawnObstacles()

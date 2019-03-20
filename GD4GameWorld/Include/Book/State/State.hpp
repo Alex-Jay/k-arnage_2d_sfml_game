@@ -28,7 +28,7 @@ class State
 
 		struct Context
 		{
-								Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t localID, TextureHolder& textures, FontHolder& fonts,
+								Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
 									MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys);
 
 			sf::RenderWindow*	window;

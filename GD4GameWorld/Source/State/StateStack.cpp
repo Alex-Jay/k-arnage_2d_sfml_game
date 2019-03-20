@@ -63,11 +63,6 @@ bool StateStack::isEmpty() const
 	return mStack.empty();
 }
 
-//bool StateStack::getCurrentState()
-//{
-//	return mStack[mStack.size -1];
-//}
-
 State::Ptr StateStack::createState(States::ID stateID)
 {
 	auto found = mFactories.find(stateID);

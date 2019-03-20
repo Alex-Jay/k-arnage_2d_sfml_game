@@ -10,8 +10,6 @@
 #include <fstream>
 #include <iostream>
 
-sf::TcpSocket CLIENT_SOCKET;
-
 sf::IpAddress LobbyState::getAddressFromFile()
 {
 	{ // Try to open existing file (RAII block)
@@ -44,6 +42,7 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	setText(context);
 	setButtons(context);
 	connectToServer();
+
 }
 
 #pragma region Initialization
@@ -58,7 +57,7 @@ void LobbyState::setText(Context context)
 
 	// We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	mFailedConnectionText.setFont(context.fonts->get(Fonts::Main));
-	mFailedConnectionText.setString("FUCK YEAH");
+	//mFailedConnectionText.setString("FUCK YEAH");
 	mFailedConnectionText.setCharacterSize(35);
 	mFailedConnectionText.setFillColor(sf::Color::White);
 	centerOrigin(mFailedConnectionText);
@@ -340,13 +339,11 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 	packet >> characterIdentifier;
 
 	mLocalPlayerID = characterIdentifier;
+	//std::cout << "LOCAL PLAYER ID [LOBBY STATE]: " << mLocalPlayerID << std::endl;
 
 	mPlayerCount += 1;
 
 	updateDisplayText();
-
-	mStack.registerState<MultiplayerGameState>(States::HostGame, true, mLocalPlayerID);
-	mStack.registerState<MultiplayerGameState>(States::JoinGame, false, mLocalPlayerID);
 }
 
 void LobbyState::playerConnect(sf::Packet& packet)
@@ -382,6 +379,3 @@ void LobbyState::setInitialLobbyState(sf::Packet& packet)
 }
 
 #pragma endregion
-
-
-

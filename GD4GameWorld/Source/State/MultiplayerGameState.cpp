@@ -9,25 +9,26 @@
 #include <fstream>
 
 //MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::TcpSocket *socket)
-MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, int16_t localID)
+MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
+	, mSocket(*context.socket)
+	, mLocalPlayerID(*context.localID)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
-//	, mSocket(socket)
 	, mActiveState(true)
 	, mHasFocus(true)
 	, mHost(isHost)
 	, mGameStarted(false)
 	, mClientTimeout(sf::seconds(2.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
-	, mLocalPlayerID(localID)
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 
-
+	
+	std::cout << "SOCKET PORT MP : " << mSocket.getLocalPort() << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 }
@@ -153,6 +154,7 @@ void MultiplayerGameState::onDestroy()
 
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
+	std::cout << "RECIEVED PACKET TYPE: " << packetType << std::endl;
 	switch (packetType) {
 		// Send message to all clients
 	case Server::BroadcastMessage: {
@@ -251,20 +253,33 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 	character->setPosition(characterPosition);
 
 	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+
 }
 
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
-	std::cout << "Setting Characters" << std::endl;
 
-	sf::Int32 characterIdentifier;
+	float currentWorldPosition;
+	sf::Int32 characterCount;
+	packet >> currentWorldPosition >> characterCount;
 
-	packet >> characterIdentifier;
+	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+	if (!mCharactersRecieved)
+	{
+		mCharactersRecieved = true;
+		for (sf::Int32 i = 0; i < characterCount; ++i) {
 
-	Character* character = mWorld.addCharacter(characterIdentifier, false);
-	character->setPosition(assignCharacterSpawn(characterIdentifier));
+			sf::Int32 characterIdentifier;
+			packet >> characterIdentifier;
 
-	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+			Character* character = mWorld.addCharacter(0, true);
+
+			character->setPosition(assignCharacterSpawn(characterIdentifier));
+
+			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+		}
+	}
+
 }
 
 void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
@@ -278,25 +293,25 @@ void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
 
 void MultiplayerGameState::setInitialState(sf::Packet& packet)
 {
-	sf::Int32 characterCount;
+	//sf::Int32 characterCount;
 
-	packet >> characterCount;
-	for (sf::Int32 i = 0; i < characterCount; ++i) {
-		sf::Int32 characterIdentifier;
-	
-		packet >> characterIdentifier;
-		sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
+	//packet >> characterCount;
+	//for (sf::Int32 i = 0; i < characterCount; ++i) {
+	//	sf::Int32 characterIdentifier;
+	//
+	//	packet >> characterIdentifier;
+	//	sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
 
-		Character* character;
+	//	Character* character;
 
-		if (characterIdentifier == mLocalPlayerID)
-			character = mWorld.addCharacter(characterIdentifier, true);
-		else
-			character = mWorld.addCharacter(characterIdentifier, false);
-		
-		character->setPosition(characterPosition);
-		mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-	}
+	//	if (characterIdentifier == mLocalPlayerID)
+	//		character = mWorld.addCharacter(characterIdentifier, true);
+	//	else
+	//		character = mWorld.addCharacter(characterIdentifier, false);
+	//	
+	//	character->setPosition(characterPosition);
+	//	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+	//}
 }
 
 void MultiplayerGameState::playerEvent(sf::Packet& packet)
@@ -412,8 +427,8 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		{
 			itr = mPlayers.erase(itr);
 
-			if (mPlayers.empty())
-				requestStackPush(States::GameOver);
+			//if (mPlayers.empty())
+			//	requestStackPush(States::GameOver);
 		}
 		else
 			++itr;
@@ -421,8 +436,8 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		mWorld.update(dt);
 	}
 
-	if (!foundLocalPlane && mGameStarted)
-		requestStackPush(States::GameOver);
+	//if (!foundLocalPlane && mGameStarted)
+	//	requestStackPush(States::GameOver);
 }
 
 void MultiplayerGameState::handleRealTimeInput()
