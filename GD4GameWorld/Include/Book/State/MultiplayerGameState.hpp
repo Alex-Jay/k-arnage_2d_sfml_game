@@ -39,6 +39,8 @@ private:
 
 	void playerConnect(sf::Packet & packet);
 
+	void setCharacters(sf::Packet & packet);
+
 	void playerDisconnect(sf::Packet & packet);
 
 	void setInitialState(sf::Packet & packet);
@@ -81,7 +83,7 @@ private:
 
 	std::map<int, PlayerPtr>	mPlayers;
 	std::vector<sf::Int32>		mLocalPlayerIdentifiers;
-	//sf::TcpSocket*				mSocket;
+	sf::TcpSocket				mSocket;
 	bool						mConnected;
 	std::unique_ptr<GameServer> mGameServer;
 	sf::Clock					mTickClock;

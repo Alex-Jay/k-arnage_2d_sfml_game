@@ -171,6 +171,8 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	case Client::StartGame:
 	{
 		startGame();
+		//When Clients are Ready
+		//sendCharacters();
 	} break;
 
 	case Client::PlayerEvent:
@@ -200,8 +202,8 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 void GameServer::startGame()
 {
+	gameStarted = true;
 	notifyStartGame();
-	sendCharacters();
 }
 
 void GameServer::playerEvent(sf::Packet packet)
@@ -411,7 +413,7 @@ void GameServer::handleIncomingConnections()
 		mPeers[mConnectedPlayers]->characterIdentifiers.push_back(mCharacterIdentifierCounter);
 
 		broadcastMessage("New player!");
-		informWorldState(mPeers[mConnectedPlayers]->socket);
+		
 		notifyPlayerSpawn(mCharacterIdentifierCounter++);
 
 		mPeers[mConnectedPlayers]->socket.send(packet);
@@ -480,24 +482,23 @@ void GameServer::RemoveDestroyedCharacters()
 
 void GameServer::SetInitialWorldState()
 {
-	sendCharacters();
+	//sendCharacters();
 }
 
 void GameServer::sendCharacters()
 {
-	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::InitialState);
-
-	packet << static_cast<sf::Int32>(mCharacterCount);
-
-	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	FOREACH(PeerPtr& peer, mPeers)
 	{
-		if (mPeers[i]->ready)
+		if (peer->ready)
 		{
-			FOREACH(sf::Int32 identifier, mPeers[i]->characterIdentifiers)
-				packet << identifier;
+			sf::Packet packet;
+			while (peer->socket.receive(packet) == sf::Socket::Done)
+			{
+				informWorldState(mPeers[mConnectedPlayers]->socket);
+			}
 		}
 	}
+
 }
 
 void GameServer::spawnObstacles()
