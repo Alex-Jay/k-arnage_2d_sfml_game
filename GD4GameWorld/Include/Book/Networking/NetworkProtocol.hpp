@@ -13,7 +13,8 @@ namespace Server
 	enum PacketType
 	{
 		BroadcastMessage,	// format: [Int32:packetType] [string:message]
-		SpawnSelf,			// format: [Int32:packetType]
+		SpawnSelf,
+		JoinLobby,			// format: [Int32:packetType]
 		SetCharacters,
 		InitialState,
 		PlayerEvent,
@@ -28,6 +29,7 @@ namespace Server
 		SpawnPickup,
 		UpdateClientState,
 		MissionSuccess,
+		LoadGame,
 		StartGame
 	};
 }
@@ -38,6 +40,9 @@ namespace Client
 	enum PacketType
 	{
 		StartGame,
+		LoadGame,
+		Ready,
+		WorldBuilt,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		RequestCoopPartner,

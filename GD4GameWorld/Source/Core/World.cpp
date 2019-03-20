@@ -118,7 +118,7 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
-
+	//std::cout << "CHARACTERS IN WORLD : " << mPlayerCharacters.size() << std::endl;
 	setView();
 
 	// Setup commands to destroy entities, and guide grenades

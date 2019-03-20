@@ -29,12 +29,12 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mBattleFieldScrollSpeed(-50.f)
 	, mCharacterCount(0)
 	, mPeers(1)
-	, mCharacterIdentifierCounter(1)
+	, mCharacterIdentifierCounter(0)
 	, mWaitingThreadEnd(false)
 	, mLastSpawnTime(sf::Time::Zero)
 	, mTimeForNextSpawn(sf::seconds(5.f))
 	, mZombieCount(0)
-	, clientReadyCount(0)
+	, mClientReadyCount(1)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -98,6 +98,8 @@ void GameServer::executionThread()
 			tickTime -= tickInterval;
 		}
 
+
+
 		// Sleep to prevent server from consuming 100% CPU
 		sf::sleep(sf::milliseconds(100));
 	}
@@ -111,8 +113,16 @@ void GameServer::tick()
 	RemoveDestroyedCharacters();
 	spawnEnemys();
 
+	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
+	{
+		//std::cout << "ALL CLIENTS READY: " << std::endl;
+		mAllClientsReady = true;
 
-	sendCharacters();
+		spawnObstacles();
+		sendCharacters();
+		
+		buildWorldPacketSent = true;
+	}
 
 	
 }
@@ -147,7 +157,7 @@ void GameServer::handleIncomingPackets()
 
 			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
-				std::cout << "4 Setting Timeout status" << std::endl;
+				//std::cout << "4 Setting Timeout status" << std::endl;
 				peer->timedOut = true;
 				detectedTimeout = true;
 			}
@@ -171,6 +181,28 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	{
 		receivingPeer.timedOut = true;
 		detectedTimeout = true;
+	} break;
+
+	case Client::LoadGame:
+	{
+		loadGame();
+		//When Clients are Ready
+
+	} break;
+
+
+	case Client::Ready:
+	{
+	//	std::cout << "RECIEVED CLIENT READY: " << std::endl;
+		++mClientReadyCount;
+
+	} break;
+
+	case Client::WorldBuilt:
+	{
+	//	std::cout << "RECIEVED World BUILT: " << std::endl;
+		++mClientReadyCount;
+
 	} break;
 
 	case Client::StartGame:
@@ -201,13 +233,19 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	}
 	}
 }
+
 #pragma endregion
 
 #pragma region Notify Events
 
+void GameServer::loadGame()
+{
+	notifyLoadGame();
+}
+
 void GameServer::startGame()
 {
-	//gameStarted = true;
+	gameStarted = true;
 	notifyStartGame();
 }
 
@@ -305,6 +343,20 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 			packet << characterIdentifier;
 			packet << action;
 
+			mPeers[i]->socket.send(packet);
+		}
+	}
+}
+
+void GameServer::notifyLoadGame()
+{
+//	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::LoadGame);
 			mPeers[i]->socket.send(packet);
 		}
 	}
@@ -410,7 +462,7 @@ void GameServer::handleIncomingConnections()
 		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
 
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::SpawnSelf);
+		packet << static_cast<sf::Int32>(Server::JoinLobby);
 		packet << mCharacterIdentifierCounter;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.x;
 		packet << mCharacterInfo[mCharacterIdentifierCounter].position.y;
@@ -492,14 +544,21 @@ void GameServer::SetInitialWorldState()
 
 void GameServer::sendCharacters()
 {
+	//std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
+
 	packet << static_cast<sf::Int32>(Server::SetCharacters);
+	packet << static_cast<sf::Int32>(mCharacterCount);
 
-	packet << static_cast<sf::Int32>(mCharacterInfo.size());
-
-	FOREACH(auto character, mCharacterInfo)
-		packet << character.first;
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			FOREACH(sf::Int32 identifier, mPeers[i]->characterIdentifiers)
+				packet << identifier;
+		}
+	}
 
 	sendToAll(packet);
 }

@@ -44,10 +44,10 @@ private:
 	void playerConnect(sf::Packet & packet);
 	void playerDisconnect(sf::Packet & packet);
 	void setInitialLobbyState(sf::Packet & packet);
-	void startGame();
 	void returnToMenu();
+	void loadGame();
+	void sendLoadGame();
 	void sendDisconnectSelf();
-	void sendStartGame();
 
 private:
 	sf::RenderWindow& mWindow;
@@ -62,6 +62,7 @@ private:
 	bool mHasFocus;
 	bool mHost;
 	bool mDisconnectSelf{};
+	bool mGameStarted{};
 
 	sf::Sprite mBackgroundSprite;
 	GUI::Container mGUIContainer;

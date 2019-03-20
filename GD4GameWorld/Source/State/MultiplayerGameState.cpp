@@ -20,29 +20,45 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mHasFocus(true)
 	, mHost(isHost)
 	, mGameStarted(false)
-	, mClientTimeout(sf::seconds(2.f))
+	, mClientTimeout(sf::seconds(20.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
-
+	mServerNotifiedReady = false;
 	
-	std::cout << "SOCKET PORT MP : " << mSocket.getLocalPort() << std::endl;
+	mLoadingText.setFont(context.fonts->get(Fonts::Main));
+	mLoadingText.setCharacterSize(35);
+	mLoadingText.setFillColor(sf::Color::White);
+	centerOrigin(mLoadingText);
+	mLoadingText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
+	mLoadingText.setString("Loading Game...");
+
 	// Play game theme
 	context.music->play(Music::MissionTheme);
+
 }
 
 #pragma region Update
 
 void MultiplayerGameState::draw()
 {
-	mWorld.draw();
+	if (mGameStarted)
+	{
+		mWorld.draw();
 
-	// Broadcast messages in default view
-	mWindow.setView(mWindow.getDefaultView());
+		// Broadcast messages in default view
+		mWindow.setView(mWindow.getDefaultView());
 
-	if (!mBroadcasts.empty())
-		mWindow.draw(mBroadcastText);
+		if (!mBroadcasts.empty())
+			mWindow.draw(mBroadcastText);
+	}
+	else
+	{
+		mWindow.draw(mLoadingText);
+	}
+
+	
 }
 
 bool MultiplayerGameState::update(sf::Time dt)
@@ -89,6 +105,22 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 #pragma endregion
 
 #pragma region Events
+
+void MultiplayerGameState::notifyServerReady()
+{
+	//std::cout << "NOTIFY SERVER READY: " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::Ready);
+	mSocket.send(packet);
+}
+
+void MultiplayerGameState::notifyServerWorldBuilt()
+{
+	//std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::WorldBuilt);
+	mSocket.send(packet);
+}
 
 void MultiplayerGameState::disableAllRealtimeActions()
 {
@@ -153,14 +185,16 @@ void MultiplayerGameState::onDestroy()
 
 void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
-	std::cout << "RECIEVED PACKET TYPE: " << packetType << std::endl;
 	switch (packetType) {
 		// Send message to all clients
 	case Server::BroadcastMessage: {
+		
 		broadcastMessage(packet);
 	} break;
 
 	case Server::SpawnSelf: {
+
+		//std::cout << "SPAWN SELF RECIEVED" << std::endl;
 		//spawnSelf(packet);
 	} break;
 
@@ -208,6 +242,19 @@ void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet
 		updateClientState(packet);
 	} break;
 	}
+
+	if (!mServerNotifiedReady)
+	{
+		notifyServerReady();
+		mServerNotifiedReady = true;
+	}
+
+	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
+	{
+		notifyServerWorldBuilt();
+		mSeverNotifiedBuilt = true;
+		mGameStarted = true;
+	}
 }
 
 void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
@@ -226,7 +273,7 @@ void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 
 void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 {
-	std::cout << "Spawn Self" << std::endl;
+	//std::cout << "Spawn Self" << std::endl;
 
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
@@ -238,12 +285,11 @@ void MultiplayerGameState::spawnSelf(sf::Packet& packet)
 	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 	mLocalPlayerIdentifiers.push_back(characterIdentifier);
 
-	mGameStarted = true;
 }
 
 void MultiplayerGameState::playerConnect(sf::Packet& packet)
 {
-	std::cout << "Player Connect" << std::endl;
+	//std::cout << "Player Connect" << std::endl;
 	sf::Int32 characterIdentifier;
 	sf::Vector2f characterPosition;
 	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
@@ -257,27 +303,23 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 
 void MultiplayerGameState::setCharacters(sf::Packet& packet)
 {
-
-	float currentWorldPosition;
+	//std::cout << "SET CHARACTERS RECIEVED " << std::endl;
+	mCharactersRecieved = true;
 	sf::Int32 characterCount;
-	packet >> currentWorldPosition >> characterCount;
+	packet >> characterCount;
 
-	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
-	if (!mCharactersRecieved)
-	{
-		mCharactersRecieved = true;
 		for (sf::Int32 i = 0; i < characterCount; ++i) {
 
 			sf::Int32 characterIdentifier;
 			packet >> characterIdentifier;
 
-			Character* character = mWorld.addCharacter(0, true);
-
+			Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
+			mLocalPlayerIdentifiers.push_back(characterIdentifier);
 			character->setPosition(assignCharacterSpawn(characterIdentifier));
 
 			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 		}
-	}
+
 
 }
 
@@ -345,6 +387,8 @@ void MultiplayerGameState::spawnEnemy(sf::Packet& packet)
 
 void MultiplayerGameState::spawnObstacle(sf::Packet& packet)
 {
+	//std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
+	mObstaclesRecieved = true;
 	float x, y, a;
 	sf::Int32 type;
 	packet >> type >> x >> y >> a;
@@ -414,20 +458,20 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 {
 	// Remove players whose characters were destroyed
-	bool foundLocalPlane = false;
+	bool foundLocalPlayer = false;
 
 	for (auto itr = mPlayers.begin(); itr != mPlayers.end();)
 	{
 		// Check if there are no more local planes for remote clients
 		if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end())
-			foundLocalPlane = true;
+			foundLocalPlayer = true;
 
 		if (!mWorld.getCharacter(itr->first))
 		{
 			itr = mPlayers.erase(itr);
 
-			//if (mPlayers.empty())
-			//	requestStackPush(States::GameOver);
+			if (mPlayers.empty())
+				requestStackPush(States::GameOver);
 		}
 		else
 			++itr;
@@ -435,8 +479,8 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		mWorld.update(dt);
 	}
 
-	//if (!foundLocalPlane && mGameStarted)
-	//	requestStackPush(States::GameOver);
+	if (!foundLocalPlayer && mGameStarted)
+		requestStackPush(States::GameOver);
 }
 
 void MultiplayerGameState::handleRealTimeInput()

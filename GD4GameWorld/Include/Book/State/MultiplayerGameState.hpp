@@ -26,6 +26,10 @@ public:
 	virtual void				onActivate();
 	void						onDestroy();
 
+	void notifyServerReady();
+
+	void notifyServerWorldBuilt();
+
 	void						disableAllRealtimeActions();
 
 
@@ -93,8 +97,7 @@ private:
 	sf::Text					mBroadcastText;
 	sf::Time					mBroadcastElapsedTime;
 
-	sf::Text					mPlayerInvitationText;
-	sf::Time					mPlayerInvitationTime;
+	sf::Text					mLoadingText;
 
 	sf::Text					mFailedConnectionText;
 	sf::Clock					mFailedConnectionClock;
@@ -104,6 +107,9 @@ private:
 	bool						mHost;
 	bool						mGameStarted;
 	bool mCharactersRecieved{};
+	bool mObstaclesRecieved{};
+	bool mServerNotifiedReady{};
+	bool mSeverNotifiedBuilt{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
 };
