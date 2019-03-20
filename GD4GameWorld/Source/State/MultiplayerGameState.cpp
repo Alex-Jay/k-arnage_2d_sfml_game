@@ -294,7 +294,6 @@ void MultiplayerGameState::playerConnect(sf::Packet& packet)
 
 	Character* character = mWorld.addCharacter(characterIdentifier, false);
 	character->setPosition(characterPosition);
-
 	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
 
 }
@@ -306,30 +305,51 @@ void MultiplayerGameState::setCharacters(sf::Packet& packet)
 		sf::Int32 characterCount;
 		packet >> characterCount;
 
-		for (sf::Int32 i = 0; i < characterCount; ++i) {
+		//for (sf::Int32 i = 0; i < characterCount; ++i) {
+		//	sf::Int32 characterIdentifier;
+		//
+		//	packet >> characterIdentifier;
+		//	sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
 
+		//	Character* character;
+
+		//	if (characterIdentifier == mLocalPlayerID)
+		//		character = mWorld.addCharacter(characterIdentifier, true);
+		//	else
+		//		character = mWorld.addCharacter(characterIdentifier, false);
+		//	
+		//	character->setPosition(characterPosition);
+		//	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+		//}
+
+		for (sf::Int32 i = 0; i < characterCount; ++i)
+		{
 			sf::Int32 characterIdentifier;
 			packet >> characterIdentifier;
 
-			if ((characterIdentifier == mLocalPlayerID))
+			Character* character;
+
+			if (characterIdentifier == mLocalPlayerID)
 			{
-				Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
-				mLocalPlayerIdentifiers.push_back(characterIdentifier);
-				character->setPosition(assignCharacterSpawn(characterIdentifier));
-				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+				std::cout << "Spawn -- LOCAL PLAYER" << std::endl;
+				character = mWorld.addCharacter(characterIdentifier, true);
+
+				//mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 			}
 			else
 			{
-				Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
-				mLocalPlayerIdentifiers.push_back(characterIdentifier);
-				character->setPosition(assignCharacterSpawn(characterIdentifier));
-				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+				std::cout << "Spawn -- NON-LOCAL PLAYER" << std::endl;
+				character = mWorld.addCharacter(characterIdentifier, false);
+				//mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
 			}
+
+			mLocalPlayerIdentifiers.push_back(characterIdentifier);
+			character->setPosition(assignCharacterSpawn(characterIdentifier));
+			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
 		}
+
 		mCharactersRecieved = true;
 	}
-
-
 }
 
 void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
@@ -433,6 +453,7 @@ void MultiplayerGameState::updateClientState(sf::Packet& packet)
 		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
 		Character* character = mWorld.getCharacter(characterIdentifier);
+
 		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
 		if (character && !isLocalPlane) {
 			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
@@ -444,23 +465,60 @@ void MultiplayerGameState::updateClientState(sf::Packet& packet)
 sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 {
 	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
-	// TO FIX this Needs to be done by Modulas, so that it wraps around when more playes join
-	if (Identifier == 0)
+	switch (Identifier)
 	{
-		spawnPosition = sf::Vector2f(512.f, 315.f);
+		case 0:
+			spawnPosition = sf::Vector2f(512.f, 315.f);
+			break;
+		case 1:
+			spawnPosition = sf::Vector2f(712.f, 315.f);
+			break;
+		case 2:
+			spawnPosition = sf::Vector2f(912.f, 315.f);
+			break;
+		case 3:
+			spawnPosition = sf::Vector2f(1112.f, 315.f);
+			break;
+		case 4:
+			spawnPosition = sf::Vector2f(1312.f, 315.f);
+			break;
+		case 5:
+			spawnPosition = sf::Vector2f(1512.f, 315.f);
+			break;
+		case 6:
+			spawnPosition = sf::Vector2f(1712.f, 315.f);
+			break;
+		case 7:
+			spawnPosition = sf::Vector2f(1912.f, 315.f);
+			break;
+		case 8:
+			spawnPosition = sf::Vector2f(2112.f, 315.f);
+			break;
+		case 9:
+			spawnPosition = sf::Vector2f(2312.f, 315.f);
+			break;
+		default:
+			break;
 	}
-	else if (Identifier == 1)
-	{
-		spawnPosition = sf::Vector2f(1536.f, 315.f);
-	}
-	else if (Identifier == 2)
-	{
-		spawnPosition = sf::Vector2f(2048.f, 315.f);
-	}
-	else if (Identifier == 3)
-	{
-		spawnPosition = sf::Vector2f(2048.f, 315.f);
-	}
+
+
+	//// TO FIX this Needs to be done by Modulas, so that it wraps around when more playes join
+	//if (Identifier == 0)
+	//{
+	//	spawnPosition = sf::Vector2f(512.f, 315.f);
+	//}
+	//else if (Identifier == 1)
+	//{
+	//	spawnPosition = sf::Vector2f(1536.f, 315.f);
+	//}
+	//else if (Identifier == 2)
+	//{
+	//	spawnPosition = sf::Vector2f(2048.f, 315.f);
+	//}
+	//else if (Identifier == 3)
+	//{
+	//	spawnPosition = sf::Vector2f(2048.f, 315.f);
+	//}
 
 	return spawnPosition;
 }
