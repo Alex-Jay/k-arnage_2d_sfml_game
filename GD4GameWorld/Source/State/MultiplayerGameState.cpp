@@ -140,25 +140,21 @@ bool MultiplayerGameState::handleEvent(const sf::Event& event)
 	FOREACH(auto& pair, mPlayers)
 		pair.second->handleEvent(event, commands);
 
-	if (event.type == sf::Event::KeyPressed) {
-		// Enter pressed, add second player co-op (only if we are one player)
-		//if (event.key.code == sf::Keyboard::Return && mLocalPlayerIdentifiers.size() == 1) {
-		//	sf::Packet packet;
-		//	packet << static_cast<sf::Int32>(Client::RequestCoopPartner);
-
-		//	CLIENT_SOCKET.send(packet);
-		//}
-
+	if (event.type == sf::Event::KeyPressed)
+	{
 		// Escape pressed, trigger the pause screen
-		if (event.key.code == sf::Keyboard::Escape) {
+		if (event.key.code == sf::Keyboard::Escape)
+		{
 			disableAllRealtimeActions();
 			requestStackPush(States::NetworkPause);
 		}
 	}
-	else if (event.type == sf::Event::GainedFocus) {
+	else if (event.type == sf::Event::GainedFocus)
+	{
 		mHasFocus = true;
 	}
-	else if (event.type == sf::Event::LostFocus) {
+	else if (event.type == sf::Event::LostFocus)
+	{
 		mHasFocus = false;
 	}
 
@@ -315,11 +311,20 @@ void MultiplayerGameState::setCharacters(sf::Packet& packet)
 			sf::Int32 characterIdentifier;
 			packet >> characterIdentifier;
 
-			Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
-			mLocalPlayerIdentifiers.push_back(characterIdentifier);
-			character->setPosition(assignCharacterSpawn(characterIdentifier));
-
-			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+			if ((characterIdentifier == mLocalPlayerID))
+			{
+				Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
+				mLocalPlayerIdentifiers.push_back(characterIdentifier);
+				character->setPosition(assignCharacterSpawn(characterIdentifier));
+				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
+			}
+			else
+			{
+				Character* character = mWorld.addCharacter(characterIdentifier, (characterIdentifier == mLocalPlayerID));
+				mLocalPlayerIdentifiers.push_back(characterIdentifier);
+				character->setPosition(assignCharacterSpawn(characterIdentifier));
+				mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
+			}
 		}
 		mCharactersRecieved = true;
 	}

@@ -164,8 +164,8 @@ void GameServer::handleIncomingPackets()
 		}
 	}
 
-	if (detectedTimeout)
-		GameServer::handleDisconnections();
+	//if (detectedTimeout)
+	//	GameServer::handleDisconnections();
 }
 
 void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout)
