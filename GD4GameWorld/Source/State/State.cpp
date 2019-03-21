@@ -1,7 +1,6 @@
 #include "State/State.hpp"
 #include "State/StateStack.hpp"
 
-
 State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
 	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys)
 	: window(&window)
@@ -45,12 +44,15 @@ State::Context State::getContext() const
 	return mContext;
 }
 
+void State::setLocalID(sf::Int32 id)
+{
+	mContext.localID = id;
+}
+
 void State::onActivate()
 {
-
 }
 
 void State::onDestroy()
 {
-
 }

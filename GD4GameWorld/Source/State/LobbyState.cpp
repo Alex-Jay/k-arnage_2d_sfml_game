@@ -31,7 +31,6 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWindow(*context.window)
 	, mSocket(*context.socket)
-	, mLocalPlayerID(*context.localID)
 	, mGUIContainer()
 	, mClientTimeout(sf::seconds(300.f)) // 5 second timeout
 	, mTimeSinceLastPacket(sf::seconds(0.f))
@@ -358,7 +357,7 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 
 	packet >> characterIdentifier;
 
-	mLocalPlayerID = characterIdentifier;
+	setLocalID(characterIdentifier);
 
 	++mPlayerCount;
 
