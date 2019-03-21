@@ -6,7 +6,7 @@
 #include "Networking/GameServer.hpp"
 #include "Networking/NetworkProtocol.hpp"
 #include "Entity/Player.hpp"
-#include "../SocketManager.hpp"
+#include "Networking/PacketHandler.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -17,6 +17,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
+
+class PacketHandler;
 
 class LobbyState : public State {
 public:
@@ -29,6 +31,13 @@ public:
 	virtual void onActivate();
 	virtual void onDestroy();
 
+	void updateDisplayText();
+	void increasePlayerCount();
+	void decreasePlayerCount();
+	int16_t getPlayerCount(int16_t playerCount);
+	void setPlayerCount(int16_t playerCount);
+	void returnToMenu();
+	void loadGame();
 private:
 	typedef std::unique_ptr<Player> PlayerPtr;
 
@@ -36,7 +45,7 @@ private:
 	void setDisplayText(Context context);
 	void setButtons(Context context);
 	void connectToServer();
-	void updateDisplayText();
+	
 	void updateBroadcastMessage(sf::Time elapsedTime);
 	void handlePacket(sf::Int32 packetType, sf::Packet& packet);
 	void setBroadcastMessage(sf::Packet & packet);
@@ -44,8 +53,8 @@ private:
 	void playerConnect(sf::Packet & packet);
 	void playerDisconnect(sf::Packet & packet);
 	void setInitialLobbyState(sf::Packet & packet);
-	void returnToMenu();
-	void loadGame();
+	
+	
 	void sendLoadGame();
 	void sendDisconnectSelf();
 
@@ -78,4 +87,5 @@ private:
 	sf::Time mTimeSinceLastPacket;
 	StateStack& mStack;
 
+	PacketHandler* mPacketHandler;
 };

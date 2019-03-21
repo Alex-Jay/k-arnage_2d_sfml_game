@@ -36,11 +36,12 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
 	, mStack(stack)
+	, mPacketHandler(new PacketHandler)
 {
+	mPacketHandler->setLobby(this);
 	setText(context);
 	setButtons(context);
 	connectToServer();
-
 }
 
 #pragma region Initialization
@@ -116,16 +117,19 @@ void LobbyState::connectToServer()
 
 	if (status == sf::TcpSocket::Done)
 	{
+		mPacketHandler->setConnected(true);
 		mConnected = true;
 	}
 	else
 	{
+		mPacketHandler->setConnected(false);
 		mConnected = false;
 		mFailedConnectionClock.restart();
 	}
 
 	mSocket.setBlocking(false);
 }
+
 #pragma endregion
 
 #pragma region Update
@@ -154,42 +158,59 @@ void LobbyState::draw()
 	}
 }
 
+//bool LobbyState::update(sf::Time dt)
+//{
+//	if (!mGameStarted)
+//	{
+//		// Connected to server: Handle all the network logic
+//		if (mConnected) {
+//
+//
+//			// Handle messages from server that may have arrived
+//			sf::Packet packet;
+//			if (mSocket.receive(packet) == sf::Socket::Done) {
+//				mTimeSinceLastPacket = sf::seconds(0.f);
+//				sf::Int32 packetType;
+//				packet >> packetType;
+//				handlePacket(packetType, packet);
+//			}
+//			else {
+//				// Check for timeout with the server
+//				if (mTimeSinceLastPacket > mClientTimeout) {
+//					mConnected = false;
+//
+//					mFailedConnectionText.setString("Lost connection to server");
+//					centerOrigin(mFailedConnectionText);
+//
+//					mFailedConnectionClock.restart();
+//				}
+//			}
+//
+//			updateBroadcastMessage(dt);
+//			mTimeSinceLastPacket += dt;
+//		}
+//
+//		// Failed to connect and waited for more than 5 seconds: Back to menu
+//		else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
+//			requestStateClear();
+//			requestStackPush(States::Menu);
+//		}
+//	}
+//
+//	return true;
+//}
+
 bool LobbyState::update(sf::Time dt)
 {
 	if (!mGameStarted)
 	{
 		// Connected to server: Handle all the network logic
-		if (mConnected) {
-
-			// TODO Remove players who disconnect
-			bool foundLocalPlayer = false;
-
-			// Handle messages from server that may have arrived
-			sf::Packet packet;
-			if (mSocket.receive(packet) == sf::Socket::Done) {
-				mTimeSinceLastPacket = sf::seconds(0.f);
-				sf::Int32 packetType;
-				packet >> packetType;
-				handlePacket(packetType, packet);
-			}
-			else {
-				// Check for timeout with the server
-				if (mTimeSinceLastPacket > mClientTimeout) {
-					mConnected = false;
-
-					mFailedConnectionText.setString("Lost connection to server");
-					centerOrigin(mFailedConnectionText);
-
-					mFailedConnectionClock.restart();
-				}
-			}
-
+		if (mPacketHandler->isConnected())
+		{
+			mPacketHandler->update(dt, &mSocket);
 			updateBroadcastMessage(dt);
-			mTimeSinceLastPacket += dt;
 		}
-
-		// Failed to connect and waited for more than 5 seconds: Back to menu
-		else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
+		else if (mPacketHandler->timedOut()) {
 			requestStateClear();
 			requestStackPush(States::Menu);
 		}
@@ -317,10 +338,6 @@ void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		spawnSelf(packet);
 	} break;
 
-	case Server::PlayerConnect: {
-		playerConnect(packet);
-	} break;
-
 	case Server::PlayerDisconnect:
 	{
 		playerDisconnect(packet);
@@ -364,12 +381,6 @@ void LobbyState::spawnSelf(sf::Packet& packet)
 	updateDisplayText();
 }
 
-void LobbyState::playerConnect(sf::Packet& packet)
-{
-	++mPlayerCount;
-	updateDisplayText();
-}
-
 void LobbyState::playerDisconnect(sf::Packet& packet)
 {
 	sf::Int32 characterIdentifier;
@@ -397,6 +408,30 @@ void LobbyState::setInitialLobbyState(sf::Packet& packet)
 	mPlayerCount = characterCount;
 
 	updateDisplayText();
+}
+
+#pragma endregion
+
+#pragma region Getters and Setters
+
+void LobbyState::increasePlayerCount()
+{
+	++mPlayerCount;
+}
+
+void LobbyState::decreasePlayerCount()
+{
+	--mPlayerCount;
+}
+
+int16_t LobbyState::getPlayerCount(int16_t playerCount)
+{
+	return mPlayerCount;
+}
+
+void LobbyState::setPlayerCount(int16_t playerCount)
+{
+	mPlayerCount = playerCount;
 }
 
 #pragma endregion

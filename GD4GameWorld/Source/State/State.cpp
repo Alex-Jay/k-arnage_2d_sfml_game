@@ -1,11 +1,12 @@
 #include "State/State.hpp"
 #include "State/StateStack.hpp"
 
+
 State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
 	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys)
 	: window(&window)
 	, socket(&socket)
-	, localID(&localID)
+	, localID(0)
 	, textures(&textures)
 	, fonts(&fonts)
 	, music(&music)
@@ -47,6 +48,11 @@ State::Context State::getContext() const
 void State::setLocalID(sf::Int32 id)
 {
 	mContext.localID = id;
+}
+
+sf::Int32 State::getLocalID()
+{
+	return mContext.localID;
 }
 
 void State::onActivate()

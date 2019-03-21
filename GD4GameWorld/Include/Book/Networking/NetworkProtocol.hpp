@@ -14,7 +14,9 @@ namespace Server
 	{
 		BroadcastMessage,	// format: [Int32:packetType] [string:message]
 		SpawnSelf,
-		JoinLobby,			// format: [Int32:packetType]
+		JoinLobby,
+		LeaveLobby,
+		LobbyState,
 		SetCharacters,
 		InitialState,
 		PlayerEvent,

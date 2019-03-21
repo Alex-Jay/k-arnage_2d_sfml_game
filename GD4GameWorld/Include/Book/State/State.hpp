@@ -47,7 +47,8 @@ public:
 
 	virtual void onActivate();
 	virtual void onDestroy();
-
+	void setLocalID(sf::Int32 id);
+	sf::Int32 getLocalID();
 protected:
 	void requestStackPush(States::ID stateID);
 	void requestStackPop();
@@ -55,7 +56,7 @@ protected:
 
 	Context getContext() const;
 
-	void setLocalID(sf::Int32 id);
+	
 
 private:
 	StateStack* mStack;

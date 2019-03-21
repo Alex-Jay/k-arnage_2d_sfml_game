@@ -13,7 +13,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
 	, mSocket(*context.socket)
-	, mLocalPlayerID(*context.localID)
+	, mLocalPlayerID(context.localID)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
 	, mActiveState(true)
