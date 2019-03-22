@@ -45,20 +45,9 @@ public:
 	void updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
-	void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
 
 	void broadcastMessage(sf::Packet & packet);
 
-
-	void playerRealTimeChange(sf::Packet & packet);
-
-	void spawnEnemy(sf::Packet & packet);
-
-	void spawnObstacle(sf::Packet & packet);
-
-	void spawnPickup(sf::Packet & packet);
-
-	void updateClientState(sf::Packet & packet);
 
 	sf::Vector2f assignCharacterSpawn(int Identifier);
 

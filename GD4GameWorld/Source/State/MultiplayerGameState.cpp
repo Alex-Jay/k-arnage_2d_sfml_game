@@ -70,17 +70,11 @@ void MultiplayerGameState::draw()
 bool MultiplayerGameState::update(sf::Time dt)
 {
 	handleCharacterCount(dt);
-
 	handleRealTimeInput();
-
 	handleNetworkInput();
-
 	handleServerMessages(dt);
-
 	updateBroadcastMessage(dt);
-
 	handleGameActions();
-
 	handlePositionUpdates();
 
 	mTimeSinceLastPacket += dt;
@@ -96,18 +90,18 @@ bool MultiplayerGameState::update(sf::Time dt)
 
 void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 {
-	if (mBroadcasts.empty())
+	if (mPacketHandler->getBroadcastMessages().empty())
 		return;
 
 	// Update broadcast timer
 	mBroadcastElapsedTime += elapsedTime;
 	if (mBroadcastElapsedTime > sf::seconds(2.5f)) {
 		// If message has expired, remove it
-		mBroadcasts.erase(mBroadcasts.begin());
+		mPacketHandler->removeBroadcast();
 
 		// Continue to display next broadcast message
-		if (!mBroadcasts.empty()) {
-			mBroadcastText.setString(mBroadcasts.front());
+		if (!mPacketHandler->getBroadcastMessages().empty()) {
+			mBroadcastText.setString(mPacketHandler->getBroadcastMessages().front());
 			centerOrigin(mBroadcastText);
 			mBroadcastElapsedTime = sf::Time::Zero;
 		}
@@ -117,8 +111,6 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 #pragma endregion
 
 #pragma region Events
-
-
 
 void MultiplayerGameState::disableAllRealtimeActions()
 {
@@ -166,17 +158,13 @@ void MultiplayerGameState::onActivate()
 void MultiplayerGameState::onDestroy()
 {
 	if (!mHost && mConnected) {
-		// Inform server this client is dying
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
+		mPacketHandler->sendDisconnectSelf(&mSocket);
 	}
 }
 
 #pragma endregion
 
 #pragma region Packet Handling
-
 
 void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 {
@@ -249,7 +237,7 @@ void MultiplayerGameState::playerRealTimeChange(sf::Int32 characterIdentifier, s
 
 void MultiplayerGameState::spawnZombie(int x, int y)
 {
-	mWorld.addZombie(x, y, 0);
+	mWorld.addZombie(x, y);
 }
 
 void MultiplayerGameState::spawnPickup(sf::Int32 type, sf::Vector2f position)
@@ -317,13 +305,10 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 {
 	// Remove players whose characters were destroyed
-	bool foundLocalPlayer = false;
+	bool foundLocalPlayer = mWorld.getCharacter(mLocalPlayerID);
 
 	for (auto itr = mPlayers.begin(); itr != mPlayers.end();)
 	{
-		// Check if there are no more local planes for remote clients
-		if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end())
-			foundLocalPlayer = true;
 
 		if (!mWorld.getCharacter(itr->first))
 		{
@@ -334,10 +319,10 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		}
 		else
 			++itr;
-
 		mWorld.update(dt);
 	}
 
+	//TODO IF PLAYER IS DEAD SET TO SPECTATING UNTIL GAME IS OVER TO AVOID GAME ENDING ON HOST DEATH
 	if (!foundLocalPlayer && mGameStarted)
 		requestStackPush(States::GameOver);
 }
@@ -364,7 +349,6 @@ void MultiplayerGameState::handleNetworkInput()
 
 void MultiplayerGameState::handleServerMessages(sf::Time dt)
 {
-
 	if (mPacketHandler->isConnected())
 	{
 		mPacketHandler->update(dt, &mSocket);
@@ -378,17 +362,10 @@ void MultiplayerGameState::handleServerMessages(sf::Time dt)
 
 void MultiplayerGameState::handleGameActions()
 {
-	// Events occurring in the game
 	GameActions::Action gameAction;
-	while (mWorld.pollGameAction(gameAction)) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::GameEvent);
-		packet << static_cast<sf::Int32>(gameAction.type);
-		packet << gameAction.position.x;
-		packet << gameAction.position.y;
 
-		mSocket.send(packet);
-	}
+	while (mWorld.pollGameAction(gameAction)) 
+		mPacketHandler->sendGameEvent(&mSocket, gameAction);
 }
 
 void MultiplayerGameState::handlePositionUpdates()

@@ -113,6 +113,7 @@ void GameServer::tick()
 	RemoveDestroyedCharacters();
 	spawnEnemys();
 	int np = mPeers.size();
+
 	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
 	{
 		std::cout << "ALL CLIENTS READY: " << std::endl;
@@ -202,7 +203,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	{
 		std::cout << "RECIEVED World BUILT: " << std::endl;
 		++mClientReadyCount;
-
+		// WHEN ALL CLIENTS HAVE SAID THAT THEIR WORLD HAS BEEN BUILT, Start The Game
 	} break;
 
 	case Client::StartGame:
@@ -539,11 +540,6 @@ void GameServer::RemoveDestroyedCharacters()
 	}
 }
 
-void GameServer::SetInitialWorldState()
-{
-	//sendCharacters();
-}
-
 void GameServer::sendCharacters()
 {
 	std::cout << "SENDING SET CHARACTERS " << std::endl;
@@ -564,33 +560,6 @@ void GameServer::sendCharacters()
 
 	sendToAll(packet);
 }
-
-//void GameServer::spawnObstacles()
-//{
-//	if (!obstaclesSpawned)
-//	{
-//		obstaclesSpawned = true;
-//		int rot;
-//
-//		std::size_t obstacleCount = 15; //1u + randomInt(20);
-//		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
-//
-//		// Send the spawn orders to all clients
-//		for (std::size_t i = 0; i < obstacleCount; ++i)
-//		{
-//			rot = randomInt(360);
-//			sf::Packet packet;
-//
-//			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
-//			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
-//			packet << spawnPoints[i].x;
-//			packet << spawnPoints[i].y;
-//			packet << rot;
-//
-//			sendToAll(packet);
-//		}
-//	}
-//}
 
 void GameServer::setObstacles()
 {

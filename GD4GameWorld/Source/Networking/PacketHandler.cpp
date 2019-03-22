@@ -322,6 +322,17 @@ void PacketHandler::notifyServerWorldBuilt(sf::TcpSocket* socket)
 	socket->send(packet);
 }
 
+void PacketHandler::sendGameEvent(sf::TcpSocket* socket, GameActions::Action gameAction)
+{
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::GameEvent);
+	packet << static_cast<sf::Int32>(gameAction.type);
+	packet << gameAction.position.x;
+	packet << gameAction.position.y;
+
+	socket->send(packet);
+}
+
 #pragma endregion
 
 

@@ -158,7 +158,8 @@ void World::draw()
 {
 	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
 	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
-	if (PostEffect::isSupported())
+	// Dont apply shader is world is networked
+	if (PostEffect::isSupported() && !mNetworkedWorld)
 	{
 
 		mWaterSceneTexture.clear();
@@ -341,7 +342,7 @@ void World::addZombies(sf::Time dt)
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
 					//mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
-					addZombie(xPos, yPos, angle);
+					addZombie(xPos, yPos);
 					++mNumZombiesAlive;
 				}
 			}
@@ -526,7 +527,7 @@ void World::buildScene()
 
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 
-	if (PostEffect::isSupported())
+	if (PostEffect::isSupported() && !mNetworkedWorld)
 	{
 		mWaterSprite.attachChild(std::move(waterSprite));
 	}

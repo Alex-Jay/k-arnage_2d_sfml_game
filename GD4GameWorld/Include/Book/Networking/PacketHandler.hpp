@@ -34,6 +34,8 @@ public:
 	void notifyServerReady(sf::TcpSocket* socket);
 
 	void notifyServerWorldBuilt(sf::TcpSocket* socket);
+	void sendPlayerUpdates(sf::TcpSocket * socket);
+	void sendGameEvent(sf::TcpSocket * socket, GameActions::Action gameAction);
 private:
 
 	void handlePacket(sf::Int32 packetType, sf::Packet & packet);

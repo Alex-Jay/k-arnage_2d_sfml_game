@@ -158,48 +158,6 @@ void LobbyState::draw()
 	}
 }
 
-//bool LobbyState::update(sf::Time dt)
-//{
-//	if (!mGameStarted)
-//	{
-//		// Connected to server: Handle all the network logic
-//		if (mConnected) {
-//
-//
-//			// Handle messages from server that may have arrived
-//			sf::Packet packet;
-//			if (mSocket.receive(packet) == sf::Socket::Done) {
-//				mTimeSinceLastPacket = sf::seconds(0.f);
-//				sf::Int32 packetType;
-//				packet >> packetType;
-//				handlePacket(packetType, packet);
-//			}
-//			else {
-//				// Check for timeout with the server
-//				if (mTimeSinceLastPacket > mClientTimeout) {
-//					mConnected = false;
-//
-//					mFailedConnectionText.setString("Lost connection to server");
-//					centerOrigin(mFailedConnectionText);
-//
-//					mFailedConnectionClock.restart();
-//				}
-//			}
-//
-//			updateBroadcastMessage(dt);
-//			mTimeSinceLastPacket += dt;
-//		}
-//
-//		// Failed to connect and waited for more than 5 seconds: Back to menu
-//		else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
-//			requestStateClear();
-//			requestStackPush(States::Menu);
-//		}
-//	}
-//
-//	return true;
-//}
-
 bool LobbyState::update(sf::Time dt)
 {
 	if (!mGameStarted)

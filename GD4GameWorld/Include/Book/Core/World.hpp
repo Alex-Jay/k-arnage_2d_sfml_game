@@ -65,13 +65,12 @@ public:
 	void resetZombieHitElapsedTime();
 	void removeCharacter(int8_t localIdentifier);
 	void createPickup(sf::Vector2f position, Pickup::Type type);
-	void addZombie(int16_t x, int16_t y, int16_t a);
 	void addObstacle(Obstacle::ObstacleID type, int16_t x, int16_t y, int16_t a);
 	void spawnZombies();
 	void spawnObstacles();
 	void setZombieHitDelay(sf::Time delay);
 	void setAliveZombieCount(int8_t count);
-
+	void addZombie(int16_t x, int16_t y);
 private:
 	struct SpawnPoint {
 		SpawnPoint(Character::Type type, int16_t x, int16_t y, int8_t a)
@@ -126,7 +125,7 @@ private:
 	void handleExplosionCollisions(SceneNode::Pair& pair);
 	void setView();
 	void addZombies(sf::Time dt);
-	void addZombie(int16_t x, int16_t y);
+	
 	void updateSounds();
 	void StartZombieSpawnTimer(sf::Time dt);
 	void destroyEntitiesOutsideView();
