@@ -80,7 +80,7 @@ void LobbyState::setButtons(Context context)
 		readyButton->setText("Ready");
 		readyButton->setCallback([this]()
 		{
-			sendLoadGame();
+			mPacketHandler->sendLoadGame(&mSocket);
 		});
 
 		mGUIContainer.pack(readyButton);
@@ -91,7 +91,7 @@ void LobbyState::setButtons(Context context)
 	exitButton->setText("Back");
 	exitButton->setCallback([this]() {
 		mText.setString("Disconnecting....");
-		sendDisconnectSelf();
+		mPacketHandler->sendDisconnectSelf(&mSocket);
 	});
 
 	mGUIContainer.pack(exitButton);
@@ -221,18 +221,18 @@ bool LobbyState::update(sf::Time dt)
 
 void LobbyState::updateBroadcastMessage(sf::Time elapsedTime)
 {
-	if (mBroadcasts.empty())
+	if (mPacketHandler->getBroadcastMessages().empty())
 		return;
 
 	// Update broadcast timer
 	mBroadcastElapsedTime += elapsedTime;
 	if (mBroadcastElapsedTime > sf::seconds(2.5f)) {
 		// If message has expired, remove it
-		mBroadcasts.erase(mBroadcasts.begin());
+		mPacketHandler->removeBroadcast();
 
 		// Continue to display next broadcast message
-		if (!mBroadcasts.empty()) {
-			mBroadcastText.setString(mBroadcasts.front());
+		if (!mPacketHandler->getBroadcastMessages().empty()) {
+			mBroadcastText.setString(mPacketHandler->getBroadcastMessages().front());
 			centerOrigin(mBroadcastText);
 			mBroadcastElapsedTime = sf::Time::Zero;
 		}
@@ -297,117 +297,6 @@ void LobbyState::setDisplayText(Context context)
 	mText.setString(text);
 	centerOrigin(mText);
 	mText.setPosition(sf::Vector2f(context.window->getSize().x / 2u, 100));
-}
-
-#pragma endregion
-
-#pragma region Send Packet
-
-void LobbyState::sendLoadGame()
-{
-	//std::cout << "1 SEND LOAD GAME"  << std::endl;
-	if (mHost && mConnected) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::LoadGame);
-		mSocket.send(packet);
-	}
-}
-
-void LobbyState::sendDisconnectSelf()
-{
-	if (mConnected) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
-	}
-}
-
-#pragma endregion
-
-#pragma region Handle Packet
-
-void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
-{
-	switch (packetType) {
-		// Send message to all clients
-	case Server::BroadcastMessage: {
-		setBroadcastMessage(packet);
-	} break;
-
-	case Server::JoinLobby: {
-		spawnSelf(packet);
-	} break;
-
-	case Server::PlayerDisconnect:
-	{
-		playerDisconnect(packet);
-	} break;
-
-	case Server::InitialState: {
-		setInitialLobbyState(packet);
-	} break;
-
-	case Server::LoadGame:
-	{
-		loadGame();
-	} break;
-	}
-}
-
-void LobbyState::setBroadcastMessage(sf::Packet& packet)
-{
-	std::string message;
-	packet >> message;
-	mBroadcasts.push_back(message);
-
-	// Just added first message, display immediately
-	if (mBroadcasts.size() == 1) {
-		mBroadcastText.setString(mBroadcasts.front());
-		centerOrigin(mBroadcastText);
-		mBroadcastElapsedTime = sf::Time::Zero;
-	}
-}
-
-void LobbyState::spawnSelf(sf::Packet& packet)
-{
-	sf::Int32 characterIdentifier;
-
-	packet >> characterIdentifier;
-
-	setLocalID(characterIdentifier);
-
-	++mPlayerCount;
-
-	updateDisplayText();
-}
-
-void LobbyState::playerDisconnect(sf::Packet& packet)
-{
-	sf::Int32 characterIdentifier;
-	packet >> characterIdentifier;
-	
-	if (characterIdentifier == mLocalPlayerID)
-	{
-		mSocket.disconnect();
-		returnToMenu();
-	}
-	else
-	{
-		--mPlayerCount;
-		updateDisplayText();
-	}
-
-}
-
-void LobbyState::setInitialLobbyState(sf::Packet& packet)
-{
-	sf::Int32 characterCount;
-
-	packet >> characterCount;
-	
-	mPlayerCount = characterCount;
-
-	updateDisplayText();
 }
 
 #pragma endregion

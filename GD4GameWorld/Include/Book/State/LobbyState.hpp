@@ -47,16 +47,6 @@ private:
 	void connectToServer();
 	
 	void updateBroadcastMessage(sf::Time elapsedTime);
-	void handlePacket(sf::Int32 packetType, sf::Packet& packet);
-	void setBroadcastMessage(sf::Packet & packet);
-	void spawnSelf(sf::Packet & packet);
-	void playerConnect(sf::Packet & packet);
-	void playerDisconnect(sf::Packet & packet);
-	void setInitialLobbyState(sf::Packet & packet);
-	
-	
-	void sendLoadGame();
-	void sendDisconnectSelf();
 
 private:
 	sf::RenderWindow& mWindow;

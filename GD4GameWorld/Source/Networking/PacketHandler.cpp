@@ -8,6 +8,8 @@ PacketHandler::PacketHandler() :
 {
 }
 
+#pragma region Getters & Setters
+
 void PacketHandler::setLobby(LobbyState* lobby)
 {
 	mLobby = lobby;
@@ -23,16 +25,30 @@ bool PacketHandler::isConnected()
 	return mConnected;
 }
 
+std::vector<std::string> PacketHandler::getBroadcastMessages()
+{
+	return mBroadcasts;
+}
+
+void PacketHandler::removeBroadcast()
+{
+	mBroadcasts.erase(mBroadcasts.begin());
+}
+
 bool PacketHandler::timedOut()
 {
 	return mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f);
 }
 
-bool PacketHandler::update(sf::Time dt, sf::TcpSocket* mSocket)
+#pragma endregion
+
+#pragma region Update
+
+bool PacketHandler::update(sf::Time dt, sf::TcpSocket* socket)
 {
 	sf::Packet packet;
 
-	if (mSocket->receive(packet) == sf::Socket::Done) 
+	if (socket->receive(packet) == sf::Socket::Done)
 	{
 		mTimeSinceLastPacket = sf::seconds(0.f);
 		sf::Int32 packetType;
@@ -50,6 +66,10 @@ bool PacketHandler::update(sf::Time dt, sf::TcpSocket* mSocket)
 	return true;
 }
 
+#pragma endregion
+
+#pragma region Packet Switch
+
 void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
 	switch (packetType) {
@@ -62,8 +82,12 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		joinLobby(packet);
 	} break;
 
-	case Server::LeaveLobby: {
-		leaveLobby(packet);
+	case Server::SelfJoinLobby: {
+		joinLobby(packet, true);
+	} break;
+
+	case Server::PlayerDisconnect: {
+		handleDisconnect(packet);
 	} break;
 
 	case Server::LobbyState: {
@@ -77,6 +101,20 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 	}
 }
 
+#pragma endregion
+
+#pragma region Packet Recieving
+
+void PacketHandler::handleDisconnect(sf::Packet& packet)
+{
+	//If lobby is not null it means players are in lobby state
+	if (mLobby)
+	{
+		leaveLobby(packet);
+	}
+	//else leaveMultiplayer
+}
+
 void PacketHandler::setBroadcastMessage(sf::Packet& packet)
 {
 	std::string message;
@@ -84,19 +122,24 @@ void PacketHandler::setBroadcastMessage(sf::Packet& packet)
 	mBroadcasts.push_back(message);
 }
 
-void PacketHandler::joinLobby(sf::Packet& packet)
+void PacketHandler::joinLobby(sf::Packet& packet, bool isSelf)
 {
 	sf::Int32 characterIdentifier;
 	packet >> characterIdentifier;
-	mLobby->setLocalID(characterIdentifier);
 	mLobby->increasePlayerCount();
 	mLobby->updateDisplayText();
+
+	if (isSelf)
+		mLobby->setLocalID(characterIdentifier);
 }
 
 void PacketHandler::leaveLobby(sf::Packet& packet)
 {
 	sf::Int32 characterIdentifier;
 	packet >> characterIdentifier;
+
+	std::cout << "car ID is " << characterIdentifier << std::endl;
+	std::cout << "loby ID is " << mLobby->getLocalID() << std::endl;
 
 	if (mLobby->getLocalID() == characterIdentifier)
 	{
@@ -116,3 +159,24 @@ void PacketHandler::setInitialLobbyState(sf::Packet& packet)
 	mLobby->setPlayerCount(characterCount);
 	mLobby->updateDisplayText();
 }
+
+#pragma endregion
+
+#pragma region Packet Sending
+
+void PacketHandler::sendLoadGame(sf::TcpSocket* socket)
+{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::LoadGame);
+		socket->send(packet);
+}
+
+void PacketHandler::sendDisconnectSelf(sf::TcpSocket* socket)
+{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Client::Quit);
+		socket->send(packet);
+}
+
+#pragma endregion
+

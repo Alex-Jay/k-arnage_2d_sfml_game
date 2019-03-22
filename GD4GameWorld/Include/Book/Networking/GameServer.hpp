@@ -20,7 +20,7 @@ public:
 
 	void onDestroy();
 
-	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
+	void notifyPlayerJoin(sf::Int32 characterIdentifier);
 	void loadGame();
 	void startGame();
 	void playerEvent(sf::Packet packet);

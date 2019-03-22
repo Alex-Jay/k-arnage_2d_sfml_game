@@ -16,15 +16,26 @@ public:
 
 	bool isConnected();
 
+	std::vector<std::string> getBroadcastMessages();
+
+	void removeBroadcast();
+
 	bool timedOut();
 
-	bool update(sf::Time dt, sf::TcpSocket* mSocket);
+	bool update(sf::Time dt, sf::TcpSocket* socket);
 
+	void sendLoadGame(sf::TcpSocket * socket);
+
+	void sendDisconnectSelf(sf::TcpSocket * socket);
+
+private:
 	void handlePacket(sf::Int32 packetType, sf::Packet & packet);
+
+	void handleDisconnect(sf::Packet & packet);
 
 	void setBroadcastMessage(sf::Packet & packet);
 
-	void joinLobby(sf::Packet & packet);
+	void joinLobby(sf::Packet & packet, bool isSelf = false);
 
 	void leaveLobby(sf::Packet & packet);
 

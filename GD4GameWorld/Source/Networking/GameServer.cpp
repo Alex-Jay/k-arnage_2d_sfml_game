@@ -164,8 +164,8 @@ void GameServer::handleIncomingPackets()
 		}
 	}
 
-	//if (detectedTimeout)
-	//	GameServer::handleDisconnections();
+	if (detectedTimeout)
+		GameServer::handleDisconnections();
 }
 
 void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout)
@@ -375,14 +375,14 @@ void GameServer::notifyStartGame()
 	}
 }
 
-void GameServer::notifyPlayerSpawn(sf::Int32 characterIdentifier)
+void GameServer::notifyPlayerJoin(sf::Int32 characterIdentifier)
 {
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
 		{
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Server::PlayerConnect);
+			packet << static_cast<sf::Int32>(Server::JoinLobby);
 			packet << characterIdentifier;;
 			mPeers[i]->socket.send(packet);
 		}
@@ -406,7 +406,7 @@ void GameServer::updateClientState()
 void GameServer::informWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::InitialState);
+	packet << static_cast<sf::Int32>(Server::LobbyState);
 
 	packet << static_cast<sf::Int32>(mCharacterCount);
 
@@ -456,23 +456,15 @@ void GameServer::handleIncomingConnections()
 
 	if (mListenerSocket.accept(mPeers[mConnectedPlayers]->socket) == sf::TcpListener::Done)
 	{
-		
-		// order the new client to spawn its own plane ( player 1 )
-		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
-		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
-		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
-
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::JoinLobby);
+		packet << static_cast<sf::Int32>(Server::SelfJoinLobby);
 		packet << mCharacterIdentifierCounter;
-		packet << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-		packet << mCharacterInfo[mCharacterIdentifierCounter].position.y;
 
 		mPeers[mConnectedPlayers]->characterIdentifiers.push_back(mCharacterIdentifierCounter);
 
 		broadcastMessage("New player!");
 		
-		notifyPlayerSpawn(mCharacterIdentifierCounter++);
+		notifyPlayerJoin(mCharacterIdentifierCounter++);
 
 		informWorldState(mPeers[mConnectedPlayers]->socket);
 
