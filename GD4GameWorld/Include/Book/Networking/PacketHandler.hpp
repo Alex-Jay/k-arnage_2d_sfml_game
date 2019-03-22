@@ -5,12 +5,15 @@
 #include"State/MultiplayerGameState.hpp"
 
 class LobbyState;
+class MultiplayerGameState;
 
 class PacketHandler{
 public:
 	PacketHandler();
 
 	void setLobby(LobbyState * lobby);
+
+	void setGame(MultiplayerGameState * mGame);
 
 	void setConnected(bool isConnected);
 
@@ -28,7 +31,11 @@ public:
 
 	void sendDisconnectSelf(sf::TcpSocket * socket);
 
+	void notifyServerReady(sf::TcpSocket* socket);
+
+	void notifyServerWorldBuilt(sf::TcpSocket* socket);
 private:
+
 	void handlePacket(sf::Int32 packetType, sf::Packet & packet);
 
 	void handleDisconnect(sf::Packet & packet);
@@ -41,6 +48,12 @@ private:
 
 	void setInitialLobbyState(sf::Packet & packet);
 
+	void setPlayers(sf::Packet & packet);
+
+	void setObstacles(sf::Packet & packet);
+
+
+
 private:
 	std::vector<std::string> mBroadcasts;
 	sf::Time mClientTimeout;
@@ -50,6 +63,8 @@ private:
 
 private:
 	LobbyState* mLobby;
+
+	MultiplayerGameState* mGame;
 
 	bool mConnected;
 };

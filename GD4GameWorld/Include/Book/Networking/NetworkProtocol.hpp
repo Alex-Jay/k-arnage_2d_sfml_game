@@ -18,6 +18,7 @@ namespace Server
 		LeaveLobby,
 		LobbyState,
 		SetCharacters,
+		SetObstacles,
 		InitialState,
 		PlayerEvent,
 		PlayerRealtimeChange,

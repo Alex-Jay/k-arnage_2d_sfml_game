@@ -275,7 +275,7 @@ void LobbyState::returnToMenu()
 
 void LobbyState::loadGame()
 {
-	//std::cout << "RECIEVED Load GAme " << std::endl;
+	std::cout << "RECIEVED Load GAme " << std::endl;
 	if (mHost)
 	{
 		//requestStackPop();

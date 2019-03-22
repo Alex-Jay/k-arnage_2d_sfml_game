@@ -1,6 +1,7 @@
 #include "Networking/PacketHandler.hpp"
 #include "Networking/NetworkProtocol.hpp"
 
+
 PacketHandler::PacketHandler() :
 	  mClientTimeout(sf::seconds(300.f)) 
 	, mTimeSinceLastPacket(sf::seconds(0.f))
@@ -13,6 +14,11 @@ PacketHandler::PacketHandler() :
 void PacketHandler::setLobby(LobbyState* lobby)
 {
 	mLobby = lobby;
+}
+
+void PacketHandler::setGame(MultiplayerGameState* game)
+{
+	mGame = game;
 }
 
 void PacketHandler::setConnected(bool isConnected)
@@ -72,32 +78,41 @@ bool PacketHandler::update(sf::Time dt, sf::TcpSocket* socket)
 
 void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 {
-	switch (packetType) {
-		// Send message to all clients
-	case Server::BroadcastMessage: {
-		setBroadcastMessage(packet);
-	} break;
-
-	case Server::JoinLobby: {
-		joinLobby(packet);
-	} break;
-
-	case Server::SelfJoinLobby: {
-		joinLobby(packet, true);
-	} break;
-
-	case Server::PlayerDisconnect: {
-		handleDisconnect(packet);
-	} break;
-
-	case Server::LobbyState: {
-		setInitialLobbyState(packet);
-	} break;
-
-	case Server::LoadGame:
+	switch (packetType) 
 	{
-		mLobby->loadGame();
-	} break;
+		// Send message to all clients
+		case Server::BroadcastMessage: {
+			setBroadcastMessage(packet);
+		} break;
+
+		case Server::JoinLobby: {
+			joinLobby(packet);
+		} break;
+
+		case Server::SelfJoinLobby: {
+			joinLobby(packet, true);
+		} break;
+
+		case Server::PlayerDisconnect: {
+			handleDisconnect(packet);
+		} break;
+
+		case Server::LobbyState: {
+			setInitialLobbyState(packet);
+		} break;
+
+		case Server::LoadGame:
+		{
+			mLobby->loadGame();
+		} break;
+
+		case Server::SetCharacters: {
+			setPlayers(packet);
+		} break;
+
+		case Server::SetObstacles: {
+			setObstacles(packet);
+		} break;
 	}
 }
 
@@ -160,6 +175,45 @@ void PacketHandler::setInitialLobbyState(sf::Packet& packet)
 	mLobby->updateDisplayText();
 }
 
+void PacketHandler::setPlayers(sf::Packet& packet)
+{
+	sf::Int32 playerCount;
+	packet >> playerCount;
+
+	std::vector<sf::Int32> playerIds;
+	sf::Int32 localId = mGame->getLocalID();
+
+	for (sf::Int32 i = 0; i < playerCount; ++i)
+	{
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier;
+		if (characterIdentifier != localId)
+		{
+			playerIds.push_back(characterIdentifier);
+		}
+	}
+
+	mGame->spawnPlayers(playerIds);
+	mGame->spawnSelf();
+}
+
+void PacketHandler::setObstacles(sf::Packet& packet)
+{
+	sf::Int32 obstacleCount;
+	packet >> obstacleCount;
+	std::vector<Obstacle::ObstacleData> obstacleData;
+	int16_t type, x, y, a;
+
+	for (int i = 0; i < obstacleCount; ++i)
+	{
+		packet >> type >> x >> y >> a;
+		obstacleData.push_back(Obstacle::ObstacleData(type, x, y, a));
+	}
+
+	mGame->spawnObstacles(obstacleData);
+}
+
+
 #pragma endregion
 
 #pragma region Packet Sending
@@ -178,5 +232,21 @@ void PacketHandler::sendDisconnectSelf(sf::TcpSocket* socket)
 		socket->send(packet);
 }
 
+void PacketHandler::notifyServerReady(sf::TcpSocket* socket)
+{
+	std::cout << "NOTIFY SERVER READY: " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::Ready);
+	socket->send(packet);
+}
+
+void PacketHandler::notifyServerWorldBuilt(sf::TcpSocket* socket)
+{
+	std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::WorldBuilt);
+	socket->send(packet);
+}
 #pragma endregion
+
 
