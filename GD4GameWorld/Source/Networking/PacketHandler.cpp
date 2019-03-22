@@ -113,6 +113,30 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		case Server::SetObstacles: {
 			setObstacles(packet);
 		} break;
+
+		case Server::PlayerEvent: {
+			playerEvent(packet);
+		} break;
+
+		case Server::PlayerRealtimeChange: {
+			playerRealTimeChange(packet);
+		} break;
+
+		case Server::SpawnEnemy: {
+			spawnZombie(packet);
+		} break;
+
+		case Server::SpawnPickup: {
+			spawnPickup(packet);
+		} break;
+
+		case Server::MissionSuccess: {
+			mGame->requestStackPush(States::MissionSuccess);
+		} break;
+
+		case Server::UpdateClientState: {
+			updateClientState(packet);
+		} break;
 	}
 }
 
@@ -122,12 +146,10 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 
 void PacketHandler::handleDisconnect(sf::Packet& packet)
 {
-	//If lobby is not null it means players are in lobby state
 	if (mLobby)
-	{
-		leaveLobby(packet);
-	}
-	//else leaveMultiplayer
+		playerDisconnectLobby(packet);
+	else
+		playerDisconnectGame(packet);
 }
 
 void PacketHandler::setBroadcastMessage(sf::Packet& packet)
@@ -148,13 +170,10 @@ void PacketHandler::joinLobby(sf::Packet& packet, bool isSelf)
 		mLobby->setLocalID(characterIdentifier);
 }
 
-void PacketHandler::leaveLobby(sf::Packet& packet)
+void PacketHandler::playerDisconnectLobby(sf::Packet& packet)
 {
 	sf::Int32 characterIdentifier;
 	packet >> characterIdentifier;
-
-	std::cout << "car ID is " << characterIdentifier << std::endl;
-	std::cout << "loby ID is " << mLobby->getLocalID() << std::endl;
 
 	if (mLobby->getLocalID() == characterIdentifier)
 	{
@@ -165,6 +184,13 @@ void PacketHandler::leaveLobby(sf::Packet& packet)
 		mLobby->decreasePlayerCount();
 		mLobby->updateDisplayText();
 	}
+}
+
+void PacketHandler::playerDisconnectGame(sf::Packet& packet)
+{
+	sf::Int32 characterIdentifier;
+	packet >> characterIdentifier;
+	mGame->playerDisconnect(characterIdentifier);
 }
 
 void PacketHandler::setInitialLobbyState(sf::Packet& packet)
@@ -199,7 +225,8 @@ void PacketHandler::setPlayers(sf::Packet& packet)
 
 void PacketHandler::setObstacles(sf::Packet& packet)
 {
-	sf::Int32 obstacleCount;
+	std::cout << "Recieved SET Obstacoles " << std::endl;
+	int16_t obstacleCount;
 	packet >> obstacleCount;
 	std::vector<Obstacle::ObstacleData> obstacleData;
 	int16_t type, x, y, a;
@@ -213,6 +240,53 @@ void PacketHandler::setObstacles(sf::Packet& packet)
 	mGame->spawnObstacles(obstacleData);
 }
 
+void PacketHandler::playerEvent(sf::Packet& packet)
+{
+	sf::Int32 characterIdentifier;
+	sf::Int32 action;
+	packet >> characterIdentifier >> action;
+	mGame->playerEvent(characterIdentifier, action);
+}
+
+void PacketHandler::playerRealTimeChange(sf::Packet& packet)
+{
+	sf::Int32 characterIdentifier;
+	sf::Int32 action;
+	bool actionEnabled;
+	packet >> characterIdentifier >> action >> actionEnabled;
+	mGame->playerRealTimeChange(characterIdentifier, action, actionEnabled);
+}
+
+void PacketHandler::spawnZombie(sf::Packet& packet)
+{
+	int x, y;
+	packet >> x >> y;
+	mGame->spawnZombie(x,y);
+}
+
+void PacketHandler::spawnPickup(sf::Packet& packet)
+{
+	sf::Int32 type;
+	sf::Vector2f position;
+	packet >> type >> position.x >> position.y;
+	mGame->spawnPickup(type,position);
+}
+
+void PacketHandler::updateClientState(sf::Packet& packet)
+{
+	float currentWorldPosition;
+	sf::Int32 characterCount;
+	packet >> currentWorldPosition >> characterCount;
+
+	for (sf::Int32 i = 0; i < characterCount; ++i) 
+	{
+		sf::Vector2f characterPosition;
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+
+		mGame->updateClientState(characterIdentifier, characterPosition);
+	}
+}
 
 #pragma endregion
 
@@ -247,6 +321,7 @@ void PacketHandler::notifyServerWorldBuilt(sf::TcpSocket* socket)
 	packet << static_cast<sf::Int32>(Client::WorldBuilt);
 	socket->send(packet);
 }
+
 #pragma endregion
 
 

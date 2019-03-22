@@ -44,13 +44,25 @@ private:
 
 	void joinLobby(sf::Packet & packet, bool isSelf = false);
 
-	void leaveLobby(sf::Packet & packet);
+	void playerDisconnectLobby(sf::Packet & packet);
+
+	void playerDisconnectGame(sf::Packet & packet);
 
 	void setInitialLobbyState(sf::Packet & packet);
 
 	void setPlayers(sf::Packet & packet);
 
 	void setObstacles(sf::Packet & packet);
+
+	void playerEvent(sf::Packet & packet);
+
+	void playerRealTimeChange(sf::Packet & packet);
+
+	void spawnZombie(sf::Packet & packet);
+
+	void spawnPickup(sf::Packet & packet);
+
+	void updateClientState(sf::Packet & packet);
 
 
 

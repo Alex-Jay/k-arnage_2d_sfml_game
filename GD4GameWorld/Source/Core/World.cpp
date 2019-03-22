@@ -351,11 +351,10 @@ void World::addZombies(sf::Time dt)
 	}
 }
 
-void World::addZombie(int16_t x, int16_t y, int16_t a)
+void World::addZombie(int16_t x, int16_t y)
 {
-	SpawnPoint spawn(Character::Type::Zombie, x, y, a);
+	SpawnPoint spawn(Character::Type::Zombie, x, y, 0);
 	mEnemySpawnPoints.push_back(spawn);
-	//std::cout << "SPAWN POINT ADDED " << std::endl;
 }
 
 void World::addObstacle(Obstacle::ObstacleID type, int16_t x, int16_t y, int16_t a)

@@ -49,7 +49,7 @@ public:
 	virtual void onDestroy();
 	void setLocalID(sf::Int32 id);
 	sf::Int32 getLocalID();
-protected:
+
 	void requestStackPush(States::ID stateID);
 	void requestStackPop();
 	void requestStateClear();

@@ -9,6 +9,8 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 
+#include <Entity/Obstacle.hpp>
+
 #include <vector>
 #include <memory>
 #include <map>
@@ -62,6 +64,7 @@ private:
 	void executionThread();
 	void tick();
 	std::vector<sf::Vector2f> getObjectSpwanPoints(int obstacleCount);
+	std::vector<Obstacle::ObstacleData> getObjectData(int obstacleCount);
 	void buildWorld();
 	sf::Time now() const;
 
@@ -76,6 +79,7 @@ private:
 	void SetInitialWorldState();
 	void sendCharacters();
 	void spawnObstacles();
+	void setObstacles();
 	void spawnEnemys();
 	void sendToAll(sf::Packet& packet);
 	void updateClientState();

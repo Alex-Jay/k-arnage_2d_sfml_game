@@ -37,15 +37,18 @@ public:
 
 	void spawnPlayers(std::vector<sf::Int32> playerIds);
 	void spawnObstacles(std::vector<Obstacle::ObstacleData> obstacleData);
+	void playerDisconnect(sf::Int32 characterIdentifier);
+	void playerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
+	void playerRealTimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
+	void spawnZombie(int x, int y);
+	void spawnPickup(sf::Int32 type, sf::Vector2f position);
+	void updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
 	void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
 
 	void broadcastMessage(sf::Packet & packet);
 
-	void playerDisconnect(sf::Packet & packet);
-
-	void playerEvent(sf::Packet & packet);
 
 	void playerRealTimeChange(sf::Packet & packet);
 

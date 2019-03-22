@@ -118,7 +118,7 @@ void GameServer::tick()
 		std::cout << "ALL CLIENTS READY: " << std::endl;
 		mAllClientsReady = true;
 
-		spawnObstacles();
+		setObstacles();
 		sendCharacters();
 		
 		buildWorldPacketSent = true;
@@ -565,30 +565,59 @@ void GameServer::sendCharacters()
 	sendToAll(packet);
 }
 
-void GameServer::spawnObstacles()
+//void GameServer::spawnObstacles()
+//{
+//	if (!obstaclesSpawned)
+//	{
+//		obstaclesSpawned = true;
+//		int rot;
+//
+//		std::size_t obstacleCount = 15; //1u + randomInt(20);
+//		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
+//
+//		// Send the spawn orders to all clients
+//		for (std::size_t i = 0; i < obstacleCount; ++i)
+//		{
+//			rot = randomInt(360);
+//			sf::Packet packet;
+//
+//			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
+//			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
+//			packet << spawnPoints[i].x;
+//			packet << spawnPoints[i].y;
+//			packet << rot;
+//
+//			sendToAll(packet);
+//		}
+//	}
+//}
+
+void GameServer::setObstacles()
 {
 	if (!obstaclesSpawned)
 	{
-		obstaclesSpawned = true;
-		int rot;
+		std::cout << "SENDING SET Obstacoles " << std::endl;
 
-		std::size_t obstacleCount = 15; //1u + randomInt(20);
-		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
+		int16_t obstacleCount = 5; //1u + randomInt(20);
+
+		std::vector<Obstacle::ObstacleData> obstacleData = GameServer::getObjectData(obstacleCount);
+
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::SetObstacles);
+		packet << obstacleCount;
 
 		// Send the spawn orders to all clients
 		for (std::size_t i = 0; i < obstacleCount; ++i)
 		{
-			rot = randomInt(360);
-			sf::Packet packet;
-
-			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
-			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
-			packet << spawnPoints[i].x;
-			packet << spawnPoints[i].y;
-			packet << rot;
-
-			sendToAll(packet);
+			packet << obstacleData[i].type;
+			packet << obstacleData[i].x;
+			packet << obstacleData[i].y;
+			packet << obstacleData[i].a;
 		}
+
+		sendToAll(packet);
+
+		obstaclesSpawned = true;
 	}
 }
 
@@ -635,6 +664,36 @@ std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
 	}
 
 	return spawnPoints;
+}
+
+std::vector<Obstacle::ObstacleData> GameServer::getObjectData(int obstacleCount)
+{
+	std::vector<Obstacle::ObstacleData> obstacleData;
+	std::list<sf::FloatRect> objectRects;
+	int xPos, yPos;
+
+	sf::FloatRect worldBounds = sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(WORLD_WIDTH, WORLD_HEIGHT));
+
+	for (size_t i = 0; i < obstacleCount; ++i)
+	{
+		xPos = DESSERT_TILE_WIDTH + randomInt(std::ceil(WORLD_WIDTH - DESSERT_TILE_WIDTH));
+		yPos = DESSERT_TILE_HEIGHT + randomInt(std::ceil(WORLD_HEIGHT - DESSERT_TILE_HEIGHT));
+		sf::FloatRect boundingRectangle = sf::FloatRect(xPos, yPos, DESSERT_TILE_WIDTH * 2, DESSERT_TILE_HEIGHT * 2);
+
+		if (!containsIntersection(objectRects, boundingRectangle))
+		{
+			objectRects.push_back(boundingRectangle);
+
+			int16_t type = randomInt(static_cast<int16_t>(Obstacle::ObstacleID::TypeCount) - 1);
+			int16_t rot = randomInt(360);
+
+			obstacleData.push_back(Obstacle::ObstacleData(type, xPos, yPos, rot));
+		}
+		else
+			i--;
+	}
+
+	return obstacleData;
 }
 
 #pragma endregion

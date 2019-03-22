@@ -126,6 +126,7 @@ private:
 	void handleExplosionCollisions(SceneNode::Pair& pair);
 	void setView();
 	void addZombies(sf::Time dt);
+	void addZombie(int16_t x, int16_t y);
 	void updateSounds();
 	void StartZombieSpawnTimer(sf::Time dt);
 	void destroyEntitiesOutsideView();
