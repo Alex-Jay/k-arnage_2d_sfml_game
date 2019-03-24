@@ -6,12 +6,12 @@ State::Context::Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_
 	MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys)
 	: window(&window)
 	, socket(&socket)
-	, localID(0)
 	, textures(&textures)
 	, fonts(&fonts)
 	, music(&music)
 	, sounds(&sounds)
 	, keys(&keys)
+	, localID(0)
 {
 }
 
@@ -47,12 +47,12 @@ State::Context State::getContext() const
 
 void State::setLocalID(sf::Int32 id)
 {
-	mContext.localID = id;
+	mContext.localID = &id;
 }
 
 sf::Int32 State::getLocalID()
 {
-	return mContext.localID;
+	return *mContext.localID;
 }
 
 void State::onActivate()

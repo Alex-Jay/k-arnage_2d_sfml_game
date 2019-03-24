@@ -281,4 +281,10 @@ void LobbyState::setPlayerCount(int16_t playerCount)
 	mPlayerCount = playerCount;
 }
 
+void LobbyState::RegisterGameState(sf::Int32 localId)
+{
+	mStack.registerState<MultiplayerGameState>(States::HostGame, true, localId);
+	mStack.registerState<MultiplayerGameState>(States::JoinGame, false, localId);
+}
+
 #pragma endregion

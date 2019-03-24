@@ -19,9 +19,7 @@ class PacketHandler;
 class MultiplayerGameState : public State
 {
 public:
-	//MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::TcpSocket * socket);
-
-	MultiplayerGameState(StateStack& stack, Context context, bool isHost);
+	MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::Int32 localID);
 
 	virtual void				draw();
 	virtual bool				update(sf::Time dt);

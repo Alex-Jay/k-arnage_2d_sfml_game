@@ -8,12 +8,11 @@
 
 #include <fstream>
 
-MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
+MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::Int32 localID)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
 	, mSocket(*context.socket)
-	, mLocalPlayerID(context.localID)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
 	, mActiveState(true)
@@ -23,6 +22,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mClientTimeout(sf::seconds(20.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mPacketHandler(new PacketHandler)
+	, mLocalPlayerID(localID)
 {
 
 	mPacketHandler->setGame(this);
@@ -42,7 +42,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 
-	mPacketHandler->notifyServerReady(&mSocket);
+	std::cout << "MULTIPLATER ID: " << mLocalPlayerID << std::endl;
+
+	mPacketHandler->notifyServerReady(&mSocket, mLocalPlayerID);
 }
 
 #pragma region Update

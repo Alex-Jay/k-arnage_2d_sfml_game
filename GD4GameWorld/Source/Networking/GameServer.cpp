@@ -112,18 +112,17 @@ void GameServer::tick()
 	//handleWinCondition();
 	RemoveDestroyedCharacters();
 	spawnEnemys();
-	int np = mPeers.size();
 
-	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
-	{
-		std::cout << "ALL CLIENTS READY: " << std::endl;
-		mAllClientsReady = true;
+	//if (!buildWorldPacketSent && allClientsReadyToLoad())
+	//{
+	//	std::cout << "ALL CLIENTS READY: " << std::endl;
+	//	mAllClientsReady = true;
 
-		setObstacles();
-		sendCharacters();
-		
-		buildWorldPacketSent = true;
-	}
+	//	setObstacles();
+	//	sendCharacters();
+	//	
+	//	buildWorldPacketSent = true;
+	//}
 
 	
 }
@@ -194,15 +193,15 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	case Client::Ready:
 	{
-		std::cout << "RECIEVED CLIENT READY: " << std::endl;
-		++mClientReadyCount;
-
+			std::cout << "RECIEVED CLIENT READY: " << std::endl;
+			++mClientReadyCount;
 	} break;
 
 	case Client::WorldBuilt:
 	{
-		std::cout << "RECIEVED World BUILT: " << std::endl;
-		++mClientReadyCount;
+		//std::cout << "RECIEVED World BUILT: " << std::endl;
+
+		//++mClientReadyCount;
 		// WHEN ALL CLIENTS HAVE SAID THAT THEIR WORLD HAS BEEN BUILT, Start The Game
 	} break;
 
@@ -593,20 +592,20 @@ void GameServer::setObstacles()
 void GameServer::spawnEnemys()
 {
 	// Check if its time to attempt to spawn enemies
-	if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
-	{
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::SpawnEnemy);
-		packet << randomIntExcluding(0, WORLD_WIDTH);
-		packet << randomIntExcluding(0, WORLD_HEIGHT);
+	//if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
+	//{
+	//	sf::Packet packet;
+	//	packet << static_cast<sf::Int32>(Server::SpawnEnemy);
+	//	packet << randomIntExcluding(0, WORLD_WIDTH);
+	//	packet << randomIntExcluding(0, WORLD_HEIGHT);
 
-		sendToAll(packet);
+	//	sendToAll(packet);
 
-		++mZombieCount;
+	//	++mZombieCount;
 
-		mLastSpawnTime = now();
-		mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
-	}
+	//	mLastSpawnTime = now();
+	//	mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
+	//}
 }
 
 std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)

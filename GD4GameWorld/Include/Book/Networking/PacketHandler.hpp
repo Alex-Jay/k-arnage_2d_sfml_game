@@ -31,7 +31,7 @@ public:
 
 	void sendDisconnectSelf(sf::TcpSocket * socket);
 
-	void notifyServerReady(sf::TcpSocket* socket);
+	void notifyServerReady(sf::TcpSocket* socket, int16_t playerID);
 
 	void notifyServerWorldBuilt(sf::TcpSocket* socket);
 	void sendPlayerUpdates(sf::TcpSocket * socket);

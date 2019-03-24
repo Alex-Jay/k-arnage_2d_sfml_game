@@ -86,7 +86,7 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 		} break;
 
 		case Server::JoinLobby: {
-			joinLobby(packet);
+			joinLobby(packet, false);
 		} break;
 
 		case Server::SelfJoinLobby: {
@@ -167,7 +167,9 @@ void PacketHandler::joinLobby(sf::Packet& packet, bool isSelf)
 	mLobby->updateDisplayText();
 
 	if (isSelf)
-		mLobby->setLocalID(characterIdentifier);
+		mLobby->RegisterGameState(characterIdentifier);
+
+	
 }
 
 void PacketHandler::playerDisconnectLobby(sf::Packet& packet)
@@ -306,11 +308,12 @@ void PacketHandler::sendDisconnectSelf(sf::TcpSocket* socket)
 		socket->send(packet);
 }
 
-void PacketHandler::notifyServerReady(sf::TcpSocket* socket)
+void PacketHandler::notifyServerReady(sf::TcpSocket* socket, int16_t playerID)
 {
-	std::cout << "NOTIFY SERVER READY: " << std::endl;
+	std::cout << "PLayer " << playerID <<  " NOTIFY SERVER READY: " << std::endl;
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Client::Ready);
+	packet << playerID;
 	socket->send(packet);
 }
 

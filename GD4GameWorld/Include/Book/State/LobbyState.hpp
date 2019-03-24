@@ -36,6 +36,7 @@ public:
 	void decreasePlayerCount();
 	int16_t getPlayerCount(int16_t playerCount);
 	void setPlayerCount(int16_t playerCount);
+	void RegisterGameState(sf::Int32 localId);
 	void returnToMenu();
 	void loadGame();
 private:

@@ -116,6 +116,7 @@ private:
 
 	bool gameStarted{};
 	bool mAllClientsReady{};
+
 	int16_t mClientReadyCount;
 	bool buildWorldPacketSent{};
 	bool worldBuiltPacketRecieved{};

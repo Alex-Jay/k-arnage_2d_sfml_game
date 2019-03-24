@@ -29,7 +29,7 @@ public:
 
 		sf::RenderWindow* window;
 		sf::TcpSocket* socket;
-		sf::Int32 localID;
+		sf::Int32* localID;
 		TextureHolder* textures;
 		FontHolder* fonts;
 		MusicPlayer* music;
