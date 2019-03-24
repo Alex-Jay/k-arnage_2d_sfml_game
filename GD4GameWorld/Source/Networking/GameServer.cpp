@@ -26,7 +26,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mConnectedPlayers(0)
 	, mWorldHeight(5000.f)
 	, mBattleFieldRect(0.f, mWorldHeight - battlefieldSize.y, battlefieldSize.x, battlefieldSize.y)
-	, mBattleFieldScrollSpeed(-50.f)
+	, mBattleFieldScrollSpeed(0)
 	, mCharacterCount(0)
 	, mPeers(1)
 	, mCharacterIdentifierCounter(0)
@@ -115,7 +115,7 @@ void GameServer::tick()
 	}
 	else if(mClientReadyCount >= mPeers.size() - 1)
 	{
-		std::cout << "ALL CLIENTS READY: " << std::endl;
+		//std::cout << "ALL CLIENTS READY: " << std::endl;
 		setObstacles();
 		sendCharacters();
 		mGameStarted = true;
@@ -153,7 +153,7 @@ void GameServer::handleIncomingPackets()
 
 			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
-				//std::cout << "4 Setting Timeout status" << std::endl;
+				////std::cout << "4 Setting Timeout status" << std::endl;
 				peer->timedOut = true;
 				detectedTimeout = true;
 			}
@@ -169,7 +169,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	sf::Int32 packetType;
 	packet >> packetType;
 
-	//std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
+	////std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
 
 	switch (packetType)
 	{
@@ -190,7 +190,7 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	case Client::Ready:
 	{
 			++mClientReadyCount;
-			std::cout << "RECIEVED CLIENT READY: Clients Ready " << mClientReadyCount  << std::endl;
+			//std::cout << "RECIEVED CLIENT READY: Clients Ready " << mClientReadyCount  << std::endl;
 	} break;
 
 	case Client::PlayerEvent:
@@ -341,7 +341,7 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 
 void GameServer::notifyLoadGame()
 {
-	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+	//std::cout << "NOTIFYING LOAD GAME: " << std::endl;
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
@@ -476,13 +476,13 @@ void GameServer::handleIncomingConnections()
 		mCharacterCount++;
 		mConnectedPlayers++;
 
-		std::cout << "PLAYER ADDED " << std::endl;
+		//std::cout << "PLAYER ADDED " << std::endl;
 
-		std::cout << "CHARC COUNT " << mCharacterCount << std::endl;
+		//std::cout << "CHARC COUNT " << mCharacterCount << std::endl;
 
-		std::cout << "PLAYER CONNECTED " << mConnectedPlayers << std::endl;
+		//std::cout << "PLAYER CONNECTED " << mConnectedPlayers << std::endl;
 
-		std::cout << "PEERS" << mPeers.size() << std::endl;
+		//std::cout << "PEERS" << mPeers.size() << std::endl;
 		if (mConnectedPlayers >= mMaxConnectedPlayers)
 			setListening(false);
 		else // Add a new waiting peer
@@ -543,7 +543,7 @@ void GameServer::RemoveDestroyedCharacters()
 
 void GameServer::sendCharacters()
 {
-	std::cout << "SENDING SET CHARACTERS " << std::endl;
+	//std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
 
@@ -566,7 +566,7 @@ void GameServer::setObstacles()
 {
 	if (!obstaclesSpawned)
 	{
-		std::cout << "SENDING SET Obstacoles " << std::endl;
+		//std::cout << "SENDING SET Obstacoles " << std::endl;
 
 		int16_t obstacleCount = 5; //1u + randomInt(20);
 

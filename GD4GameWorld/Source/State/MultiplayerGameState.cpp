@@ -38,10 +38,10 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 
-	std::cout << "MULTIPLATER ID: " << mLocalPlayerID << std::endl;
-	std::cout << "SOCKET Port: " << mSocket.getLocalPort() << std::endl;
-	std::cout << "SOCKET r address: " << mSocket.getRemoteAddress() << std::endl;
-	std::cout << "SOCKET r Port: " << mSocket.getRemotePort() << std::endl;
+	//std::cout << "MULTIPLATER ID: " << mLocalPlayerID << std::endl;
+	//std::cout << "SOCKET Port: " << mSocket.getLocalPort() << std::endl;
+	//std::cout << "SOCKET r address: " << mSocket.getRemoteAddress() << std::endl;
+	//std::cout << "SOCKET r Port: " << mSocket.getRemotePort() << std::endl;
 
 	mPacketHandler->setGame(this);
 	mPacketHandler->setConnected(true);
@@ -186,7 +186,7 @@ void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 void MultiplayerGameState::spawnSelf()
 {
 		Character* character = mWorld.addCharacter(mLocalPlayerID, true);
-		//mLocalPlayerIdentifiers.push_back(playerIds[i]);
+		mLocalPlayerIdentifiers.push_back(mLocalPlayerID);
 		character->setPosition(assignCharacterSpawn(mLocalPlayerID));
 		mPlayers[mLocalPlayerID].reset(new Player(&mSocket, mLocalPlayerID, getContext().keys));
 
@@ -198,7 +198,7 @@ void MultiplayerGameState::spawnPlayers(std::vector<sf::Int32> playerIds)
 	for (size_t i = 0; i < playerIds.size(); ++i)
 	{
 		Character* character = mWorld.addCharacter(playerIds[i], false);
-		//mLocalPlayerIdentifiers.push_back(playerIds[i]);
+		mLocalPlayerIdentifiers.push_back(playerIds[i]);
 		character->setPosition(assignCharacterSpawn(playerIds[i]));
 		mPlayers[playerIds[i]].reset(new Player(&mSocket, playerIds[i], nullptr));
 	}
@@ -265,6 +265,7 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 	sf::Int32 aircraftCount;
 	packet >> currentWorldPosition >> aircraftCount;
 
+	
 	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
 
 	// Set the world's scroll compensation according to whether the view is behind or too advanced
@@ -276,6 +277,7 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 		sf::Int32 aircraftIdentifier;
 		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y;
 
+		//std::cout << "CURRENT POSITION IS: " << aircraftPosition.x << ", " << aircraftPosition.y << std::endl;
 		Character* aircraft = mWorld.getCharacter(aircraftIdentifier);
 		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
 		if (aircraft && !isLocalPlane)
@@ -427,7 +429,13 @@ void MultiplayerGameState::handlePositionUpdates()
 		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
 		{
 			if (Character* aircraft = mWorld.getCharacter(identifier))
+			{
 				positionUpdatePacket << identifier << aircraft->getPosition().x << aircraft->getPosition().y << static_cast<sf::Int32>(aircraft->getHitpoints()) << static_cast<sf::Int32>(aircraft->getGrenadeAmmo());
+				//std::cout << "SENDING  POSITION : " << aircraft->getPosition().x << ", " << aircraft->getPosition().y << std::endl;
+			}
+				
+
+			
 		}
 
 		mSocket.send(positionUpdatePacket);

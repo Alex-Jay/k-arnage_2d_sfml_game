@@ -229,7 +229,7 @@ void PacketHandler::setPlayers(sf::Packet& packet)
 
 void PacketHandler::setObstacles(sf::Packet& packet)
 {
-	std::cout << "Recieved SET Obstacoles " << std::endl;
+	//std::cout << "Recieved SET Obstacoles " << std::endl;
 	int16_t obstacleCount;
 	packet >> obstacleCount;
 	std::vector<Obstacle::ObstacleData> obstacleData;
@@ -312,7 +312,7 @@ void PacketHandler::sendDisconnectSelf(sf::TcpSocket* socket)
 
 void PacketHandler::notifyServerReady(sf::TcpSocket* socket, int16_t playerID)
 {
-	std::cout << "PLayer " << playerID <<  " NOTIFY SERVER READY: " << std::endl;
+	//std::cout << "PLayer " << playerID <<  " NOTIFY SERVER READY: " << std::endl;
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Client::Ready);
 	packet << playerID;
@@ -321,7 +321,7 @@ void PacketHandler::notifyServerReady(sf::TcpSocket* socket, int16_t playerID)
 
 void PacketHandler::notifyServerWorldBuilt(sf::TcpSocket* socket)
 {
-	std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
+	//std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Client::WorldBuilt);
 	socket->send(packet);

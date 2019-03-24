@@ -118,7 +118,7 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
-	//std::cout << "CHARACTERS IN WORLD : " << mPlayerCharacters.size() << std::endl;
+	////std::cout << "CHARACTERS IN WORLD : " << mPlayerCharacters.size() << std::endl;
 	setView();
 
 	// Setup commands to destroy entities, and guide grenades
@@ -227,7 +227,7 @@ void World::setAliveZombieCount(int8_t count)
 	mNumZombiesAlive = count;
 }
 
-Character * World::getCharacter(int8_t localIdentifier) const
+Character * World::getCharacter(sf::Int32 localIdentifier) const
 {
 	for (Character* c : mPlayerCharacters)
 	{
@@ -383,8 +383,8 @@ void World::spawnZombies()
 
 		++mNumZombiesAlive;
 
-		//std::cout << "Spawned Zombie at X: " << spawn.x << " Y: " << spawn.y << std::endl;
-		//std::cout << "Zombies Alive World: " << mNumZombiesAlive << std::endl;
+		////std::cout << "Spawned Zombie at X: " << spawn.x << " Y: " << spawn.y << std::endl;
+		////std::cout << "Zombies Alive World: " << mNumZombiesAlive << std::endl;
 	}
 }
 

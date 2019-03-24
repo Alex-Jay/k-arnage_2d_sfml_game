@@ -53,7 +53,7 @@ public:
 
 	CommandQueue& getCommandQueue();
 
-	Character* getCharacter(int8_t localIdentifier) const;
+	Character* getCharacter(sf::Int32 localIdentifier) const;
 	Character* addCharacter(int8_t identifier, bool isLocal);
 
 	bool pollGameAction(GameActions::Action& out);
@@ -168,5 +168,5 @@ private:
 	int16_t mZombieSpawnTime;
 	int16_t mNumZombiesSpawn;
 	int16_t mNumZombiesAlive;
-	int8_t localCharacterID;
+	sf::Int32 localCharacterID;
 };
