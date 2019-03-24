@@ -24,7 +24,6 @@ public:
 
 	void notifyPlayerJoin(sf::Int32 characterIdentifier);
 	void loadGame();
-	void startGame();
 	void playerEvent(sf::Packet packet);
 	void playerRealTimeChange(sf::Packet packet);
 	void positionUpdate(sf::Packet packet);
@@ -114,7 +113,7 @@ private:
 
 	std::vector<int16_t> mPlayerIDs;
 
-	bool gameStarted{};
+	bool mGameStarted{};
 	bool mAllClientsReady{};
 
 	int16_t mClientReadyCount;

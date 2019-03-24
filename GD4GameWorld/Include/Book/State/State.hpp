@@ -37,6 +37,9 @@ public:
 		KeyBinding* keys;
 	};
 
+	void setLocalID(sf::Int32 id);
+	sf::Int32 getLocalID();
+
 public:
 	State(StateStack& stack, Context context);
 	virtual ~State();
@@ -47,8 +50,7 @@ public:
 
 	virtual void onActivate();
 	virtual void onDestroy();
-	void setLocalID(sf::Int32 id);
-	sf::Int32 getLocalID();
+
 
 	void requestStackPush(States::ID stateID);
 	void requestStackPop();

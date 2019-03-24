@@ -241,7 +241,7 @@ void LobbyState::loadGame()
 	}
 	else
 	{
-		requestStackPop();
+		//requestStackPop();
 		requestStackPush(States::JoinGame);
 	}
 
@@ -261,6 +261,16 @@ void LobbyState::setDisplayText(Context context)
 
 #pragma region Getters and Setters
 
+
+void LobbyState::setLocalID(sf::Int32 id)
+{
+	mLocalPlayerID = id;
+}
+
+sf::Int32  LobbyState::getLocalID()
+{
+	return mLocalPlayerID;
+}
 void LobbyState::increasePlayerCount()
 {
 	++mPlayerCount;

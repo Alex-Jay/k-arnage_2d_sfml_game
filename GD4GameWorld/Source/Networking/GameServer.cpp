@@ -34,7 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mLastSpawnTime(sf::Time::Zero)
 	, mTimeForNextSpawn(sf::seconds(5.f))
 	, mZombieCount(0)
-	, mClientReadyCount(1)
+	, mClientReadyCount(0)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -98,8 +98,6 @@ void GameServer::executionThread()
 			tickTime -= tickInterval;
 		}
 
-
-
 		// Sleep to prevent server from consuming 100% CPU
 		sf::sleep(sf::milliseconds(100));
 	}
@@ -107,23 +105,21 @@ void GameServer::executionThread()
 
 void GameServer::tick()
 {
-	updateClientState();
-	//TODO HANDLE GAME OVER CONDITION
-	//handleWinCondition();
-	RemoveDestroyedCharacters();
-	spawnEnemys();
-
-	//if (!buildWorldPacketSent && allClientsReadyToLoad())
-	//{
-	//	std::cout << "ALL CLIENTS READY: " << std::endl;
-	//	mAllClientsReady = true;
-
-	//	setObstacles();
-	//	sendCharacters();
-	//	
-	//	buildWorldPacketSent = true;
-	//}
-
+	if (mGameStarted)
+	{
+		updateClientState();
+		//TODO HANDLE GAME OVER CONDITION
+		//handleWinCondition();
+		RemoveDestroyedCharacters();
+		spawnEnemys();
+	}
+	else if(mClientReadyCount >= mPeers.size() - 1)
+	{
+		std::cout << "ALL CLIENTS READY: " << std::endl;
+		setObstacles();
+		sendCharacters();
+		mGameStarted = true;
+	}
 	
 }
 
@@ -193,23 +189,8 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	case Client::Ready:
 	{
-			std::cout << "RECIEVED CLIENT READY: " << std::endl;
 			++mClientReadyCount;
-	} break;
-
-	case Client::WorldBuilt:
-	{
-		//std::cout << "RECIEVED World BUILT: " << std::endl;
-
-		//++mClientReadyCount;
-		// WHEN ALL CLIENTS HAVE SAID THAT THEIR WORLD HAS BEEN BUILT, Start The Game
-	} break;
-
-	case Client::StartGame:
-	{
-		startGame();
-		//When Clients are Ready
-		
+			std::cout << "RECIEVED CLIENT READY: Clients Ready " << mClientReadyCount  << std::endl;
 	} break;
 
 	case Client::PlayerEvent:
@@ -243,12 +224,6 @@ void GameServer::loadGame()
 	notifyLoadGame();
 }
 
-void GameServer::startGame()
-{
-	gameStarted = true;
-	notifyStartGame();
-}
-
 void GameServer::playerEvent(sf::Packet packet)
 {
 	sf::Int32 characterIdentifier;
@@ -269,19 +244,35 @@ void GameServer::playerRealTimeChange(sf::Packet packet)
 
 void GameServer::positionUpdate(sf::Packet packet)
 {
-	sf::Int32 numCharacters;
-	packet >> numCharacters;
+	//sf::Int32 numCharacters;
+	//packet >> numCharacters;
 
-	for (sf::Int32 i = 0; i < numCharacters; ++i)
+	//for (sf::Int32 i = 0; i < numCharacters; ++i)
+	//{
+	//	sf::Int32 characterIdentifier;
+	//	sf::Int32 characterHitpoints;
+	//	sf::Int32 missileAmmo;
+	//	sf::Vector2f characterPosition;
+	//	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+	//	mCharacterInfo[characterIdentifier].position = characterPosition;
+	//	//mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
+	//	//mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+	//}
+
+	//OLD CODE
+	sf::Int32 numAircrafts;
+	packet >> numAircrafts;
+
+	for (sf::Int32 i = 0; i < numAircrafts; ++i)
 	{
-		sf::Int32 characterIdentifier;
-		sf::Int32 characterHitpoints;
+		sf::Int32 aircraftIdentifier;
+		sf::Int32 aircraftHitpoints;
 		sf::Int32 missileAmmo;
-		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
-		mCharacterInfo[characterIdentifier].position = characterPosition;
-		mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
-		mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+		sf::Vector2f aircraftPosition;
+		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y >> aircraftHitpoints >> missileAmmo;
+		mCharacterInfo[aircraftIdentifier].position = aircraftPosition;
+		mCharacterInfo[aircraftIdentifier].hitpoints = aircraftHitpoints;
+		mCharacterInfo[aircraftIdentifier].missileAmmo = missileAmmo;
 	}
 }
 
@@ -391,13 +382,24 @@ void GameServer::notifyPlayerJoin(sf::Int32 characterIdentifier)
 
 void GameServer::updateClientState()
 {
+	//sf::Packet updateClientStatePacket;
+	//updateClientStatePacket << static_cast<sf::Int32>(Server::UpdateClientState);
+	////updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
+	//updateClientStatePacket << static_cast<sf::Int32>(mCharacterInfo.size());
+
+	//FOREACH(auto character, mCharacterInfo)
+	//	updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
+
+	//sendToAll(updateClientStatePacket);
+
+	//OLD CODE
 	sf::Packet updateClientStatePacket;
 	updateClientStatePacket << static_cast<sf::Int32>(Server::UpdateClientState);
 	updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
 	updateClientStatePacket << static_cast<sf::Int32>(mCharacterInfo.size());
 
-	FOREACH(auto character, mCharacterInfo)
-		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
+	FOREACH(auto aircraft, mCharacterInfo)
+		updateClientStatePacket << aircraft.first << aircraft.second.position.x << aircraft.second.position.y;
 
 	sendToAll(updateClientStatePacket);
 }
@@ -592,20 +594,20 @@ void GameServer::setObstacles()
 void GameServer::spawnEnemys()
 {
 	// Check if its time to attempt to spawn enemies
-	//if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
-	//{
-	//	sf::Packet packet;
-	//	packet << static_cast<sf::Int32>(Server::SpawnEnemy);
-	//	packet << randomIntExcluding(0, WORLD_WIDTH);
-	//	packet << randomIntExcluding(0, WORLD_HEIGHT);
+	if (now() >= mTimeForNextSpawn + mLastSpawnTime && (mZombieCount < MAX_ALIVE_ZOMBIES))
+	{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::SpawnEnemy);
+		packet << randomIntExcluding(0, WORLD_WIDTH);
+		packet << randomIntExcluding(0, WORLD_HEIGHT);
 
-	//	sendToAll(packet);
+		sendToAll(packet);
 
-	//	++mZombieCount;
+		++mZombieCount;
 
-	//	mLastSpawnTime = now();
-	//	mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
-	//}
+		mLastSpawnTime = now();
+		mTimeForNextSpawn = sf::milliseconds(MIN_ZOMBIE_SPAWN_TIME + randomInt(MAX_ZOMBIE_SPAWN_TIME));
+	}
 }
 
 std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)

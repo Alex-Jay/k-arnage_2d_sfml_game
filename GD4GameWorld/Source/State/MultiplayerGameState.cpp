@@ -24,10 +24,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mPacketHandler(new PacketHandler)
 	, mLocalPlayerID(localID)
 {
-
-	mPacketHandler->setGame(this);
-	mPacketHandler->setConnected(true);
-
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
 	mServerNotifiedReady = false;
@@ -43,7 +39,12 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	context.music->play(Music::MissionTheme);
 
 	std::cout << "MULTIPLATER ID: " << mLocalPlayerID << std::endl;
+	std::cout << "SOCKET Port: " << mSocket.getLocalPort() << std::endl;
+	std::cout << "SOCKET r address: " << mSocket.getRemoteAddress() << std::endl;
+	std::cout << "SOCKET r Port: " << mSocket.getRemotePort() << std::endl;
 
+	mPacketHandler->setGame(this);
+	mPacketHandler->setConnected(true);
 	mPacketHandler->notifyServerReady(&mSocket, mLocalPlayerID);
 }
 
@@ -258,6 +259,33 @@ void MultiplayerGameState::updateClientState(sf::Int32 characterIdentifier, sf::
 		}
 }
 
+void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
+{
+	float currentWorldPosition;
+	sf::Int32 aircraftCount;
+	packet >> currentWorldPosition >> aircraftCount;
+
+	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+
+	// Set the world's scroll compensation according to whether the view is behind or too advanced
+	//mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
+
+	for (sf::Int32 i = 0; i < aircraftCount; ++i)
+	{
+		sf::Vector2f aircraftPosition;
+		sf::Int32 aircraftIdentifier;
+		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y;
+
+		Character* aircraft = mWorld.getCharacter(aircraftIdentifier);
+		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
+		if (aircraft && !isLocalPlane)
+		{
+			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.1f;
+			aircraft->setPosition(interpolatedPosition);
+		}
+	}
+}
+
 sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 {
 	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
@@ -372,21 +400,40 @@ void MultiplayerGameState::handleGameActions()
 
 void MultiplayerGameState::handlePositionUpdates()
 {
-	// Regular position updates
-	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
+	//// Regular position updates
+	//if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
+	//	sf::Packet positionUpdatePacket;
+	//	positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
+	//	positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
+
+	//	FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+	//	{
+	//		if (Character* character = mWorld.getCharacter(identifier))
+	//			positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y;
+	//	}
+
+	//	mSocket.send(positionUpdatePacket);
+	//	mTickClock.restart();
+	//}
+
+
+		// OLD CODE
+	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f))
+	{
 		sf::Packet positionUpdatePacket;
 		positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
 		positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
 
 		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
 		{
-			if (Character* character = mWorld.getCharacter(identifier))
-				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
+			if (Character* aircraft = mWorld.getCharacter(identifier))
+				positionUpdatePacket << identifier << aircraft->getPosition().x << aircraft->getPosition().y << static_cast<sf::Int32>(aircraft->getHitpoints()) << static_cast<sf::Int32>(aircraft->getGrenadeAmmo());
 		}
 
 		mSocket.send(positionUpdatePacket);
 		mTickClock.restart();
 	}
+
 }
 
 #pragma endregion

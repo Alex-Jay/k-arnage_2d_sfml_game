@@ -32,6 +32,8 @@ public:
 	virtual void onDestroy();
 
 	void updateDisplayText();
+	void setLocalID(sf::Int32 id);
+	sf::Int32 getLocalID();
 	void increasePlayerCount();
 	void decreasePlayerCount();
 	int16_t getPlayerCount(int16_t playerCount);

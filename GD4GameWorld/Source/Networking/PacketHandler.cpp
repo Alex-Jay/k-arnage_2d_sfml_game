@@ -167,9 +167,11 @@ void PacketHandler::joinLobby(sf::Packet& packet, bool isSelf)
 	mLobby->updateDisplayText();
 
 	if (isSelf)
+	{
+		mLobby->setLocalID(characterIdentifier);
 		mLobby->RegisterGameState(characterIdentifier);
-
-	
+	}
+		
 }
 
 void PacketHandler::playerDisconnectLobby(sf::Packet& packet)
@@ -276,18 +278,18 @@ void PacketHandler::spawnPickup(sf::Packet& packet)
 
 void PacketHandler::updateClientState(sf::Packet& packet)
 {
-	float currentWorldPosition;
-	sf::Int32 characterCount;
-	packet >> currentWorldPosition >> characterCount;
+	mGame->oldUpdateClientState(packet);
+	//sf::Int32 characterCount;
+	//packet >> characterCount;
 
-	for (sf::Int32 i = 0; i < characterCount; ++i) 
-	{
-		sf::Vector2f characterPosition;
-		sf::Int32 characterIdentifier;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+	//for (sf::Int32 i = 0; i < characterCount; ++i) 
+	//{
+	//	sf::Vector2f characterPosition;
+	//	sf::Int32 characterIdentifier;
+	//	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
 
-		mGame->updateClientState(characterIdentifier, characterPosition);
-	}
+	//	mGame->updateClientState(characterIdentifier, characterPosition);
+	//}
 }
 
 #pragma endregion

@@ -45,15 +45,15 @@ State::Context State::getContext() const
 	return mContext;
 }
 
-void State::setLocalID(sf::Int32 id)
-{
-	mContext.localID = &id;
-}
-
-sf::Int32 State::getLocalID()
-{
-	return *mContext.localID;
-}
+//void State::setLocalID(sf::Int32 id)
+//{
+//	mContext.localID = &id;
+//}
+//
+//sf::Int32 State::getLocalID()
+//{
+//	return *mContext.localID;
+//}
 
 void State::onActivate()
 {

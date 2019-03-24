@@ -41,6 +41,7 @@ public:
 	void spawnZombie(int x, int y);
 	void spawnPickup(sf::Int32 type, sf::Vector2f position);
 	void updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
+	void oldUpdateClientState(sf::Packet packet);
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
 
