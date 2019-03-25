@@ -38,11 +38,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 
-	//std::cout << "MULTIPLATER ID: " << mLocalPlayerID << std::endl;
-	//std::cout << "SOCKET Port: " << mSocket.getLocalPort() << std::endl;
-	//std::cout << "SOCKET r address: " << mSocket.getRemoteAddress() << std::endl;
-	//std::cout << "SOCKET r Port: " << mSocket.getRemotePort() << std::endl;
-
 	mPacketHandler->setGame(this);
 	mPacketHandler->setConnected(true);
 	mPacketHandler->notifyServerReady(&mSocket, mLocalPlayerID);
@@ -84,6 +79,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 
 	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
 	{
+		//std::cout << "Notfiy Server World Built" << std::endl;
 		mPacketHandler->notifyServerWorldBuilt(&mSocket);
 		mSeverNotifiedBuilt = true;
 		mGameStarted = true;
@@ -433,9 +429,6 @@ void MultiplayerGameState::handlePositionUpdates()
 				positionUpdatePacket << identifier << aircraft->getPosition().x << aircraft->getPosition().y << static_cast<sf::Int32>(aircraft->getHitpoints()) << static_cast<sf::Int32>(aircraft->getGrenadeAmmo());
 				//std::cout << "SENDING  POSITION : " << aircraft->getPosition().x << ", " << aircraft->getPosition().y << std::endl;
 			}
-				
-
-			
 		}
 
 		mSocket.send(positionUpdatePacket);
@@ -445,7 +438,6 @@ void MultiplayerGameState::handlePositionUpdates()
 }
 
 #pragma endregion
-
 
 sf::Int32 MultiplayerGameState::getLocalID()
 {

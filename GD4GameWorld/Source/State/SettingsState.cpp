@@ -12,20 +12,16 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 	mBackgroundSprite.setTexture(context.textures->get(Textures::TitleScreen));
 	
 	// Build key binding buttons and labels
-	for (std::size_t x = 0; x < 2; ++x)
-	{
-		addButtonLabel(PlayerAction::MoveLeft,		x, 0, "Move Left", context);
-		addButtonLabel(PlayerAction::MoveRight,		x, 1, "Move Right", context);
-		addButtonLabel(PlayerAction::MoveUp,		x, 2, "Move Up", context);
-		addButtonLabel(PlayerAction::MoveDown,		x, 3, "Move Down", context);
-		addButtonLabel(PlayerAction::Fire,			x, 4, "Fire", context);
-		addButtonLabel(PlayerAction::StartGrenade,	x, 5, "Granade", context);
-	}
-
+	addButtonLabel(PlayerAction::MoveLeft, 0, 0, "Move Left", context);
+	addButtonLabel(PlayerAction::MoveRight, 0, 1, "Move Right", context);
+	addButtonLabel(PlayerAction::MoveUp, 0, 2, "Move Up", context);
+	addButtonLabel(PlayerAction::MoveDown, 0, 3, "Move Down", context);
+	addButtonLabel(PlayerAction::Fire, 0, 4, "Fire", context);
+	addButtonLabel(PlayerAction::StartGrenade, 0, 5, "Granade", context);
 	updateLabels();
 
 	auto backButton = std::make_shared<GUI::Button>(context);
-	backButton->setPosition(80.f, 620.f);
+	backButton->setPosition(400.f, 620.f);
 	backButton->setText("Back");
 	backButton->setCallback(std::bind(&SettingsState::requestStackPop, this));
 
@@ -50,7 +46,7 @@ bool SettingsState::handleEvent(const sf::Event& event)
 	bool isKeyBinding = false;
 
 	// Iterate through all key binding buttons to see if they are being pressed, waiting for the user to enter a key
-	for (std::size_t i = 0; i < 2*PlayerAction::Count; ++i)
+	for (std::size_t i = 0; i < PlayerAction::Count; ++i)
 	{
 		if (mBindingButtons[i]->isActive())
 		{
@@ -103,12 +99,12 @@ void SettingsState::addButtonLabel(std::size_t index, std::size_t x, std::size_t
 	index += PlayerAction::Count * x;
 
 	mBindingButtons[index] = std::make_shared<GUI::Button>(context);
-	mBindingButtons[index]->setPosition(400.f*x + 80.f, 50.f*y + 300.f);
+	mBindingButtons[index]->setPosition(400.f*x + 400.f, 50.f*y + 200.f);
 	mBindingButtons[index]->setText(text);
 	mBindingButtons[index]->setToggle(true);
 
 	mBindingLabels[index] = std::make_shared<GUI::Label>("", *context.fonts);
-	mBindingLabels[index]->setPosition(400.f*x + 300.f, 50.f*y + 315.f);
+	mBindingLabels[index]->setPosition(400.f*x + 605.f, 50.f*y + 215.f);
 
 	mGUIContainer.pack(mBindingButtons[index]);
 	mGUIContainer.pack(mBindingLabels[index]);

@@ -21,7 +21,7 @@ sf::IpAddress LobbyState::getAddressFromFile()
 
 	// If open/read failed, create new file
 	std::ofstream outputFile("ip.txt");
-	std::string localAddress = "127.0.0.1";
+	std::string localAddress = sf::IpAddress::LocalHost.toString();
 	outputFile << localAddress;
 
 	return localAddress;
@@ -261,16 +261,16 @@ void LobbyState::setDisplayText(Context context)
 
 #pragma region Getters and Setters
 
-
 void LobbyState::setLocalID(sf::Int32 id)
 {
 	mLocalPlayerID = id;
 }
 
-sf::Int32  LobbyState::getLocalID()
+sf::Int32 LobbyState::getLocalID()
 {
 	return mLocalPlayerID;
 }
+
 void LobbyState::increasePlayerCount()
 {
 	++mPlayerCount;

@@ -51,17 +51,14 @@ GameServer::~GameServer()
 
 void GameServer::setListening(bool enable)
 {
-	// Check if it isn't already listening
-	if (enable)
-	{
-		if (!mListeningState)
-			mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
-	}
-	else
+	if (!enable)
 	{
 		mListenerSocket.close();
 		mListeningState = false;
 	}
+
+	if (!mListeningState)
+		mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
 }
 
 void GameServer::executionThread()
@@ -173,45 +170,30 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 
 	switch (packetType)
 	{
-	case Client::Quit:
-	{
-		receivingPeer.timedOut = true;
-		detectedTimeout = true;
-	} break;
-
-	case Client::LoadGame:
-	{
-		loadGame();
-		//When Clients are Ready
-
-	} break;
-
-
-	case Client::Ready:
-	{
+		case Client::Quit:
+			receivingPeer.timedOut = true;
+			detectedTimeout = true;
+			break;
+		case Client::LoadGame: /* When Clients are Ready */
+			loadGame();
+			break;
+		case Client::Ready:
 			++mClientReadyCount;
-			//std::cout << "RECIEVED CLIENT READY: Clients Ready " << mClientReadyCount  << std::endl;
-	} break;
-
-	case Client::PlayerEvent:
-	{
-		playerEvent(packet);
-	} break;
-
-	case Client::PlayerRealtimeChange:
-	{
-		playerRealTimeChange(packet);
-	} break;
-
-	case Client::PositionUpdate:
-	{
-		positionUpdate(packet);
-	} break;
-
-	case Client::GameEvent:
-	{
-		gameEvent(packet, receivingPeer);
-	}
+			break;
+		case Client::PlayerEvent:
+			playerEvent(packet);
+			break;
+		case Client::PlayerRealtimeChange:
+			playerRealTimeChange(packet);
+			break;
+		case Client::PositionUpdate:
+			positionUpdate(packet);
+			break;
+		case Client::GameEvent:
+			gameEvent(packet, receivingPeer);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -260,10 +242,10 @@ void GameServer::positionUpdate(sf::Packet packet)
 	//}
 
 	//OLD CODE
-	sf::Int32 numAircrafts;
-	packet >> numAircrafts;
+	sf::Int32 characterCount;
+	packet >> characterCount;
 
-	for (sf::Int32 i = 0; i < numAircrafts; ++i)
+	for (sf::Int32 i = 0; i < characterCount; ++i)
 	{
 		sf::Int32 aircraftIdentifier;
 		sf::Int32 aircraftHitpoints;
@@ -398,8 +380,8 @@ void GameServer::updateClientState()
 	updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
 	updateClientStatePacket << static_cast<sf::Int32>(mCharacterInfo.size());
 
-	FOREACH(auto aircraft, mCharacterInfo)
-		updateClientStatePacket << aircraft.first << aircraft.second.position.x << aircraft.second.position.y;
+	FOREACH(auto character, mCharacterInfo)
+		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
 
 	sendToAll(updateClientStatePacket);
 }
