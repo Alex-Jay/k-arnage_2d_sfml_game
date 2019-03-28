@@ -23,6 +23,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mPacketHandler(new PacketHandler)
 	, mLocalPlayerID(localID)
+	, mSpectating(false)
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
@@ -72,7 +73,8 @@ bool MultiplayerGameState::update(sf::Time dt)
 	handleNetworkInput();
 	handleServerMessages(dt);
 	updateBroadcastMessage(dt);
-	handleGameActions();
+	if (!mSpectating)
+		handleGameActions();
 	handlePositionUpdates();
 
 	mTimeSinceLastPacket += dt;
@@ -262,7 +264,7 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 	packet >> currentWorldPosition >> aircraftCount;
 
 	
-	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+	//float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
 
 	// Set the world's scroll compensation according to whether the view is behind or too advanced
 	//mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
@@ -278,7 +280,7 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
 		if (aircraft && !isLocalPlane)
 		{
-			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.1f;
+			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.01f;
 			aircraft->setPosition(interpolatedPosition);
 		}
 	}
@@ -351,8 +353,13 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 	}
 
 	//TODO IF PLAYER IS DEAD SET TO SPECTATING UNTIL GAME IS OVER TO AVOID GAME ENDING ON HOST DEATH
-	if (!foundLocalPlayer && mGameStarted)
-		requestStackPush(States::GameOver);
+	if (!foundLocalPlayer && mGameStarted && !mPlayers.empty())
+	{
+		//disableAllRealtimeActions();
+		//mPlayers[mLocalPlayerID].get()->disableAllRealtimeActions();
+		mSpectating = true;
+		requestStackPush(States::Spectate);
+	}
 }
 
 void MultiplayerGameState::handleRealTimeInput()
@@ -424,9 +431,9 @@ void MultiplayerGameState::handlePositionUpdates()
 
 		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
 		{
-			if (Character* aircraft = mWorld.getCharacter(identifier))
+			if (Character* character = mWorld.getCharacter(identifier))
 			{
-				positionUpdatePacket << identifier << aircraft->getPosition().x << aircraft->getPosition().y << static_cast<sf::Int32>(aircraft->getHitpoints()) << static_cast<sf::Int32>(aircraft->getGrenadeAmmo());
+				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
 				//std::cout << "SENDING  POSITION : " << aircraft->getPosition().x << ", " << aircraft->getPosition().y << std::endl;
 			}
 		}

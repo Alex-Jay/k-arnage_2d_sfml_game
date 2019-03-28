@@ -9,6 +9,7 @@
 #include "State/PauseState.hpp"
 #include "State/SettingsState.hpp"
 #include "State/GameOverState.hpp"
+#include "State/SpectateState.hpp"
 #include "State/LobbyState.hpp"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
@@ -121,5 +122,6 @@ void Application::registerStates()
 	mStateStack.registerState<PauseState>(States::Pause);
 	mStateStack.registerState<PauseState>(States::NetworkPause, true);
 	mStateStack.registerState<GameOverState>(States::GameOver, "Mission Failed!");
+	mStateStack.registerState<SpectateState>(States::Spectate, true);
 	mStateStack.registerState<GameOverState>(States::MissionSuccess, "Mission Successful!");
 }

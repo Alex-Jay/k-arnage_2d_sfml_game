@@ -15,6 +15,7 @@ namespace States
 		NetworkPause,
 		Settings,
 		GameOver,
+		Spectate,
 		MissionSuccess,
 		HostGame,
 		JoinGame,

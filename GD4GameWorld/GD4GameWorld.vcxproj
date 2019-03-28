@@ -61,6 +61,7 @@
     <ClInclude Include="Include\Book\State\MultiplayerGameState.hpp" />
     <ClInclude Include="Include\Book\State\PauseState.hpp" />
     <ClInclude Include="Include\Book\State\SettingsState.hpp" />
+    <ClInclude Include="Include\Book\State\SpectateState.hpp" />
     <ClInclude Include="Include\Book\State\State.hpp" />
     <ClInclude Include="Include\Book\State\StateIdentifiers.hpp" />
     <ClInclude Include="Include\Book\State\StateStack.hpp" />
@@ -121,6 +122,7 @@
     <ClCompile Include="Source\State\MultiplayerGameState.cpp" />
     <ClCompile Include="Source\State\PauseState.cpp" />
     <ClCompile Include="Source\State\SettingsState.cpp" />
+    <ClCompile Include="Source\State\SpectateState.cpp" />
     <ClCompile Include="Source\State\State.cpp" />
     <ClCompile Include="Source\State\StateStack.cpp" />
     <ClCompile Include="Source\State\TitleState.cpp" />

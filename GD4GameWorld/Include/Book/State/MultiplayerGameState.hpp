@@ -93,6 +93,7 @@ private:
 	bool						mHasFocus;
 	bool						mHost;
 	bool						mGameStarted;
+	bool						mSpectating;
 	bool mCharactersRecieved{};
 	bool mObstaclesRecieved{};
 	bool mServerNotifiedReady{};

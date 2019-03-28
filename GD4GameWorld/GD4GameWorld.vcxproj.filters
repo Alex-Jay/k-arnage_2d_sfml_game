@@ -258,6 +258,9 @@
     <ClInclude Include="include\Book\Networking\PacketHandler.hpp">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Book\State\SpectateState.hpp">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl">
@@ -411,6 +414,9 @@
     </ClCompile>
     <ClCompile Include="Source\Networking\PacketHandler.cpp">
       <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State\SpectateState.cpp">
+      <Filter>Source Files\State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

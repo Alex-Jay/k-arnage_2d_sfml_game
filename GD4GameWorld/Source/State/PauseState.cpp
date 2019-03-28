@@ -50,7 +50,7 @@ PauseState::PauseState(StateStack& stack, Context context, bool letUpdatesThroug
 
 PauseState::~PauseState()
 {
-	getContext().music->setPaused(false);
+	//getContext().music->setPaused(false);
 }
 
 void PauseState::draw()
