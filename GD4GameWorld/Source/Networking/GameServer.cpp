@@ -26,7 +26,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mConnectedPlayers(0)
 	, mWorldHeight(5000.f)
 	, mBattleFieldRect(0.f, mWorldHeight - battlefieldSize.y, battlefieldSize.x, battlefieldSize.y)
-	, mBattleFieldScrollSpeed(-50.f)
+	, mBattleFieldScrollSpeed(0)
 	, mCharacterCount(0)
 	, mPeers(1)
 	, mCharacterIdentifierCounter(0)
@@ -34,7 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefieldSize)
 	, mLastSpawnTime(sf::Time::Zero)
 	, mTimeForNextSpawn(sf::seconds(5.f))
 	, mZombieCount(0)
-	, mClientReadyCount(1)
+	, mClientReadyCount(0)
 {
 	mListenerSocket.setBlocking(false);
 	mPeers[0].reset(new RemotePeer());
@@ -51,17 +51,14 @@ GameServer::~GameServer()
 
 void GameServer::setListening(bool enable)
 {
-	// Check if it isn't already listening
-	if (enable)
-	{
-		if (!mListeningState)
-			mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
-	}
-	else
+	if (!enable)
 	{
 		mListenerSocket.close();
 		mListeningState = false;
 	}
+
+	if (!mListeningState)
+		mListeningState = (mListenerSocket.listen(ServerPort) == sf::TcpListener::Done);
 }
 
 void GameServer::executionThread()
@@ -98,8 +95,6 @@ void GameServer::executionThread()
 			tickTime -= tickInterval;
 		}
 
-
-
 		// Sleep to prevent server from consuming 100% CPU
 		sf::sleep(sf::milliseconds(100));
 	}
@@ -107,23 +102,21 @@ void GameServer::executionThread()
 
 void GameServer::tick()
 {
-	updateClientState();
-	//TODO HANDLE GAME OVER CONDITION
-	//handleWinCondition();
-	RemoveDestroyedCharacters();
-	spawnEnemys();
-	int np = mPeers.size();
-	if (!buildWorldPacketSent && (mClientReadyCount >= mPeers.size()))
+	if (mGameStarted)
 	{
-		std::cout << "ALL CLIENTS READY: " << std::endl;
-		mAllClientsReady = true;
-
-		spawnObstacles();
-		sendCharacters();
-		
-		buildWorldPacketSent = true;
+		updateClientState();
+		//TODO HANDLE GAME OVER CONDITION
+		//handleWinCondition();
+		RemoveDestroyedCharacters();
+		spawnEnemys();
 	}
-
+	else if(mClientReadyCount >= mPeers.size() - 1)
+	{
+		//std::cout << "ALL CLIENTS READY: " << std::endl;
+		setObstacles();
+		sendCharacters();
+		mGameStarted = true;
+	}
 	
 }
 
@@ -157,15 +150,15 @@ void GameServer::handleIncomingPackets()
 
 			if (now() >= peer->lastPacketTime + mClientTimeoutTime) //TODO INFORM SERVER OF LOBBY STATUS, temp changing mClientTimeoutTime to 5 min
 			{
-				//std::cout << "4 Setting Timeout status" << std::endl;
+				////std::cout << "4 Setting Timeout status" << std::endl;
 				peer->timedOut = true;
 				detectedTimeout = true;
 			}
 		}
 	}
 
-	//if (detectedTimeout)
-	//	GameServer::handleDisconnections();
+	if (detectedTimeout)
+		GameServer::handleDisconnections();
 }
 
 void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout)
@@ -173,64 +166,34 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 	sf::Int32 packetType;
 	packet >> packetType;
 
-	//std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
+	////std::cout << "RECIEVED PACKED TYPE: " << packetType << std::endl;
 
 	switch (packetType)
 	{
-	case Client::Quit:
-	{
-		receivingPeer.timedOut = true;
-		detectedTimeout = true;
-	} break;
-
-	case Client::LoadGame:
-	{
-		loadGame();
-		//When Clients are Ready
-
-	} break;
-
-
-	case Client::Ready:
-	{
-		std::cout << "RECIEVED CLIENT READY: " << std::endl;
-		++mClientReadyCount;
-
-	} break;
-
-	case Client::WorldBuilt:
-	{
-		std::cout << "RECIEVED World BUILT: " << std::endl;
-		++mClientReadyCount;
-
-	} break;
-
-	case Client::StartGame:
-	{
-		startGame();
-		//When Clients are Ready
-		
-	} break;
-
-	case Client::PlayerEvent:
-	{
-		playerEvent(packet);
-	} break;
-
-	case Client::PlayerRealtimeChange:
-	{
-		playerRealTimeChange(packet);
-	} break;
-
-	case Client::PositionUpdate:
-	{
-		positionUpdate(packet);
-	} break;
-
-	case Client::GameEvent:
-	{
-		gameEvent(packet, receivingPeer);
-	}
+		case Client::Quit:
+			receivingPeer.timedOut = true;
+			detectedTimeout = true;
+			break;
+		case Client::LoadGame: /* When Clients are Ready */
+			loadGame();
+			break;
+		case Client::Ready:
+			++mClientReadyCount;
+			break;
+		case Client::PlayerEvent:
+			playerEvent(packet);
+			break;
+		case Client::PlayerRealtimeChange:
+			playerRealTimeChange(packet);
+			break;
+		case Client::PositionUpdate:
+			positionUpdate(packet);
+			break;
+		case Client::GameEvent:
+			gameEvent(packet, receivingPeer);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -241,12 +204,6 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 void GameServer::loadGame()
 {
 	notifyLoadGame();
-}
-
-void GameServer::startGame()
-{
-	gameStarted = true;
-	notifyStartGame();
 }
 
 void GameServer::playerEvent(sf::Packet packet)
@@ -269,19 +226,35 @@ void GameServer::playerRealTimeChange(sf::Packet packet)
 
 void GameServer::positionUpdate(sf::Packet packet)
 {
-	sf::Int32 numCharacters;
-	packet >> numCharacters;
+	//sf::Int32 numCharacters;
+	//packet >> numCharacters;
 
-	for (sf::Int32 i = 0; i < numCharacters; ++i)
+	//for (sf::Int32 i = 0; i < numCharacters; ++i)
+	//{
+	//	sf::Int32 characterIdentifier;
+	//	sf::Int32 characterHitpoints;
+	//	sf::Int32 missileAmmo;
+	//	sf::Vector2f characterPosition;
+	//	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
+	//	mCharacterInfo[characterIdentifier].position = characterPosition;
+	//	//mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
+	//	//mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+	//}
+
+	//OLD CODE
+	sf::Int32 characterCount;
+	packet >> characterCount;
+
+	for (sf::Int32 i = 0; i < characterCount; ++i)
 	{
-		sf::Int32 characterIdentifier;
-		sf::Int32 characterHitpoints;
+		sf::Int32 aircraftIdentifier;
+		sf::Int32 aircraftHitpoints;
 		sf::Int32 missileAmmo;
-		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
-		mCharacterInfo[characterIdentifier].position = characterPosition;
-		mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
-		mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+		sf::Vector2f aircraftPosition;
+		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y >> aircraftHitpoints >> missileAmmo;
+		mCharacterInfo[aircraftIdentifier].position = aircraftPosition;
+		mCharacterInfo[aircraftIdentifier].hitpoints = aircraftHitpoints;
+		mCharacterInfo[aircraftIdentifier].missileAmmo = missileAmmo;
 	}
 }
 
@@ -350,7 +323,7 @@ void GameServer::notifyPlayerEvent(sf::Int32 characterIdentifier, sf::Int32 acti
 
 void GameServer::notifyLoadGame()
 {
-	std::cout << "NOTIFYING LOAD GAME: " << std::endl;
+	//std::cout << "NOTIFYING LOAD GAME: " << std::endl;
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
@@ -375,14 +348,14 @@ void GameServer::notifyStartGame()
 	}
 }
 
-void GameServer::notifyPlayerSpawn(sf::Int32 characterIdentifier)
+void GameServer::notifyPlayerJoin(sf::Int32 characterIdentifier)
 {
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
 	{
 		if (mPeers[i]->ready)
 		{
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Server::PlayerConnect);
+			packet << static_cast<sf::Int32>(Server::JoinLobby);
 			packet << characterIdentifier;;
 			mPeers[i]->socket.send(packet);
 		}
@@ -391,6 +364,17 @@ void GameServer::notifyPlayerSpawn(sf::Int32 characterIdentifier)
 
 void GameServer::updateClientState()
 {
+	//sf::Packet updateClientStatePacket;
+	//updateClientStatePacket << static_cast<sf::Int32>(Server::UpdateClientState);
+	////updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
+	//updateClientStatePacket << static_cast<sf::Int32>(mCharacterInfo.size());
+
+	//FOREACH(auto character, mCharacterInfo)
+	//	updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
+
+	//sendToAll(updateClientStatePacket);
+
+	//OLD CODE
 	sf::Packet updateClientStatePacket;
 	updateClientStatePacket << static_cast<sf::Int32>(Server::UpdateClientState);
 	updateClientStatePacket << static_cast<float>(mBattleFieldRect.top + mBattleFieldRect.height);
@@ -406,7 +390,7 @@ void GameServer::updateClientState()
 void GameServer::informWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::InitialState);
+	packet << static_cast<sf::Int32>(Server::LobbyState);
 
 	packet << static_cast<sf::Int32>(mCharacterCount);
 
@@ -456,23 +440,15 @@ void GameServer::handleIncomingConnections()
 
 	if (mListenerSocket.accept(mPeers[mConnectedPlayers]->socket) == sf::TcpListener::Done)
 	{
-		
-		// order the new client to spawn its own plane ( player 1 )
-		mCharacterInfo[mCharacterIdentifierCounter].position = sf::Vector2f(mBattleFieldRect.width / 2, mBattleFieldRect.top + mBattleFieldRect.height / 2);
-		mCharacterInfo[mCharacterIdentifierCounter].hitpoints = 100;
-		mCharacterInfo[mCharacterIdentifierCounter].missileAmmo = 2;
-
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::JoinLobby);
+		packet << static_cast<sf::Int32>(Server::SelfJoinLobby);
 		packet << mCharacterIdentifierCounter;
-		packet << mCharacterInfo[mCharacterIdentifierCounter].position.x;
-		packet << mCharacterInfo[mCharacterIdentifierCounter].position.y;
 
 		mPeers[mConnectedPlayers]->characterIdentifiers.push_back(mCharacterIdentifierCounter);
 
 		broadcastMessage("New player!");
 		
-		notifyPlayerSpawn(mCharacterIdentifierCounter++);
+		notifyPlayerJoin(mCharacterIdentifierCounter++);
 
 		informWorldState(mPeers[mConnectedPlayers]->socket);
 
@@ -482,13 +458,13 @@ void GameServer::handleIncomingConnections()
 		mCharacterCount++;
 		mConnectedPlayers++;
 
-		std::cout << "PLAYER ADDED " << std::endl;
+		//std::cout << "PLAYER ADDED " << std::endl;
 
-		std::cout << "CHARC COUNT " << mCharacterCount << std::endl;
+		//std::cout << "CHARC COUNT " << mCharacterCount << std::endl;
 
-		std::cout << "PLAYER CONNECTED " << mConnectedPlayers << std::endl;
+		//std::cout << "PLAYER CONNECTED " << mConnectedPlayers << std::endl;
 
-		std::cout << "PEERS" << mPeers.size() << std::endl;
+		//std::cout << "PEERS" << mPeers.size() << std::endl;
 		if (mConnectedPlayers >= mMaxConnectedPlayers)
 			setListening(false);
 		else // Add a new waiting peer
@@ -547,14 +523,9 @@ void GameServer::RemoveDestroyedCharacters()
 	}
 }
 
-void GameServer::SetInitialWorldState()
-{
-	//sendCharacters();
-}
-
 void GameServer::sendCharacters()
 {
-	std::cout << "SENDING SET CHARACTERS " << std::endl;
+	//std::cout << "SENDING SET CHARACTERS " << std::endl;
 
 	sf::Packet packet;
 
@@ -573,30 +544,32 @@ void GameServer::sendCharacters()
 	sendToAll(packet);
 }
 
-void GameServer::spawnObstacles()
+void GameServer::setObstacles()
 {
 	if (!obstaclesSpawned)
 	{
-		obstaclesSpawned = true;
-		int rot;
+		//std::cout << "SENDING SET Obstacoles " << std::endl;
 
-		std::size_t obstacleCount = 15; //1u + randomInt(20);
-		std::vector<sf::Vector2f> spawnPoints = GameServer::getObjectSpwanPoints(obstacleCount);
+		int16_t obstacleCount = 5; //1u + randomInt(20);
+
+		std::vector<Obstacle::ObstacleData> obstacleData = GameServer::getObjectData(obstacleCount);
+
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::SetObstacles);
+		packet << obstacleCount;
 
 		// Send the spawn orders to all clients
 		for (std::size_t i = 0; i < obstacleCount; ++i)
 		{
-			rot = randomInt(360);
-			sf::Packet packet;
-
-			packet << static_cast<sf::Int32>(Server::SpawnObstacle);
-			packet << static_cast<sf::Int32>(randomInt(static_cast<sf::Int32>(Obstacle::ObstacleID::TypeCount) - 1));
-			packet << spawnPoints[i].x;
-			packet << spawnPoints[i].y;
-			packet << rot;
-
-			sendToAll(packet);
+			packet << obstacleData[i].type;
+			packet << obstacleData[i].x;
+			packet << obstacleData[i].y;
+			packet << obstacleData[i].a;
 		}
+
+		sendToAll(packet);
+
+		obstaclesSpawned = true;
 	}
 }
 
@@ -643,6 +616,36 @@ std::vector<sf::Vector2f> GameServer::getObjectSpwanPoints(int obstacleCount)
 	}
 
 	return spawnPoints;
+}
+
+std::vector<Obstacle::ObstacleData> GameServer::getObjectData(int obstacleCount)
+{
+	std::vector<Obstacle::ObstacleData> obstacleData;
+	std::list<sf::FloatRect> objectRects;
+	int xPos, yPos;
+
+	sf::FloatRect worldBounds = sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(WORLD_WIDTH, WORLD_HEIGHT));
+
+	for (size_t i = 0; i < obstacleCount; ++i)
+	{
+		xPos = DESSERT_TILE_WIDTH + randomInt(std::ceil(WORLD_WIDTH - DESSERT_TILE_WIDTH));
+		yPos = DESSERT_TILE_HEIGHT + randomInt(std::ceil(WORLD_HEIGHT - DESSERT_TILE_HEIGHT));
+		sf::FloatRect boundingRectangle = sf::FloatRect(xPos, yPos, DESSERT_TILE_WIDTH * 2, DESSERT_TILE_HEIGHT * 2);
+
+		if (!containsIntersection(objectRects, boundingRectangle))
+		{
+			objectRects.push_back(boundingRectangle);
+
+			int16_t type = randomInt(static_cast<int16_t>(Obstacle::ObstacleID::TypeCount) - 1);
+			int16_t rot = randomInt(360);
+
+			obstacleData.push_back(Obstacle::ObstacleData(type, xPos, yPos, rot));
+		}
+		else
+			i--;
+	}
+
+	return obstacleData;
 }
 
 #pragma endregion

@@ -45,6 +45,7 @@
     <ClInclude Include="Include\Book\Entity\Projectile.hpp" />
     <ClInclude Include="Include\Book\Networking\GameServer.hpp" />
     <ClInclude Include="Include\Book\Networking\NetworkProtocol.hpp" />
+    <ClInclude Include="include\Book\Networking\PacketHandler.hpp" />
     <ClInclude Include="Include\Book\Node\EmitterNode.hpp" />
     <ClInclude Include="Include\Book\Node\NetworkNode.hpp" />
     <ClInclude Include="Include\Book\Node\ParticleNode.hpp" />
@@ -73,7 +74,6 @@
     <ClInclude Include="Include\Book\Structural\Utility.hpp" />
     <ClInclude Include="Include\Book\Structural\Xbox360Controller.hpp" />
     <ClInclude Include="ScoreBoardState.hpp" />
-    <ClInclude Include="SocketManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Book\Structural\ResourceHolder.inl" />
@@ -81,7 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoreBoardState.cpp" />
-    <ClCompile Include="SocketManager.cpp" />
     <ClCompile Include="Source\Animation\Animation.cpp" />
     <ClCompile Include="Source\Audio\MusicPlayer.cpp" />
     <ClCompile Include="Source\Audio\SoundPlayer.cpp" />
@@ -106,6 +105,7 @@
     <ClCompile Include="Source\Entity\Player.cpp" />
     <ClCompile Include="Source\Entity\Projectile.cpp" />
     <ClCompile Include="Source\Networking\GameServer.cpp" />
+    <ClCompile Include="Source\Networking\PacketHandler.cpp" />
     <ClCompile Include="Source\Node\EmitterNode.cpp" />
     <ClCompile Include="Source\Node\NetworkNode.cpp" />
     <ClCompile Include="Source\Node\ParticleNode.cpp" />

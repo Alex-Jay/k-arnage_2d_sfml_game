@@ -21,7 +21,7 @@ sf::IpAddress LobbyState::getAddressFromFile()
 
 	// If open/read failed, create new file
 	std::ofstream outputFile("ip.txt");
-	std::string localAddress = "127.0.0.1";
+	std::string localAddress = sf::IpAddress::LocalHost.toString();
 	outputFile << localAddress;
 
 	return localAddress;
@@ -31,17 +31,17 @@ LobbyState::LobbyState(StateStack& stack, Context context, bool isHost)
 	: State(stack, context)
 	, mWindow(*context.window)
 	, mSocket(*context.socket)
-	, mLocalPlayerID(*context.localID)
 	, mGUIContainer()
 	, mClientTimeout(sf::seconds(300.f)) // 5 second timeout
 	, mTimeSinceLastPacket(sf::seconds(0.f))
 	, mHost(isHost)
 	, mStack(stack)
+	, mPacketHandler(new PacketHandler)
 {
+	mPacketHandler->setLobby(this);
 	setText(context);
 	setButtons(context);
 	connectToServer();
-
 }
 
 #pragma region Initialization
@@ -80,7 +80,7 @@ void LobbyState::setButtons(Context context)
 		readyButton->setText("Ready");
 		readyButton->setCallback([this]()
 		{
-			sendLoadGame();
+			mPacketHandler->sendLoadGame(&mSocket);
 		});
 
 		mGUIContainer.pack(readyButton);
@@ -91,7 +91,7 @@ void LobbyState::setButtons(Context context)
 	exitButton->setText("Back");
 	exitButton->setCallback([this]() {
 		mText.setString("Disconnecting....");
-		sendDisconnectSelf();
+		mPacketHandler->sendDisconnectSelf(&mSocket);
 	});
 
 	mGUIContainer.pack(exitButton);
@@ -117,16 +117,19 @@ void LobbyState::connectToServer()
 
 	if (status == sf::TcpSocket::Done)
 	{
+		mPacketHandler->setConnected(true);
 		mConnected = true;
 	}
 	else
 	{
+		mPacketHandler->setConnected(false);
 		mConnected = false;
 		mFailedConnectionClock.restart();
 	}
 
 	mSocket.setBlocking(false);
 }
+
 #pragma endregion
 
 #pragma region Update
@@ -160,37 +163,12 @@ bool LobbyState::update(sf::Time dt)
 	if (!mGameStarted)
 	{
 		// Connected to server: Handle all the network logic
-		if (mConnected) {
-
-			// TODO Remove players who disconnect
-			bool foundLocalPlayer = false;
-
-			// Handle messages from server that may have arrived
-			sf::Packet packet;
-			if (mSocket.receive(packet) == sf::Socket::Done) {
-				mTimeSinceLastPacket = sf::seconds(0.f);
-				sf::Int32 packetType;
-				packet >> packetType;
-				handlePacket(packetType, packet);
-			}
-			else {
-				// Check for timeout with the server
-				if (mTimeSinceLastPacket > mClientTimeout) {
-					mConnected = false;
-
-					mFailedConnectionText.setString("Lost connection to server");
-					centerOrigin(mFailedConnectionText);
-
-					mFailedConnectionClock.restart();
-				}
-			}
-
+		if (mPacketHandler->isConnected())
+		{
+			mPacketHandler->update(dt, &mSocket);
 			updateBroadcastMessage(dt);
-			mTimeSinceLastPacket += dt;
 		}
-
-		// Failed to connect and waited for more than 5 seconds: Back to menu
-		else if (mFailedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
+		else if (mPacketHandler->timedOut()) {
 			requestStateClear();
 			requestStackPush(States::Menu);
 		}
@@ -201,18 +179,18 @@ bool LobbyState::update(sf::Time dt)
 
 void LobbyState::updateBroadcastMessage(sf::Time elapsedTime)
 {
-	if (mBroadcasts.empty())
+	if (mPacketHandler->getBroadcastMessages().empty())
 		return;
 
 	// Update broadcast timer
 	mBroadcastElapsedTime += elapsedTime;
 	if (mBroadcastElapsedTime > sf::seconds(2.5f)) {
 		// If message has expired, remove it
-		mBroadcasts.erase(mBroadcasts.begin());
+		mPacketHandler->removeBroadcast();
 
 		// Continue to display next broadcast message
-		if (!mBroadcasts.empty()) {
-			mBroadcastText.setString(mBroadcasts.front());
+		if (!mPacketHandler->getBroadcastMessages().empty()) {
+			mBroadcastText.setString(mPacketHandler->getBroadcastMessages().front());
 			centerOrigin(mBroadcastText);
 			mBroadcastElapsedTime = sf::Time::Zero;
 		}
@@ -255,7 +233,7 @@ void LobbyState::returnToMenu()
 
 void LobbyState::loadGame()
 {
-	//std::cout << "RECIEVED Load GAme " << std::endl;
+	std::cout << "RECIEVED Load GAme " << std::endl;
 	if (mHost)
 	{
 		//requestStackPop();
@@ -263,7 +241,7 @@ void LobbyState::loadGame()
 	}
 	else
 	{
-		requestStackPop();
+		//requestStackPop();
 		requestStackPush(States::JoinGame);
 	}
 
@@ -281,123 +259,42 @@ void LobbyState::setDisplayText(Context context)
 
 #pragma endregion
 
-#pragma region Send Packet
+#pragma region Getters and Setters
 
-void LobbyState::sendLoadGame()
+void LobbyState::setLocalID(sf::Int32 id)
 {
-	//std::cout << "1 SEND LOAD GAME"  << std::endl;
-	if (mHost && mConnected) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::LoadGame);
-		mSocket.send(packet);
-	}
+	mLocalPlayerID = id;
 }
 
-void LobbyState::sendDisconnectSelf()
+sf::Int32 LobbyState::getLocalID()
 {
-	if (mConnected) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
-	}
+	return mLocalPlayerID;
 }
 
-#pragma endregion
-
-#pragma region Handle Packet
-
-void LobbyState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
-{
-	switch (packetType) {
-		// Send message to all clients
-	case Server::BroadcastMessage: {
-		setBroadcastMessage(packet);
-	} break;
-
-	case Server::JoinLobby: {
-		spawnSelf(packet);
-	} break;
-
-	case Server::PlayerConnect: {
-		playerConnect(packet);
-	} break;
-
-	case Server::PlayerDisconnect:
-	{
-		playerDisconnect(packet);
-	} break;
-
-	case Server::InitialState: {
-		setInitialLobbyState(packet);
-	} break;
-
-	case Server::LoadGame:
-	{
-		loadGame();
-	} break;
-	}
-}
-
-void LobbyState::setBroadcastMessage(sf::Packet& packet)
-{
-	std::string message;
-	packet >> message;
-	mBroadcasts.push_back(message);
-
-	// Just added first message, display immediately
-	if (mBroadcasts.size() == 1) {
-		mBroadcastText.setString(mBroadcasts.front());
-		centerOrigin(mBroadcastText);
-		mBroadcastElapsedTime = sf::Time::Zero;
-	}
-}
-
-void LobbyState::spawnSelf(sf::Packet& packet)
-{
-	sf::Int32 characterIdentifier;
-
-	packet >> characterIdentifier;
-
-	mLocalPlayerID = characterIdentifier;
-
-	++mPlayerCount;
-
-	updateDisplayText();
-}
-
-void LobbyState::playerConnect(sf::Packet& packet)
+void LobbyState::increasePlayerCount()
 {
 	++mPlayerCount;
-	updateDisplayText();
 }
 
-void LobbyState::playerDisconnect(sf::Packet& packet)
+void LobbyState::decreasePlayerCount()
 {
-	sf::Int32 characterIdentifier;
-	packet >> characterIdentifier;
-	
-	if (characterIdentifier == mLocalPlayerID)
-	{
-		mSocket.disconnect();
-		returnToMenu();
-	}
-	else
-	{
-		--mPlayerCount;
-		updateDisplayText();
-	}
-
+	--mPlayerCount;
 }
 
-void LobbyState::setInitialLobbyState(sf::Packet& packet)
+int16_t LobbyState::getPlayerCount(int16_t playerCount)
 {
-	sf::Int32 characterCount;
+	return mPlayerCount;
+}
 
-	packet >> characterCount;
-	
-	mPlayerCount = characterCount;
+void LobbyState::setPlayerCount(int16_t playerCount)
+{
+	mPlayerCount = playerCount;
+}
 
-	updateDisplayText();
+void LobbyState::RegisterGameState(sf::Int32 localId)
+{
+	mStack.registerState<MultiplayerGameState>(States::HostGame, true, localId);
+	mStack.registerState<MultiplayerGameState>(States::JoinGame, false, localId);
 }
 
 #pragma endregion

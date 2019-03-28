@@ -37,7 +37,7 @@ public:
 	void playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
 
 	void setGrenadeAmmo(sf::Int32 ammo);
-	int8_t getGrenadeAmmo();
+	sf::Int32 getGrenadeAmmo();
 
 
 
@@ -93,11 +93,11 @@ private:
 
 	int8_t mFireRateLevel;
 	int8_t mSpreadLevel;
-	int8_t mGrenadeAmmo;
+	sf::Int32 mGrenadeAmmo;
 
 	std::size_t mDirectionIndex;
 
-	int16_t mLocalIdentifier;
+	sf::Int32 mLocalIdentifier;
 
 	bool networkNotified{};
 

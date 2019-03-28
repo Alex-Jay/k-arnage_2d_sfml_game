@@ -13,9 +13,12 @@ namespace Server
 	enum PacketType
 	{
 		BroadcastMessage,	// format: [Int32:packetType] [string:message]
-		SpawnSelf,
-		JoinLobby,			// format: [Int32:packetType]
+		SelfJoinLobby,
+		JoinLobby,
+		LeaveLobby,
+		LobbyState,
 		SetCharacters,
+		SetObstacles,
 		InitialState,
 		PlayerEvent,
 		PlayerRealtimeChange,

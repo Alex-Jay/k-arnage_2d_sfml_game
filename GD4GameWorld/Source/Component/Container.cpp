@@ -62,8 +62,8 @@ namespace GUI {
 
 		//	}
 
-		//	std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-		//	std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+		//	//std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+		//	//std::cout << "mouse y: " << event.mouseButton.y << std::endl;
 		//}
 	}
 

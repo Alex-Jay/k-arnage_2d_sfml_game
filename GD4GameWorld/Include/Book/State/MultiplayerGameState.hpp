@@ -4,21 +4,22 @@
 #include "State/State.hpp"
 #include "Core/World.hpp"
 #include "Entity/Player.hpp"
+#include "Entity/Obstacle.hpp"
 #include "Networking/GameServer.hpp"
 #include "Networking/NetworkProtocol.hpp"
+#include "Networking/PacketHandler.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/Packet.hpp>
 
+class PacketHandler;
 
 class MultiplayerGameState : public State
 {
 public:
-	//MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::TcpSocket * socket);
-
-	MultiplayerGameState(StateStack& stack, Context context, bool isHost);
+	MultiplayerGameState(StateStack & stack, Context context, bool isHost, sf::Int32 localID);
 
 	virtual void				draw();
 	virtual bool				update(sf::Time dt);
@@ -26,40 +27,26 @@ public:
 	virtual void				onActivate();
 	void						onDestroy();
 
-	void notifyServerReady();
-
-	void notifyServerWorldBuilt();
 
 	void						disableAllRealtimeActions();
+	sf::Int32 getLocalID();
 
+	void spawnSelf();
 
+	void spawnPlayers(std::vector<sf::Int32> playerIds);
+	void spawnObstacles(std::vector<Obstacle::ObstacleData> obstacleData);
+	void playerDisconnect(sf::Int32 characterIdentifier);
+	void playerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
+	void playerRealTimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
+	void spawnZombie(int x, int y);
+	void spawnPickup(sf::Int32 type, sf::Vector2f position);
+	void updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
+	void oldUpdateClientState(sf::Packet packet);
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
-	void						handlePacket(sf::Int32 packetType, sf::Packet& packet);
 
 	void broadcastMessage(sf::Packet & packet);
 
-	void spawnSelf(sf::Packet & packet);
-
-	void playerConnect(sf::Packet & packet);
-
-	void setCharacters(sf::Packet & packet);
-
-	void playerDisconnect(sf::Packet & packet);
-
-	void setInitialState(sf::Packet & packet);
-
-	void playerEvent(sf::Packet & packet);
-
-	void playerRealTimeChange(sf::Packet & packet);
-
-	void spawnEnemy(sf::Packet & packet);
-
-	void spawnObstacle(sf::Packet & packet);
-
-	void spawnPickup(sf::Packet & packet);
-
-	void updateClientState(sf::Packet & packet);
 
 	sf::Vector2f assignCharacterSpawn(int Identifier);
 
@@ -69,7 +56,7 @@ private:
 
 	void handleNetworkInput();
 
-	void handleServerMessages();
+	void handleServerMessages(sf::Time dt);
 
 	void handleGameActions();
 
@@ -112,6 +99,8 @@ private:
 	bool mSeverNotifiedBuilt{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
+
+	PacketHandler* mPacketHandler;
 };
 
 #endif // BOOK_MULTIPLAYERGAMESTATE_HPP

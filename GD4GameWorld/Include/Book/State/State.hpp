@@ -9,9 +9,7 @@
 
 #include <memory>
 
-
-namespace sf
-{
+namespace sf {
 	class RenderWindow;
 	class TcpSocket;
 }
@@ -21,50 +19,50 @@ class MusicPlayer;
 class SoundPlayer;
 class KeyBinding;
 
-class State
-{
-	public:
-		typedef std::unique_ptr<State> Ptr;
+class State {
+public:
+	typedef std::unique_ptr<State> Ptr;
 
-		struct Context
-		{
-								Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
-									MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys);
+	struct Context {
+		Context(sf::RenderWindow& window, sf::TcpSocket& socket, uint16_t& localID, TextureHolder& textures, FontHolder& fonts,
+			MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys);
 
-			sf::RenderWindow*	window;
-			sf::TcpSocket*		socket;
-			uint16_t*			localID;
-			TextureHolder*		textures;
-			FontHolder*			fonts;
-			MusicPlayer*		music;
-			SoundPlayer*		sounds;
-			KeyBinding*			keys;
-		};
+		sf::RenderWindow* window;
+		sf::TcpSocket* socket;
+		sf::Int32* localID;
+		TextureHolder* textures;
+		FontHolder* fonts;
+		MusicPlayer* music;
+		SoundPlayer* sounds;
+		KeyBinding* keys;
+	};
 
+	void setLocalID(sf::Int32 id);
+	sf::Int32 getLocalID();
 
-	public:
-							State(StateStack& stack, Context context);
-		virtual				~State();
+public:
+	State(StateStack& stack, Context context);
+	virtual ~State();
 
-		virtual void		draw() = 0;
-		virtual bool		update(sf::Time dt) = 0;
-		virtual bool		handleEvent(const sf::Event& event) = 0;
+	virtual void draw() = 0;
+	virtual bool update(sf::Time dt) = 0;
+	virtual bool handleEvent(const sf::Event& event) = 0;
 
-		virtual void		onActivate();
-		virtual void		onDestroy();
-
-
-	protected:
-		void				requestStackPush(States::ID stateID);
-		void				requestStackPop();
-		void				requestStateClear();
-
-		Context				getContext() const;
+	virtual void onActivate();
+	virtual void onDestroy();
 
 
-	private:
-		StateStack*			mStack;
-		Context				mContext;
+	void requestStackPush(States::ID stateID);
+	void requestStackPop();
+	void requestStateClear();
+
+	Context getContext() const;
+
+	
+
+private:
+	StateStack* mStack;
+	Context mContext;
 };
 
 #endif // BOOK_STATE_HPP

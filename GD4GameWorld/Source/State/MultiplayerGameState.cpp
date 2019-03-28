@@ -8,12 +8,11 @@
 
 #include <fstream>
 
-MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost)
+MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool isHost, sf::Int32 localID)
 	: State(stack, context)
 	, mWorld(*context.window, *context.fonts, *context.sounds, true)
 	, mWindow(*context.window)
 	, mSocket(*context.socket)
-	, mLocalPlayerID(*context.localID)
 	, mTextureHolder(*context.textures)
 	, mConnected(false)
 	, mActiveState(true)
@@ -22,6 +21,8 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, mGameStarted(false)
 	, mClientTimeout(sf::seconds(20.f))
 	, mTimeSinceLastPacket(sf::seconds(0.f))
+	, mPacketHandler(new PacketHandler)
+	, mLocalPlayerID(localID)
 {
 	mBroadcastText.setFont(context.fonts->get(Fonts::Main));
 	mBroadcastText.setPosition(1024.f / 2, 100.f);
@@ -34,10 +35,12 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	mLoadingText.setPosition(mWindow.getSize().x / 2.f, mWindow.getSize().y / 2.f);
 	mLoadingText.setString("Loading Game...");
 
-	std::cout << "MG M" << std::endl;
 	// Play game theme
 	context.music->play(Music::MissionTheme);
 
+	mPacketHandler->setGame(this);
+	mPacketHandler->setConnected(true);
+	mPacketHandler->notifyServerReady(&mSocket, mLocalPlayerID);
 }
 
 #pragma region Update
@@ -65,38 +68,39 @@ void MultiplayerGameState::draw()
 bool MultiplayerGameState::update(sf::Time dt)
 {
 	handleCharacterCount(dt);
-
 	handleRealTimeInput();
-
 	handleNetworkInput();
-
-	handleServerMessages();
-
+	handleServerMessages(dt);
 	updateBroadcastMessage(dt);
-
 	handleGameActions();
-
 	handlePositionUpdates();
 
 	mTimeSinceLastPacket += dt;
 
+	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
+	{
+		//std::cout << "Notfiy Server World Built" << std::endl;
+		mPacketHandler->notifyServerWorldBuilt(&mSocket);
+		mSeverNotifiedBuilt = true;
+		mGameStarted = true;
+	}
 	return true;
 }
 
 void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 {
-	if (mBroadcasts.empty())
+	if (mPacketHandler->getBroadcastMessages().empty())
 		return;
 
 	// Update broadcast timer
 	mBroadcastElapsedTime += elapsedTime;
 	if (mBroadcastElapsedTime > sf::seconds(2.5f)) {
 		// If message has expired, remove it
-		mBroadcasts.erase(mBroadcasts.begin());
+		mPacketHandler->removeBroadcast();
 
 		// Continue to display next broadcast message
-		if (!mBroadcasts.empty()) {
-			mBroadcastText.setString(mBroadcasts.front());
+		if (!mPacketHandler->getBroadcastMessages().empty()) {
+			mBroadcastText.setString(mPacketHandler->getBroadcastMessages().front());
 			centerOrigin(mBroadcastText);
 			mBroadcastElapsedTime = sf::Time::Zero;
 		}
@@ -106,22 +110,6 @@ void MultiplayerGameState::updateBroadcastMessage(sf::Time elapsedTime)
 #pragma endregion
 
 #pragma region Events
-
-void MultiplayerGameState::notifyServerReady()
-{
-	std::cout << "NOTIFY SERVER READY: " << std::endl;
-	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Client::Ready);
-	mSocket.send(packet);
-}
-
-void MultiplayerGameState::notifyServerWorldBuilt()
-{
-	std::cout << "NOTIFY SERVER WORLD BUILT " << std::endl;
-	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Client::WorldBuilt);
-	mSocket.send(packet);
-}
 
 void MultiplayerGameState::disableAllRealtimeActions()
 {
@@ -169,91 +157,13 @@ void MultiplayerGameState::onActivate()
 void MultiplayerGameState::onDestroy()
 {
 	if (!mHost && mConnected) {
-		// Inform server this client is dying
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::Quit);
-		mSocket.send(packet);
+		mPacketHandler->sendDisconnectSelf(&mSocket);
 	}
 }
 
 #pragma endregion
 
 #pragma region Packet Handling
-
-void MultiplayerGameState::handlePacket(sf::Int32 packetType, sf::Packet& packet)
-{
-	switch (packetType) {
-		// Send message to all clients
-	case Server::BroadcastMessage: {
-		
-		broadcastMessage(packet);
-	} break;
-
-	case Server::SpawnSelf: {
-
-		std::cout << "SPAWN SELF RECIEVED" << std::endl;
-		//spawnSelf(packet);
-	} break;
-
-	case Server::SetCharacters: {
-		setCharacters(packet);
-	} break;
-
-	case Server::PlayerConnect: {
-		playerConnect(packet);
-	} break;
-
-	case Server::PlayerDisconnect: {
-		playerDisconnect(packet);
-	} break;
-
-	case Server::InitialState: {
-		setInitialState(packet);
-	} break;
-
-	case Server::PlayerEvent: {
-		playerEvent(packet);
-	} break;
-
-	case Server::PlayerRealtimeChange: {
-		playerRealTimeChange(packet);
-	} break;
-
-	case Server::SpawnEnemy: {
-		spawnEnemy(packet);
-	} break;
-
-	case Server::SpawnObstacle: {
-		spawnObstacle(packet);
-	} break;
-
-	case Server::MissionSuccess: {
-		requestStackPush(States::MissionSuccess);
-	} break;
-
-	case Server::SpawnPickup: {
-		spawnPickup(packet);
-	} break;
-
-	case Server::UpdateClientState: {
-		updateClientState(packet);
-	} break;
-	}
-
-	if (!mServerNotifiedReady)
-	{
-		notifyServerReady();
-		mServerNotifiedReady = true;
-	}
-
-	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
-	{
-		
-		notifyServerWorldBuilt();
-		mSeverNotifiedBuilt = true;
-		mGameStarted = true;
-	}
-}
 
 void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 {
@@ -269,195 +179,107 @@ void MultiplayerGameState::broadcastMessage(sf::Packet& packet)
 	}
 }
 
-void MultiplayerGameState::spawnSelf(sf::Packet& packet)
+void MultiplayerGameState::spawnSelf()
 {
-	std::cout << "Spawn Self" << std::endl;
-
-	sf::Int32 characterIdentifier;
-	sf::Vector2f characterPosition;
-	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
-	Character* character = mWorld.addCharacter((characterIdentifier), true);
-	character->setPosition(assignCharacterSpawn(characterIdentifier));
-
-	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
-	mLocalPlayerIdentifiers.push_back(characterIdentifier);
-
-}
-
-void MultiplayerGameState::playerConnect(sf::Packet& packet)
-{
-	std::cout << "Player Connect" << std::endl;
-	sf::Int32 characterIdentifier;
-	sf::Vector2f characterPosition;
-	packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
-	Character* character = mWorld.addCharacter(characterIdentifier, false);
-	character->setPosition(characterPosition);
-	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-
-}
-
-void MultiplayerGameState::setCharacters(sf::Packet& packet)
-{
-	if (!mCharactersRecieved)
-	{
-		sf::Int32 characterCount;
-		packet >> characterCount;
-
-		//for (sf::Int32 i = 0; i < characterCount; ++i) {
-		//	sf::Int32 characterIdentifier;
-		//
-		//	packet >> characterIdentifier;
-		//	sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
-
-		//	Character* character;
-
-		//	if (characterIdentifier == mLocalPlayerID)
-		//		character = mWorld.addCharacter(characterIdentifier, true);
-		//	else
-		//		character = mWorld.addCharacter(characterIdentifier, false);
-		//	
-		//	character->setPosition(characterPosition);
-		//	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-		//}
-
-		for (sf::Int32 i = 0; i < characterCount; ++i)
-		{
-			sf::Int32 characterIdentifier;
-			packet >> characterIdentifier;
-
-			Character* character;
-
-			if (characterIdentifier == mLocalPlayerID)
-			{
-				std::cout << "Spawn -- LOCAL PLAYER" << std::endl;
-				character = mWorld.addCharacter(characterIdentifier, true);
-
-				//mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
-			}
-			else
-			{
-				std::cout << "Spawn -- NON-LOCAL PLAYER" << std::endl;
-				character = mWorld.addCharacter(characterIdentifier, false);
-				//mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-			}
-
-			mLocalPlayerIdentifiers.push_back(characterIdentifier);
-			character->setPosition(assignCharacterSpawn(characterIdentifier));
-			mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, getContext().keys));
-		}
+		Character* character = mWorld.addCharacter(mLocalPlayerID, true);
+		mLocalPlayerIdentifiers.push_back(mLocalPlayerID);
+		character->setPosition(assignCharacterSpawn(mLocalPlayerID));
+		mPlayers[mLocalPlayerID].reset(new Player(&mSocket, mLocalPlayerID, getContext().keys));
 
 		mCharactersRecieved = true;
+}
+
+void MultiplayerGameState::spawnPlayers(std::vector<sf::Int32> playerIds)
+{
+	for (size_t i = 0; i < playerIds.size(); ++i)
+	{
+		Character* character = mWorld.addCharacter(playerIds[i], false);
+		mLocalPlayerIdentifiers.push_back(playerIds[i]);
+		character->setPosition(assignCharacterSpawn(playerIds[i]));
+		mPlayers[playerIds[i]].reset(new Player(&mSocket, playerIds[i], nullptr));
 	}
 }
 
-void MultiplayerGameState::playerDisconnect(sf::Packet& packet)
+void MultiplayerGameState::spawnObstacles(std::vector<Obstacle::ObstacleData> obstacleData)
 {
-	sf::Int32 characterIdentifier;
-	packet >> characterIdentifier;
+	for (size_t i = 0; i < obstacleData.size(); i++)
+	{
+		mWorld.addObstacle(static_cast<Obstacle::ObstacleID>
+			(obstacleData[i].type),
+			 obstacleData[i].x,
+			 obstacleData[i].y,
+			 obstacleData[i].a);
+	}
 
+	mObstaclesRecieved = true;
+}
+
+void MultiplayerGameState::playerDisconnect(sf::Int32 characterIdentifier)
+{
 	mWorld.removeCharacter(characterIdentifier);
 	mPlayers.erase(characterIdentifier);
 }
 
-void MultiplayerGameState::setInitialState(sf::Packet& packet)
+void MultiplayerGameState::playerEvent(sf::Int32 characterIdentifier, sf::Int32 action)
 {
-	//sf::Int32 characterCount;
-
-	//packet >> characterCount;
-	//for (sf::Int32 i = 0; i < characterCount; ++i) {
-	//	sf::Int32 characterIdentifier;
-	//
-	//	packet >> characterIdentifier;
-	//	sf::Vector2f characterPosition = assignCharacterSpawn(characterIdentifier);
-
-	//	Character* character;
-
-	//	if (characterIdentifier == mLocalPlayerID)
-	//		character = mWorld.addCharacter(characterIdentifier, true);
-	//	else
-	//		character = mWorld.addCharacter(characterIdentifier, false);
-	//	
-	//	character->setPosition(characterPosition);
-	//	mPlayers[characterIdentifier].reset(new Player(&mSocket, characterIdentifier, nullptr));
-	//}
-}
-
-void MultiplayerGameState::playerEvent(sf::Packet& packet)
-{
-	sf::Int32 characterIdentifier;
-	sf::Int32 action;
-	packet >> characterIdentifier >> action;
-
 	auto itr = mPlayers.find(characterIdentifier);
 	if (itr != mPlayers.end())
 		itr->second->handleNetworkEvent(static_cast<Player::Action>(action), mWorld.getCommandQueue());
 }
 
-void MultiplayerGameState::playerRealTimeChange(sf::Packet& packet)
+void MultiplayerGameState::playerRealTimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled)
 {
-	sf::Int32 characterIdentifier;
-	sf::Int32 action;
-	bool actionEnabled;
-	packet >> characterIdentifier >> action >> actionEnabled;
-
 	auto itr = mPlayers.find(characterIdentifier);
 	if (itr != mPlayers.end())
 		itr->second->handleNetworkRealtimeChange(static_cast<Player::Action>(action), actionEnabled);
 }
 
-void MultiplayerGameState::spawnEnemy(sf::Packet& packet)
+void MultiplayerGameState::spawnZombie(int x, int y)
 {
-	int x, y;
-	packet >> x >> y;
-	mWorld.addZombie(x, y, 0);
+	mWorld.addZombie(x, y);
 }
 
-void MultiplayerGameState::spawnObstacle(sf::Packet& packet)
+void MultiplayerGameState::spawnPickup(sf::Int32 type, sf::Vector2f position)
 {
-	std::cout << "SPAWN Obstacle RECIEVED" << std::endl;
-	
-	if (!mObstaclesRecieved)
-	{
-		float x, y, a;
-		sf::Int32 type;
-		packet >> type >> x >> y >> a;
-
-		mWorld.addObstacle(static_cast<Obstacle::ObstacleID>(type), x, y, a);
-		mObstaclesRecieved = true;
-	}
-
-}
-
-void MultiplayerGameState::spawnPickup(sf::Packet& packet)
-{
-	sf::Int32 type;
-	sf::Vector2f position;
-	packet >> type >> position.x >> position.y;
-
 	mWorld.createPickup(position, static_cast<Pickup::Type>(type));
 }
 
-void MultiplayerGameState::updateClientState(sf::Packet& packet)
+void MultiplayerGameState::updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition)
 {
-	float currentWorldPosition;
-	sf::Int32 characterCount;
-	packet >> currentWorldPosition >> characterCount;
-
-	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
-
-	for (sf::Int32 i = 0; i < characterCount; ++i) {
-		sf::Vector2f characterPosition;
-		sf::Int32 characterIdentifier;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y;
-
 		Character* character = mWorld.getCharacter(characterIdentifier);
 
-		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
-		if (character && !isLocalPlane) {
+		if (character && (characterIdentifier != mLocalPlayerID))
+		{
 			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
 			character->setPosition(interpolatedPosition);
+		}
+}
+
+void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
+{
+	float currentWorldPosition;
+	sf::Int32 aircraftCount;
+	packet >> currentWorldPosition >> aircraftCount;
+
+	
+	float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
+
+	// Set the world's scroll compensation according to whether the view is behind or too advanced
+	//mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
+
+	for (sf::Int32 i = 0; i < aircraftCount; ++i)
+	{
+		sf::Vector2f aircraftPosition;
+		sf::Int32 aircraftIdentifier;
+		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y;
+
+		//std::cout << "CURRENT POSITION IS: " << aircraftPosition.x << ", " << aircraftPosition.y << std::endl;
+		Character* aircraft = mWorld.getCharacter(aircraftIdentifier);
+		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
+		if (aircraft && !isLocalPlane)
+		{
+			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.1f;
+			aircraft->setPosition(interpolatedPosition);
 		}
 	}
 }
@@ -501,25 +323,6 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 			break;
 	}
 
-
-	//// TO FIX this Needs to be done by Modulas, so that it wraps around when more playes join
-	//if (Identifier == 0)
-	//{
-	//	spawnPosition = sf::Vector2f(512.f, 315.f);
-	//}
-	//else if (Identifier == 1)
-	//{
-	//	spawnPosition = sf::Vector2f(1536.f, 315.f);
-	//}
-	//else if (Identifier == 2)
-	//{
-	//	spawnPosition = sf::Vector2f(2048.f, 315.f);
-	//}
-	//else if (Identifier == 3)
-	//{
-	//	spawnPosition = sf::Vector2f(2048.f, 315.f);
-	//}
-
 	return spawnPosition;
 }
 
@@ -530,13 +333,10 @@ sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
 void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 {
 	// Remove players whose characters were destroyed
-	bool foundLocalPlayer = false;
+	bool foundLocalPlayer = mWorld.getCharacter(mLocalPlayerID);
 
 	for (auto itr = mPlayers.begin(); itr != mPlayers.end();)
 	{
-		// Check if there are no more local planes for remote clients
-		if (std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), itr->first) != mLocalPlayerIdentifiers.end())
-			foundLocalPlayer = true;
 
 		if (!mWorld.getCharacter(itr->first))
 		{
@@ -547,10 +347,10 @@ void MultiplayerGameState::handleCharacterCount(sf::Time dt)
 		}
 		else
 			++itr;
-
 		mWorld.update(dt);
 	}
 
+	//TODO IF PLAYER IS DEAD SET TO SPECTATING UNTIL GAME IS OVER TO AVOID GAME ENDING ON HOST DEATH
 	if (!foundLocalPlayer && mGameStarted)
 		requestStackPush(States::GameOver);
 }
@@ -575,61 +375,71 @@ void MultiplayerGameState::handleNetworkInput()
 		pair.second->handleRealtimeNetworkInput(commands);
 }
 
-void MultiplayerGameState::handleServerMessages()
+void MultiplayerGameState::handleServerMessages(sf::Time dt)
 {
-	// Handle messages from server that may have arrived
-	sf::Packet packet;
-	if (mSocket.receive(packet) == sf::Socket::Done) {
-		mTimeSinceLastPacket = sf::seconds(0.f);
-		sf::Int32 packetType;
-		packet >> packetType;
-		handlePacket(packetType, packet);
+	if (mPacketHandler->isConnected())
+	{
+		mPacketHandler->update(dt, &mSocket);
+		updateBroadcastMessage(dt);
 	}
-	else {
-		// Check for timeout with the server
-		if (mTimeSinceLastPacket > mClientTimeout) {
-			mConnected = false;
-
-			mFailedConnectionText.setString("Lost connection to server");
-			centerOrigin(mFailedConnectionText);
-
-			mFailedConnectionClock.restart();
-		}
+	else if (mPacketHandler->timedOut()) {
+		requestStateClear();
+		requestStackPush(States::Menu);
 	}
 }
 
 void MultiplayerGameState::handleGameActions()
 {
-	// Events occurring in the game
 	GameActions::Action gameAction;
-	while (mWorld.pollGameAction(gameAction)) {
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::GameEvent);
-		packet << static_cast<sf::Int32>(gameAction.type);
-		packet << gameAction.position.x;
-		packet << gameAction.position.y;
 
-		mSocket.send(packet);
-	}
+	while (mWorld.pollGameAction(gameAction)) 
+		mPacketHandler->sendGameEvent(&mSocket, gameAction);
 }
 
 void MultiplayerGameState::handlePositionUpdates()
 {
-	// Regular position updates
-	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
+	//// Regular position updates
+	//if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f)) {
+	//	sf::Packet positionUpdatePacket;
+	//	positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
+	//	positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
+
+	//	FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+	//	{
+	//		if (Character* character = mWorld.getCharacter(identifier))
+	//			positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y;
+	//	}
+
+	//	mSocket.send(positionUpdatePacket);
+	//	mTickClock.restart();
+	//}
+
+
+		// OLD CODE
+	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f))
+	{
 		sf::Packet positionUpdatePacket;
 		positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
 		positionUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
 
 		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
 		{
-			if (Character* character = mWorld.getCharacter(identifier))
-				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
+			if (Character* aircraft = mWorld.getCharacter(identifier))
+			{
+				positionUpdatePacket << identifier << aircraft->getPosition().x << aircraft->getPosition().y << static_cast<sf::Int32>(aircraft->getHitpoints()) << static_cast<sf::Int32>(aircraft->getGrenadeAmmo());
+				//std::cout << "SENDING  POSITION : " << aircraft->getPosition().x << ", " << aircraft->getPosition().y << std::endl;
+			}
 		}
 
 		mSocket.send(positionUpdatePacket);
 		mTickClock.restart();
 	}
+
 }
 
 #pragma endregion
+
+sf::Int32 MultiplayerGameState::getLocalID()
+{
+	return mLocalPlayerID;
+}

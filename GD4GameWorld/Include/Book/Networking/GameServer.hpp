@@ -9,6 +9,8 @@
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 
+#include <Entity/Obstacle.hpp>
+
 #include <vector>
 #include <memory>
 #include <map>
@@ -20,9 +22,8 @@ public:
 
 	void onDestroy();
 
-	void notifyPlayerSpawn(sf::Int32 characterIdentifier);
+	void notifyPlayerJoin(sf::Int32 characterIdentifier);
 	void loadGame();
-	void startGame();
 	void playerEvent(sf::Packet packet);
 	void playerRealTimeChange(sf::Packet packet);
 	void positionUpdate(sf::Packet packet);
@@ -62,6 +63,7 @@ private:
 	void executionThread();
 	void tick();
 	std::vector<sf::Vector2f> getObjectSpwanPoints(int obstacleCount);
+	std::vector<Obstacle::ObstacleData> getObjectData(int obstacleCount);
 	void buildWorld();
 	sf::Time now() const;
 
@@ -76,6 +78,7 @@ private:
 	void SetInitialWorldState();
 	void sendCharacters();
 	void spawnObstacles();
+	void setObstacles();
 	void spawnEnemys();
 	void sendToAll(sf::Packet& packet);
 	void updateClientState();
@@ -110,8 +113,9 @@ private:
 
 	std::vector<int16_t> mPlayerIDs;
 
-	bool gameStarted{};
+	bool mGameStarted{};
 	bool mAllClientsReady{};
+
 	int16_t mClientReadyCount;
 	bool buildWorldPacketSent{};
 	bool worldBuiltPacketRecieved{};

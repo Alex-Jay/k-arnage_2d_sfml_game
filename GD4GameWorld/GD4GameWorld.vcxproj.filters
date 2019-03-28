@@ -252,11 +252,11 @@
     <ClInclude Include="include\Book\State\LobbyState.hpp">
       <Filter>Header Files\State</Filter>
     </ClInclude>
-    <ClInclude Include="SocketManager.hpp">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Book\Structural\Xbox360Controller.hpp">
       <Filter>Header Files\Structural</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Book\Networking\PacketHandler.hpp">
+      <Filter>Header Files\Networking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -406,11 +406,11 @@
     <ClCompile Include="Source\State\LobbyState.cpp">
       <Filter>Source Files\State</Filter>
     </ClCompile>
-    <ClCompile Include="SocketManager.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Structural\Xbox360Controller.cpp">
       <Filter>Source Files\Structural</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Networking\PacketHandler.cpp">
+      <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

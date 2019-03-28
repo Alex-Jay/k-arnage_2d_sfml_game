@@ -17,6 +17,15 @@ public:
 		TypeCount
 	};
 
+	struct ObstacleData {
+		ObstacleData(int16_t type, int16_t x, int16_t y, int16_t a)
+			: type(type)
+			, x(x)
+			, y(y)
+			, a(a) {}
+		int16_t type, x, y, a;
+	};
+
 public:
 	Obstacle(ObstacleID type, const TextureHolder& textures);
 	virtual unsigned int getCategory() const;

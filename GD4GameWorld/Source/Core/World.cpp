@@ -118,7 +118,7 @@ void World::resetZombieHitElapsedTime()
 
 void World::update(sf::Time dt)
 {
-	//std::cout << "CHARACTERS IN WORLD : " << mPlayerCharacters.size() << std::endl;
+	////std::cout << "CHARACTERS IN WORLD : " << mPlayerCharacters.size() << std::endl;
 	setView();
 
 	// Setup commands to destroy entities, and guide grenades
@@ -158,7 +158,8 @@ void World::draw()
 {
 	//If PostEffect is NOT supported, the water background is added to the scenGraph so everything is still drawn
 	//Otherwise it is seperated from the sceneGraph to apply post effects seperetly
-	if (PostEffect::isSupported())
+	// Dont apply shader is world is networked
+	if (PostEffect::isSupported() && !mNetworkedWorld)
 	{
 
 		mWaterSceneTexture.clear();
@@ -226,7 +227,7 @@ void World::setAliveZombieCount(int8_t count)
 	mNumZombiesAlive = count;
 }
 
-Character * World::getCharacter(int8_t localIdentifier) const
+Character * World::getCharacter(sf::Int32 localIdentifier) const
 {
 	for (Character* c : mPlayerCharacters)
 	{
@@ -341,7 +342,7 @@ void World::addZombies(sf::Time dt)
 				if (shrink(mWorldBoundsBuffer, mWorldBounds).intersects(enemy->getBoundingRect()))
 				{
 					//mSceneLayers[UpperLayer]->attachChild(std::move(enemy));
-					addZombie(xPos, yPos, angle);
+					addZombie(xPos, yPos);
 					++mNumZombiesAlive;
 				}
 			}
@@ -351,11 +352,10 @@ void World::addZombies(sf::Time dt)
 	}
 }
 
-void World::addZombie(int16_t x, int16_t y, int16_t a)
+void World::addZombie(int16_t x, int16_t y)
 {
-	SpawnPoint spawn(Character::Type::Zombie, x, y, a);
+	SpawnPoint spawn(Character::Type::Zombie, x, y, 0);
 	mEnemySpawnPoints.push_back(spawn);
-	//std::cout << "SPAWN POINT ADDED " << std::endl;
 }
 
 void World::addObstacle(Obstacle::ObstacleID type, int16_t x, int16_t y, int16_t a)
@@ -383,8 +383,8 @@ void World::spawnZombies()
 
 		++mNumZombiesAlive;
 
-		//std::cout << "Spawned Zombie at X: " << spawn.x << " Y: " << spawn.y << std::endl;
-		//std::cout << "Zombies Alive World: " << mNumZombiesAlive << std::endl;
+		////std::cout << "Spawned Zombie at X: " << spawn.x << " Y: " << spawn.y << std::endl;
+		////std::cout << "Zombies Alive World: " << mNumZombiesAlive << std::endl;
 	}
 }
 
@@ -527,7 +527,7 @@ void World::buildScene()
 
 	waterSprite->setPosition(-viewWidth / 2, -viewHeight);
 
-	if (PostEffect::isSupported())
+	if (PostEffect::isSupported() && !mNetworkedWorld)
 	{
 		mWaterSprite.attachChild(std::move(waterSprite));
 	}
