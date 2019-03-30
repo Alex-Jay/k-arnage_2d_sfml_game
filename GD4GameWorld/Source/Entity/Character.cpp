@@ -31,6 +31,7 @@ Character::Character(Type type, const TextureHolder& textures,
 		textures.get(Table[static_cast<int>(type)].deathAnimation))
 	, mHealthDisplay(nullptr)
 	, mGrenadeDisplay(nullptr)
+	, mLocalBadge(nullptr)
 	, mGrenadePower(nullptr)
 	, mSprite(textures.get(Table[static_cast<int>(type)].texture),
 		Table[static_cast<int>(type)].textureRect)
@@ -45,6 +46,7 @@ Character::Character(Type type, const TextureHolder& textures,
 	, mTravelledDistance(0.f)
 	, mDirectionIndex(0)
 	, mLocalIdentifier(0)
+	, isShowingBadge(false)
 {
 	// Alex - Optimize texture rect size for collision detection
 	mSprite.setTextureRect(sf::IntRect(0, 0, 80, 70));
@@ -87,6 +89,11 @@ Character::Character(Type type, const TextureHolder& textures,
 	attachChild(std::move(healthDisplay));
 
 	if (getCategory() == static_cast<int>(Category::PlayerCharacter)) {
+		std::unique_ptr<TextNode> localBadgeDisplay(new TextNode(fonts, ""));
+		localBadgeDisplay->setPosition(0, 70);
+		mLocalBadge = localBadgeDisplay.get();
+		attachChild(std::move(localBadgeDisplay));
+
 		std::unique_ptr<TextNode> grenadeDisplay(new TextNode(fonts, ""));
 		grenadeDisplay->setPosition(0, 70);
 		mGrenadeDisplay = grenadeDisplay.get();
@@ -367,7 +374,8 @@ void Character::updateTexts()
 			getHitpoints() > 0 ? 5.f : 0);
 
 
-	if (mGrenadeDisplay) {
+	if (mGrenadeDisplay)
+	{
 		mGrenadePower->setPosition(0.f, 0.f);
 		mGrenadePower->setRotation(-getRotation());
 		mGrenadePower->setOrigin(30.0f, -100.f);
@@ -379,6 +387,14 @@ void Character::updateTexts()
 		mGrenadeDisplay->setRotation(-getRotation());
 		mGrenadeDisplay->setOrigin(50.f, -100.f);
 		mGrenadeDisplay->setString(std::to_string(mGrenadeAmmo));
+	}
+	
+	if (mLocalBadge && isShowingBadge)
+	{
+		mLocalBadge->setPosition(0.f, 0.f);
+		mLocalBadge->setRotation(-getRotation());
+		mLocalBadge->setOrigin(0.f, 100.f);
+		mLocalBadge->setString("You");
 	}
 
 	if (getHitpoints() <= 20) {
@@ -401,6 +417,11 @@ void Character::playLocalSound(CommandQueue& commands, SoundEffect::ID effect)
 	command.action = derivedAction<SoundNode>([effect, worldPosition](
 		SoundNode& node, sf::Time) { node.playSound(effect, worldPosition); });
 	commands.push(command);
+}
+
+void Character::setSpriteColorTint(sf::Color color)
+{
+	mSprite.setColor(color);
 }
 
 void Character::setGrenadeAmmo(sf::Int32 ammo) { mGrenadeAmmo = ammo; }

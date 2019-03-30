@@ -35,6 +35,7 @@ public:
 	void startGrenade();
 	void launchGrenade();
 	void playLocalSound(CommandQueue& commands, SoundEffect::ID effect);
+	void setSpriteColorTint(sf::Color color);
 
 	void setGrenadeAmmo(sf::Int32 ammo);
 	sf::Int32 getGrenadeAmmo();
@@ -46,6 +47,7 @@ public:
 
 	unsigned int const getLocalIdentifier() const;
 	void setLocalIdentifier(unsigned int localID);
+	bool	isShowingBadge;
 
 private:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -73,9 +75,10 @@ private:
 	Command mFireCommand;
 	Command mGrenadeCommand;
 
-	ShapeNode* mHealthDisplay;
-	TextNode* mGrenadeDisplay;
-	ShapeNode* mGrenadePower;
+	ShapeNode*	mHealthDisplay;
+	TextNode*	mGrenadeDisplay;
+	TextNode*	mLocalBadge;
+	ShapeNode*	mGrenadePower;
 
 	sf::Sprite mSprite;
 	sf::Time mFireCountdown;
@@ -88,8 +91,8 @@ private:
 	bool mShowDeath;
 	bool mPlayedScreamSound;
 
-	float mGrenadeVelocity;
-	float mTravelledDistance;
+	float	mGrenadeVelocity;
+	float	mTravelledDistance;
 
 	int8_t mFireRateLevel;
 	int8_t mSpreadLevel;

@@ -50,6 +50,7 @@ void MultiplayerGameState::draw()
 {
 	if (mGameStarted)
 	{
+
 		mWorld.draw();
 
 		// Broadcast messages in default view
@@ -77,6 +78,7 @@ bool MultiplayerGameState::update(sf::Time dt)
 		handleGameActions();
 	handlePositionUpdates();
 
+
 	mTimeSinceLastPacket += dt;
 
 	if (!mSeverNotifiedBuilt && mCharactersRecieved && mObstaclesRecieved)
@@ -86,6 +88,17 @@ bool MultiplayerGameState::update(sf::Time dt)
 		mSeverNotifiedBuilt = true;
 		mGameStarted = true;
 	}
+
+	FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+	{
+		Character* character = mWorld.getCharacter(identifier);
+
+		if (character && (identifier == mLocalPlayerID))
+		{
+			character->isShowingBadge = true;
+		}
+	}
+
 	return true;
 }
 
@@ -118,7 +131,10 @@ void MultiplayerGameState::disableAllRealtimeActions()
 	mActiveState = false;
 
 	FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+	{
 		mPlayers[identifier]->disableAllRealtimeActions();
+	}
+		
 }
 
 bool MultiplayerGameState::handleEvent(const sf::Event& event)
@@ -259,9 +275,9 @@ void MultiplayerGameState::updateClientState(sf::Int32 characterIdentifier, sf::
 
 void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 {
+	sf::Int32 characterCount;
 	float currentWorldPosition;
-	sf::Int32 aircraftCount;
-	packet >> currentWorldPosition >> aircraftCount;
+	packet >> currentWorldPosition >> characterCount;
 
 	
 	//float currentViewPosition = mWorld.getViewBounds().top + mWorld.getViewBounds().height;
@@ -269,25 +285,32 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 	// Set the world's scroll compensation according to whether the view is behind or too advanced
 	//mWorld.setWorldScrollCompensation(currentViewPosition / currentWorldPosition);
 
-	for (sf::Int32 i = 0; i < aircraftCount; ++i)
+	for (sf::Int32 i = 0; i < characterCount; ++i)
 	{
+		sf::Int32 characterIdentifier;
 		sf::Vector2f characterPosition;
 		float characterRotation;
-		sf::Int32 characterIdentifier;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterRotation;
+		sf::Int32 characterHitpoints;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterRotation >> characterHitpoints;
 
 		//std::cout << "CURRENT POSITION IS: " << aircraftPosition.x << ", " << aircraftPosition.y << std::endl;
 		Character* character = mWorld.getCharacter(characterIdentifier);
 
 		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
 
+		if (character)
+		{
+			// DO HITPOINT UPDATES
+		}
+
 		if (character && !isLocalPlane)
 		{
-			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
-			float interpolatedRotation = character->getRotation() + (characterRotation - character->getRotation()) * 0.2f;
+			sf::Vector2f interpolatedPosition = character->getWorldPosition() + (characterPosition - character->getWorldPosition()) * 0.1f;
+			float interpolatedRotation = character->getRotation() + (characterRotation - character->getRotation());
 			//character->setPosition(aircraft->getPosition());
-			character->setPosition(interpolatedPosition);
+			character->setPosition(0.0f, interpolatedPosition.y);
 			character->setRotation(interpolatedRotation);
+			//character->setHitpoints(characterHitpoints);
 		}
 	}
 }
@@ -429,7 +452,7 @@ void MultiplayerGameState::handlePositionUpdates()
 
 
 		// OLD CODE
-	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 20.f))
+	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 25.f))
 	{
 		sf::Packet positionUpdatePacket;
 		positionUpdatePacket << static_cast<sf::Int32>(Client::PositionUpdate);
@@ -446,6 +469,31 @@ void MultiplayerGameState::handlePositionUpdates()
 		}
 
 		mSocket.send(positionUpdatePacket);
+		mTickClock.restart();
+	}
+
+}
+
+void MultiplayerGameState::handlePlayerDeath()
+{
+	// OLD CODE
+	if (mTickClock.getElapsedTime() > sf::seconds(1.f / 25.f))
+	{
+		sf::Packet hitpointUpdatePacket;
+		hitpointUpdatePacket << static_cast<sf::Int32>(Client::HitpointUpdate);
+		hitpointUpdatePacket << static_cast<sf::Int32>(mLocalPlayerIdentifiers.size());
+
+		FOREACH(sf::Int32 identifier, mLocalPlayerIdentifiers)
+		{
+			if (Character* character = mWorld.getCharacter(identifier))
+			{
+				//std::cout << "Current Rotation: " << character->getRotation() << std::endl;
+				hitpointUpdatePacket << identifier << static_cast<sf::Int32>(character->getHitpoints());
+				//std::cout << "SEND POS: -------> " << character->getPosition().x << ", " << character->getPosition().y << std::endl;
+			}
+		}
+
+		mSocket.send(hitpointUpdatePacket);
 		mTickClock.restart();
 	}
 

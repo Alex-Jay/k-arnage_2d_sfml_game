@@ -19,8 +19,6 @@
 #include <cmath>
 #include <limits>
 
-
-
 World::World(sf::RenderTarget& outputTarget, FontHolder& fonts, SoundPlayer& sounds, bool networked)
 	: mTarget(outputTarget)
 	, mWorldView(outputTarget.getDefaultView())
@@ -252,17 +250,17 @@ void World::removeCharacter(int8_t localIdentifier)
 Character * World::addCharacter(int8_t identifier, bool isLocal)
 {
 
-	std::unique_ptr<Character> player(new Character(Character::Type::Player, mTextures, mFonts));
-	player->setPosition(mWorldView.getCenter());
-	player->setLocalIdentifier(identifier);
-
-	mPlayerCharacters.push_back(player.get());
-	mSceneLayers[Layer::UpperLayer]->attachChild(std::move(player));
+	std::unique_ptr<Character> character(new Character(Character::Type::Player, mTextures, mFonts));
+	character->setPosition(mWorldView.getCenter());
+	character->setLocalIdentifier(identifier);
 
 	if (isLocal)
 	{
 		localCharacterID = (identifier);
 	}
+
+	mPlayerCharacters.push_back(character.get());
+	mSceneLayers[Layer::UpperLayer]->attachChild(std::move(character));
 
 	return mPlayerCharacters.back();
 }
@@ -841,7 +839,7 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 {
 	if (matchesCategories(pair, Category::PlayerCharacter, Category::EnemyCharacter)
 		|| matchesCategories(pair, Category::EnemyCharacter, Category::EnemyCharacter)
-		|| matchesCategories(pair, Category::PlayerCharacter, Category::PlayerCharacter))
+		/*|| matchesCategories(pair, Category::PlayerCharacter, Category::PlayerCharacter)*/)
 	{
 		return Character_Character;
 	}
@@ -872,7 +870,6 @@ World::CollisionType World::GetCollisionType(SceneNode::Pair& pair)
 	else { return Default; }
 }
 
-
 bool World::pollGameAction(GameActions::Action& out)
 {
 	return mNetworkNode->pollGameAction(out);
@@ -887,5 +884,3 @@ void World::createPickup(sf::Vector2f position, Pickup::Type type)
 }
 
 #pragma endregion
-
-

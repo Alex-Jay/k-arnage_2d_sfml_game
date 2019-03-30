@@ -65,9 +65,9 @@ void GameServer::executionThread()
 {
 	setListening(true);
 
-	sf::Time stepInterval = sf::seconds(1.f / 60.f);
+	sf::Time stepInterval = sf::seconds(1.f / 50.f);
 	sf::Time stepTime = sf::Time::Zero;
-	sf::Time tickInterval = sf::seconds(1.f / 20.f);
+	sf::Time tickInterval = sf::seconds(1.f / 25.f);
 	sf::Time tickTime = sf::Time::Zero;
 	sf::Clock stepClock, tickClock;
 
@@ -189,6 +189,10 @@ void GameServer::handleIncomingPacket(sf::Packet& packet, RemotePeer& receivingP
 		case Client::PositionUpdate:
 			positionUpdate(packet);
 			break;
+		case Client::HitpointUpdate:
+			hitpointUpdate(packet);
+			// TODO: Die
+			break;
 		case Client::GameEvent:
 			gameEvent(packet, receivingPeer);
 			break;
@@ -286,6 +290,20 @@ void GameServer::gameEvent(sf::Packet packet, RemotePeer& receivingPeer)
 		mZombieCount--;
 }
 
+void GameServer::hitpointUpdate(sf::Packet packet)
+{
+	sf::Int32 characterCount;
+	packet >> characterCount;
+
+	for (sf::Int32 i = 0; i < characterCount; ++i)
+	{
+		sf::Int32 characterIdentifier;
+		sf::Int32 characterHitpoints;
+		packet >> characterIdentifier >> characterHitpoints;
+		mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
+	}
+}
+
 #pragma endregion
 
 #pragma region Notify Clients
@@ -350,6 +368,20 @@ void GameServer::notifyStartGame()
 	}
 }
 
+void GameServer::notifyPlayerDied(sf::Int32 characterIdentifier)
+{
+	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
+	{
+		if (mPeers[i]->ready)
+		{
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::PlayerDied);
+			packet << characterIdentifier;;
+			mPeers[i]->socket.send(packet);
+		}
+	}
+}
+
 void GameServer::notifyPlayerJoin(sf::Int32 characterIdentifier)
 {
 	for (std::size_t i = 0; i < mConnectedPlayers; ++i)
@@ -384,7 +416,7 @@ void GameServer::updateClientState()
 
 	FOREACH(auto character, mCharacterInfo)
 	{
-		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y << character.second.rotation;
+		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y << character.second.rotation << character.second.hitpoints;
 		//std::cout << "RECEIVED POS: " << character.second.position.x << ", " << character.second.position.y << std::endl;
 	}
 
@@ -522,9 +554,14 @@ void GameServer::RemoveDestroyedCharacters()
 	for (auto itr = mCharacterInfo.begin(); itr != mCharacterInfo.end(); )
 	{
 		if (itr->second.hitpoints <= 0)
+		{
+			notifyPlayerDied(itr->first);
 			mCharacterInfo.erase(itr++);
+		}
 		else
+		{
 			++itr;
+		}
 	}
 }
 

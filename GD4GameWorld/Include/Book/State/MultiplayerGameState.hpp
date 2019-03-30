@@ -62,6 +62,8 @@ private:
 
 	void						handlePositionUpdates();
 
+	void						handlePlayerDeath();
+
 
 private:
 	typedef std::unique_ptr<Player> PlayerPtr;

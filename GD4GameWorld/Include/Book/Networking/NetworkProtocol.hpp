@@ -26,6 +26,7 @@ namespace Server
 		PlayerLobbyDisconnect,
 		PlayerConnect,
 		PlayerDisconnect,
+		PlayerDied,
 		AcceptCoopPartner,
 		SpawnEnemy,
 		SpawnObstacle,
@@ -50,6 +51,7 @@ namespace Client
 		PlayerRealtimeChange,
 		RequestCoopPartner,
 		PositionUpdate,
+		HitpointUpdate,
 		GameEvent,
 		Quit
 	};
