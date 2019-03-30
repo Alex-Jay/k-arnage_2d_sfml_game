@@ -123,5 +123,5 @@ void Application::registerStates()
 	mStateStack.registerState<PauseState>(States::NetworkPause, true);
 	mStateStack.registerState<GameOverState>(States::GameOver, "Mission Failed!");
 	mStateStack.registerState<SpectateState>(States::Spectate, true);
-	mStateStack.registerState<GameOverState>(States::MissionSuccess, "Mission Successful!");
+	mStateStack.registerState<GameOverState>(States::MissionSuccess, "All enemies eliminated");
 }

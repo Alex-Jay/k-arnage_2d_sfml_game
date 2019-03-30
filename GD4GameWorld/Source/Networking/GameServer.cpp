@@ -247,14 +247,14 @@ void GameServer::positionUpdate(sf::Packet packet)
 
 	for (sf::Int32 i = 0; i < characterCount; ++i)
 	{
-		sf::Int32 aircraftIdentifier;
-		sf::Int32 aircraftHitpoints;
+		sf::Int32 characterIdentifier;
+		sf::Int32 characterHitpoints;
 		sf::Int32 missileAmmo;
-		sf::Vector2f aircraftPosition;
-		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y >> aircraftHitpoints >> missileAmmo;
-		mCharacterInfo[aircraftIdentifier].position = aircraftPosition;
-		mCharacterInfo[aircraftIdentifier].hitpoints = aircraftHitpoints;
-		mCharacterInfo[aircraftIdentifier].missileAmmo = missileAmmo;
+		sf::Vector2f characterPosition;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
+		mCharacterInfo[characterIdentifier].position = characterPosition;
+		mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
+		mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
 	}
 }
 
@@ -381,7 +381,10 @@ void GameServer::updateClientState()
 	updateClientStatePacket << static_cast<sf::Int32>(mCharacterInfo.size());
 
 	FOREACH(auto character, mCharacterInfo)
+	{
 		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
+		//std::cout << "RECEIVED POS: " << character.second.position.x << ", " << character.second.position.y << std::endl;
+	}
 
 	sendToAll(updateClientStatePacket);
 }

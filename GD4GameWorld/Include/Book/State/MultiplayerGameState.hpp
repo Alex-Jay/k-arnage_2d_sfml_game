@@ -29,38 +29,38 @@ public:
 
 
 	void						disableAllRealtimeActions();
-	sf::Int32 getLocalID();
+	sf::Int32					getLocalID();
 
-	void spawnSelf();
+	void						spawnSelf();
 
-	void spawnPlayers(std::vector<sf::Int32> playerIds);
-	void spawnObstacles(std::vector<Obstacle::ObstacleData> obstacleData);
-	void playerDisconnect(sf::Int32 characterIdentifier);
-	void playerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
-	void playerRealTimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
-	void spawnZombie(int x, int y);
-	void spawnPickup(sf::Int32 type, sf::Vector2f position);
-	void updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
-	void oldUpdateClientState(sf::Packet packet);
+	void						spawnPlayers(std::vector<sf::Int32> playerIds);
+	void						spawnObstacles(std::vector<Obstacle::ObstacleData> obstacleData);
+	void						playerDisconnect(sf::Int32 characterIdentifier);
+	void						playerEvent(sf::Int32 characterIdentifier, sf::Int32 action);
+	void						playerRealTimeChange(sf::Int32 characterIdentifier, sf::Int32 action, bool actionEnabled);
+	void						spawnZombie(int x, int y);
+	void						spawnPickup(sf::Int32 type, sf::Vector2f position);
+	void						updateClientState(sf::Int32 characterIdentifier, sf::Vector2f characterPosition);
+	void						oldUpdateClientState(sf::Packet packet);
 private:
 	void						updateBroadcastMessage(sf::Time elapsedTime);
 
-	void broadcastMessage(sf::Packet & packet);
+	void						broadcastMessage(sf::Packet & packet);
 
 
-	sf::Vector2f assignCharacterSpawn(int Identifier);
+	sf::Vector2f				assignCharacterSpawn(sf::Int32 Identifier);
 
-	void handleCharacterCount(sf::Time dt);
+	void						handleCharacterCount(sf::Time dt);
 
-	void handleRealTimeInput();
+	void						handleRealTimeInput();
 
-	void handleNetworkInput();
+	void						handleNetworkInput();
 
-	void handleServerMessages(sf::Time dt);
+	void						handleServerMessages(sf::Time dt);
 
-	void handleGameActions();
+	void						handleGameActions();
 
-	void handlePositionUpdates();
+	void						handlePositionUpdates();
 
 
 private:
@@ -94,14 +94,14 @@ private:
 	bool						mHost;
 	bool						mGameStarted;
 	bool						mSpectating;
-	bool mCharactersRecieved{};
-	bool mObstaclesRecieved{};
-	bool mServerNotifiedReady{};
-	bool mSeverNotifiedBuilt{};
+	bool						mCharactersRecieved{};
+	bool						mObstaclesRecieved{};
+	bool						mServerNotifiedReady{};
+	bool						mSeverNotifiedBuilt{};
 	sf::Time					mClientTimeout;
 	sf::Time					mTimeSinceLastPacket;
 
-	PacketHandler* mPacketHandler;
+	PacketHandler*				mPacketHandler;
 };
 
 #endif // BOOK_MULTIPLAYERGAMESTATE_HPP

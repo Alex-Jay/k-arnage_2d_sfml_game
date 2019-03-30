@@ -252,7 +252,7 @@ void MultiplayerGameState::updateClientState(sf::Int32 characterIdentifier, sf::
 
 		if (character && (characterIdentifier != mLocalPlayerID))
 		{
-			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
+			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.2f;
 			character->setPosition(interpolatedPosition);
 		}
 }
@@ -277,16 +277,19 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 
 		//std::cout << "CURRENT POSITION IS: " << aircraftPosition.x << ", " << aircraftPosition.y << std::endl;
 		Character* aircraft = mWorld.getCharacter(aircraftIdentifier);
+
 		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
+
 		if (aircraft && !isLocalPlane)
 		{
-			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.01f;
+			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.1f;
+			//aircraft->setPosition(aircraft->getPosition());
 			aircraft->setPosition(interpolatedPosition);
 		}
 	}
 }
 
-sf::Vector2f MultiplayerGameState::assignCharacterSpawn(int Identifier)
+sf::Vector2f MultiplayerGameState::assignCharacterSpawn(sf::Int32 Identifier)
 {
 	sf::Vector2f spawnPosition = sf::Vector2f(0, 0);
 	switch (Identifier)
@@ -433,8 +436,9 @@ void MultiplayerGameState::handlePositionUpdates()
 		{
 			if (Character* character = mWorld.getCharacter(identifier))
 			{
+				//std::cout << "Current Rotation: " << character->getRotation() << std::endl;
 				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
-				//std::cout << "SENDING  POSITION : " << aircraft->getPosition().x << ", " << aircraft->getPosition().y << std::endl;
+				//std::cout << "SEND POS: -------> " << character->getPosition().x << ", " << character->getPosition().y << std::endl;
 			}
 		}
 
