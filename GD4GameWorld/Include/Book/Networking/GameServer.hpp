@@ -49,6 +49,7 @@ private:
 	// Structure to store information about current character state
 	struct characterInfo {
 		sf::Vector2f position;
+		float rotation;
 		sf::Int32 hitpoints;
 		sf::Int32 missileAmmo;
 		std::map<sf::Int32, bool> realtimeActions;

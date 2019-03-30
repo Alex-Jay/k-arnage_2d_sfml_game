@@ -249,12 +249,14 @@ void GameServer::positionUpdate(sf::Packet packet)
 	{
 		sf::Int32 characterIdentifier;
 		sf::Int32 characterHitpoints;
-		sf::Int32 missileAmmo;
+		sf::Int32 characterMissileAmmo;
 		sf::Vector2f characterPosition;
-		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterHitpoints >> missileAmmo;
+		float characterRotation;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterRotation >> characterHitpoints >> characterMissileAmmo;
 		mCharacterInfo[characterIdentifier].position = characterPosition;
+		mCharacterInfo[characterIdentifier].rotation = characterRotation;
 		mCharacterInfo[characterIdentifier].hitpoints = characterHitpoints;
-		mCharacterInfo[characterIdentifier].missileAmmo = missileAmmo;
+		mCharacterInfo[characterIdentifier].missileAmmo = characterMissileAmmo;
 	}
 }
 
@@ -382,7 +384,7 @@ void GameServer::updateClientState()
 
 	FOREACH(auto character, mCharacterInfo)
 	{
-		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y;
+		updateClientStatePacket << character.first << character.second.position.x << character.second.position.y << character.second.rotation;
 		//std::cout << "RECEIVED POS: " << character.second.position.x << ", " << character.second.position.y << std::endl;
 	}
 

@@ -271,20 +271,23 @@ void MultiplayerGameState::oldUpdateClientState(sf::Packet packet)
 
 	for (sf::Int32 i = 0; i < aircraftCount; ++i)
 	{
-		sf::Vector2f aircraftPosition;
-		sf::Int32 aircraftIdentifier;
-		packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y;
+		sf::Vector2f characterPosition;
+		float characterRotation;
+		sf::Int32 characterIdentifier;
+		packet >> characterIdentifier >> characterPosition.x >> characterPosition.y >> characterRotation;
 
 		//std::cout << "CURRENT POSITION IS: " << aircraftPosition.x << ", " << aircraftPosition.y << std::endl;
-		Character* aircraft = mWorld.getCharacter(aircraftIdentifier);
+		Character* character = mWorld.getCharacter(characterIdentifier);
 
-		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), aircraftIdentifier) != mLocalPlayerIdentifiers.end();
+		bool isLocalPlane = std::find(mLocalPlayerIdentifiers.begin(), mLocalPlayerIdentifiers.end(), characterIdentifier) != mLocalPlayerIdentifiers.end();
 
-		if (aircraft && !isLocalPlane)
+		if (character && !isLocalPlane)
 		{
-			sf::Vector2f interpolatedPosition = aircraft->getPosition() + (aircraftPosition - aircraft->getPosition()) * 0.1f;
-			//aircraft->setPosition(aircraft->getPosition());
-			aircraft->setPosition(interpolatedPosition);
+			sf::Vector2f interpolatedPosition = character->getPosition() + (characterPosition - character->getPosition()) * 0.1f;
+			float interpolatedRotation = character->getRotation() + (characterRotation - character->getRotation()) * 0.2f;
+			//character->setPosition(aircraft->getPosition());
+			character->setPosition(interpolatedPosition);
+			character->setRotation(interpolatedRotation);
 		}
 	}
 }
@@ -437,7 +440,7 @@ void MultiplayerGameState::handlePositionUpdates()
 			if (Character* character = mWorld.getCharacter(identifier))
 			{
 				//std::cout << "Current Rotation: " << character->getRotation() << std::endl;
-				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
+				positionUpdatePacket << identifier << character->getPosition().x << character->getPosition().y << character->getRotation() << static_cast<sf::Int32>(character->getHitpoints()) << static_cast<sf::Int32>(character->getGrenadeAmmo());
 				//std::cout << "SEND POS: -------> " << character->getPosition().x << ", " << character->getPosition().y << std::endl;
 			}
 		}

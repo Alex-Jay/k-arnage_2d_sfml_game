@@ -81,62 +81,64 @@ void PacketHandler::handlePacket(sf::Int32 packetType, sf::Packet& packet)
 	switch (packetType) 
 	{
 		// Send message to all clients
-		case Server::BroadcastMessage: {
+		case Server::BroadcastMessage:
 			setBroadcastMessage(packet);
-		} break;
+			break;
 
-		case Server::JoinLobby: {
+		case Server::JoinLobby:
 			joinLobby(packet, false);
-		} break;
+			break;
 
-		case Server::SelfJoinLobby: {
+		case Server::SelfJoinLobby:
 			joinLobby(packet, true);
-		} break;
+			break;
 
-		case Server::PlayerDisconnect: {
+		case Server::PlayerDisconnect:
 			handleDisconnect(packet);
-		} break;
+			break;
 
-		case Server::LobbyState: {
+		case Server::LobbyState:
 			setInitialLobbyState(packet);
-		} break;
+			break;
 
 		case Server::LoadGame:
-		{
 			mLobby->loadGame();
-		} break;
+			break;
 
-		case Server::SetCharacters: {
+		case Server::SetCharacters:
 			setPlayers(packet);
-		} break;
+			break;
 
-		case Server::SetObstacles: {
+		case Server::SetObstacles:
 			setObstacles(packet);
-		} break;
+			break;
 
-		case Server::PlayerEvent: {
+		case Server::PlayerEvent:
 			playerEvent(packet);
-		} break;
+			break;
 
-		case Server::PlayerRealtimeChange: {
+		case Server::PlayerRealtimeChange:
 			playerRealTimeChange(packet);
-		} break;
+			break;
 
-		case Server::SpawnEnemy: {
+		case Server::SpawnEnemy:
 			spawnZombie(packet);
-		} break;
+			break;
 
-		case Server::SpawnPickup: {
+		case Server::SpawnPickup:
 			spawnPickup(packet);
-		} break;
+			break;
 
-		case Server::MissionSuccess: {
+		case Server::MissionSuccess:
 			mGame->requestStackPush(States::MissionSuccess);
-		} break;
+			break;
 
-		case Server::UpdateClientState: {
+		case Server::UpdateClientState:
 			updateClientState(packet);
-		} break;
+			break;
+
+		default:
+			break;
 	}
 }
 
